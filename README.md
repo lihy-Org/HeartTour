@@ -1,3 +1,11 @@
+<!--
+ * @Author: Li-HONGYAO
+ * @Date: 2021-01-18 12:43:20
+ * @LastEditTime: 2021-01-18 13:03:14
+ * @LastEditors: Li-HONGYAO
+ * @Description: 
+ * @FilePath: /HeartTour/README.md
+-->
 ### 说明
 
 为了便于统一管理项目源码，所有端的项目源码文件存放至本仓库，目录结构：
@@ -5,12 +13,12 @@
 ```markdown
 .
 ├── src
-		├── BackEnd 
-				├── ProA # 后端项目A
-				├── ProB # 后端项目B
-		└── FrontEnd 
-				├── ProA # 前端项目A
-				├── ProB # 前端项目B
+  ├── BackEnd
+    ├── ProA # 后端项目 A
+    ├── ProB # 后端项目 B
+  └── FrontEnd
+    ├── ProA # 前端项目 A
+    ├── ProB # 前端项目 B
 ├── .gitignore
 └── README.md
 ```
@@ -24,21 +32,22 @@
 | 陈林浩 | 前端工程师           | 13541003792 | 门店管理系统 / 技师端               |
 | 余惠勤 | 后端工程师 PHP       | 15082342683 | 小程序端 / 技师端                   |
 | 王进锋 | 后端工程师 PHP       | 15828242712 | 总端后台管理系统 / 门店后台管理系统 |
-| 苟玉梅 | UI设计师             | 18080606214 | 小程序端 / 技师端                   |
+| 苟玉梅 | UI 设计师            | 18080606214 | 小程序端 / 技师端                   |
 
 > 提示：后端大致分工如上所示，实际分工根据项目情况而定！
 
 ### 后端接口返回基本格式
+
 ```ts
 interface BaseResponse<T = any> {
-  code: number; /** 状态码 */
-  data: T; /** 响应数据 */
-  msg: string; /** 信息 */
-  page: { /** 分页相关 */
-    pageNo: number; /** 当前页 */
-    pageSize: number; /** 每页条数 */
-    pages: number; /** 总页数 */
-    total: number; /** 总条数 */
+  code: number /** 状态码 */;
+  data: T /** 响应数据 */;
+  msg: string /** 信息 */;
+  page: {
+    /** 分页相关 */ pageNo: number /** 当前页 */;
+    pageSize: number /** 每页条数 */;
+    pages: number /** 总页数 */;
+    total: number /** 总条数 */;
   };
 }
 ```
