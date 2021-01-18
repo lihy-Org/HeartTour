@@ -22,11 +22,12 @@
   },
   "dependencies": {
     "@ant-design/pro-layout": "^6.9.5",
+    "@types/echarts": "^4.9.3",
     "@umijs/hooks": "^1.9.3",
-    "@umijs/preset-react": "1.7.12",
+    "@umijs/preset-react": "1.7.9",
     "@umijs/test": "^3.3.3",
     "crypto-js": "^4.0.0",
-    "echarts": "^5.0.0",
+    "echarts": "5.0.0",
     "lg-classnames": "^1.0.4",
     "lg-cookie": "^1.0.1",
     "lg-tools": "^1.0.11",
@@ -40,7 +41,6 @@
     "yorkie": "^2.0.0"
   },
   "devDependencies": {
-    "@types/echarts": "^4.9.3",
     "cross-env": "^7.0.3"
   }
 }
