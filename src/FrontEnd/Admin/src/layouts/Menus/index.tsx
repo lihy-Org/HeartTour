@@ -1,6 +1,14 @@
+/*
+ * @Author: Li-HONGYAO
+ * @Date: 2021-01-04 15:41:47
+ * @LastEditTime: 2021-01-20 00:30:03
+ * @LastEditors: Li-HONGYAO
+ * @Description:
+ * @FilePath: /Admin/src/layouts/Menus/index.tsx
+ */
 import React, { FC } from 'react';
-import { Layout, Menu } from 'antd';
-import { Link, withRouter } from 'umi';
+import { Menu, Layout } from 'antd';
+import { Link } from 'umi';
 import {
   UserOutlined,
   BarChartOutlined,
@@ -11,8 +19,11 @@ import {
   ShopOutlined,
   AccountBookOutlined
 } from '@ant-design/icons';
-const { Sider } = Layout;
 import './index.less';
+
+interface IProps {
+  collapsed: boolean;
+}
 
 type MenuItemType = {
   path: string;
@@ -20,7 +31,7 @@ type MenuItemType = {
   icon?: JSX.Element;
   children?: MenuItemType[];
 };
-
+const { Sider } = Layout;
 const menus: MenuItemType[] = [
   {
     path: '/index',
@@ -88,21 +99,27 @@ const menus: MenuItemType[] = [
   },
 ];
 
-const Menus: FC = () => {
+
+const Menus: FC<IProps> = (props) => {
   return (
-    <Sider breakpoint="lg" collapsedWidth="0">
+    <Sider trigger={null} collapsible collapsed={props.collapsed}>
       {/* 标题栏 */}
       <div className="layout-logo">
-        <img
-          src={require('../../assets/images/icon_logo.png')}
-          className="logo"
-          alt=""
-        />
-        <h1 className="title">心之旅·超管系统</h1>
-        <img
-          className="cursor ani-move-to-right"
-          src={require('../../assets/images/cursor.png')}
-        />
+        <div className="layout-logo__wrapper">
+          {props.collapsed ? (
+            <img
+              src={require('../../assets/images/icon_logo.png')}
+              className="logo"
+              alt=""
+            />
+          ) : (
+            <h1 className="title">心之旅·超管系统</h1>
+          )}
+          <img
+            className="cursor ani-move-to-right"
+            src={require('../../assets/images/cursor.png')}
+          />
+        </div>
       </div>
       {/* 菜单栏 */}
       <Menu
@@ -131,4 +148,4 @@ const Menus: FC = () => {
   );
 };
 
-export default withRouter(Menus);
+export default Menus;
