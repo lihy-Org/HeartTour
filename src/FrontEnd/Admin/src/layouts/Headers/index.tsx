@@ -1,10 +1,10 @@
 /*
  * @Author: Li-HONGYAO
  * @Date: 2021-01-04 16:31:33
- * @LastEditTime: 2021-01-08 13:28:49
+ * @LastEditTime: 2021-01-19 13:43:52
  * @LastEditors: Li-HONGYAO
  * @Description:
- * @FilePath: /umijs-template__admin/src/layouts/Headers/index.tsx
+ * @FilePath: /Admin/src/layouts/Headers/index.tsx
  */
 
 // 天气API => ref：https://id.qweather.com/#/homepage
@@ -125,10 +125,12 @@ const Headers: FC<IProps> = (props) => {
       geolocation.getCurrentPosition();
       window.AMap.event.addListener(geolocation, 'complete', (data: any) => {
         // 记录位置信息
+        console.log(data);
+        return;
         setCity(data.addressComponent.city + data.addressComponent.district);
         // 请求天气数据
         const location = `${data.position.lng},${data.position.lat}`;
-        const key = '59f15e551c5b4772851dcc0026e67f6a';
+        const key = '924d04837b1144bba68481e7a3a2f7a0';
         const url = `https://devapi.qweather.com/v7/weather/3d?location=${location}&key=${key}`;
         fetch(url).then(async (response: any) => {
           const res = await response.clone().json();
