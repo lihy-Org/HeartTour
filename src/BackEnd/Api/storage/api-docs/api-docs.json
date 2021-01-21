@@ -1,0 +1,111 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "心之旅",
+        "version": "1.0"
+    },
+    "paths": {
+        "/api/admin/login": {
+            "post": {
+                "tags": [
+                    "总台管理系统-用户管理"
+                ],
+                "summary": "登录",
+                "operationId": "App\\Http\\Controllers\\Admin\\AccountController::Auth",
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "header",
+                        "description": "token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "username",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "username": {
+                                        "description": "用户名",
+                                        "type": "string",
+                                        "default": ""
+                                    },
+                                    "password": {
+                                        "description": "密码",
+                                        "type": "string",
+                                        "default": ""
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "状态码",
+                                            "type": "number",
+                                            "example": "200"
+                                        },
+                                        "msg": {
+                                            "description": "提示信息",
+                                            "type": "string",
+                                            "example": "登录成功!"
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "example": ""
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "失败",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "状态码",
+                                            "type": "number",
+                                            "example": "500"
+                                        },
+                                        "msg": {
+                                            "description": "提示信息",
+                                            "type": "string",
+                                            "example": "登录失败!"
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "example": "错误信息"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "security": [
+        []
+    ]
+}
