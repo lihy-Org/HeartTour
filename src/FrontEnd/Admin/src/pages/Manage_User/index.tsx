@@ -9,7 +9,7 @@ import {
   Modal,
   Space,
   Form,
-  message
+  message,
 } from 'antd';
 import { useBoolean } from '@umijs/hooks';
 
@@ -42,15 +42,15 @@ const columns: ColumnProps<UserType>[] = [
   },
   {
     title: '手机账号',
-    dataIndex: 'phone'
+    dataIndex: 'phone',
   },
   {
     title: '用户微信昵称',
-    dataIndex: 'nickName'
+    dataIndex: 'nickName',
   },
   {
     title: '锁客商家',
-    dataIndex: 'merchantName'
+    dataIndex: 'merchantName',
   },
   {
     width: 200,
@@ -62,15 +62,15 @@ const columns: ColumnProps<UserType>[] = [
     dataIndex: 'dbeanBalance',
     defaultSortOrder: 'descend',
     sorter: (rowA: UserType, rowB: UserType) =>
-      rowA.dbeanBalance - rowB.dbeanBalance
+      rowA.dbeanBalance - rowB.dbeanBalance,
   },
   {
     title: '历史消费D积分',
-    dataIndex: 'deductDbeanCount'
+    dataIndex: 'deductDbeanCount',
   },
   {
     title: '首次扫码时间',
-    dataIndex: 'firstScanTime'
+    dataIndex: 'firstScanTime',
   },
 ];
 
@@ -144,7 +144,7 @@ const Manage_User: FC = () => {
           form={form}
           autoComplete="off"
           onFinish={(value: FilterParamsType) =>
-            setPage(prev => ({
+            setPage((prev) => ({
               ...prev,
               filters: value,
             }))
@@ -214,12 +214,12 @@ const Manage_User: FC = () => {
           showTotal: (total: number, range: [number, number]) =>
             `共 ${total} 条`,
           onChange: (page: number) =>
-            setPage(prev => ({
+            setPage((prev) => ({
               ...prev,
               page,
             })),
           onShowSizeChange: (current: number, size: number) =>
-            setPage(prev => ({
+            setPage((prev) => ({
               ...prev,
               pageSize: size,
               page: current,
