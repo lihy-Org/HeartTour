@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\TestController;
 
 Route::post('api/admin/login', 'Admin\AccountController@Auth');
 
@@ -12,6 +13,9 @@ Route::get('api/admin/login', function (Request $request) {
             'data' => '')
     );
 })->name('login');
+
+
+Route::get('/test',[TestController::class,'Test']);
 
 
 Route::prefix('api/admin')->middleware(['auth:sanctum', 'adminapi'])->group(function () {
