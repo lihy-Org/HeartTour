@@ -1,7 +1,7 @@
 /*
  * @Author: Li-HONGYAO
  * @Date: 2021-01-18 11:15:25
- * @LastEditTime: 2021-01-22 14:39:53
+ * @LastEditTime: 2021-01-23 13:44:57
  * @LastEditors: Li-HONGYAO
  * @Description:
  * @FilePath: /Admin/src/pages/Combo/index.tsx
@@ -16,13 +16,14 @@ import {
   Button,
   Form,
   message,
-  DatePicker,
-  Tabs,
+  InputNumber,
+  Upload,
 } from 'antd';
+import { SearchOutlined, DeleteOutlined } from '@ant-design/icons';
 import { ColumnProps } from 'antd/es/table';
-import StoreSelect from '@/components/StoreSelect';
-import moment from 'moment';
-import TechnicianSelect from '@/components/TechnicianSelect';
+import UploadFile from '@/components/UploadFile';
+
+const { TextArea } = Input;
 
 // 筛选条件
 type FilterParamsType = {};
@@ -44,9 +45,16 @@ type ColumnsType = {
   }[];
 };
 
+const layout = {
+  labelCol: { span: 4 },
+  wrapperCol: { span: 20 },
+};
+
 const Combo: FC = () => {
   // state
+  const [addModalVisible, setAddModalVisible] = useState(false);
   const [form] = Form.useForm();
+  const [comboForm] = Form.useForm();
   const [dataSource, setDataSource] = useState<ColumnsType[]>([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState<DP.TablePageDataType<FilterParamsType>>(
@@ -56,6 +64,7 @@ const Combo: FC = () => {
       filters: {},
     }),
   );
+
   // methods
   const getDataSource = () => {
     // console.log(filterParams);
@@ -108,7 +117,7 @@ const Combo: FC = () => {
     },
     { title: '销量', dataIndex: 'sales' },
     {
-      width: 230,
+      width: 250,
       title: '操作',
       key: 'action',
       render: () => (
@@ -119,7 +128,7 @@ const Combo: FC = () => {
           <Button type="primary" size="small">
             分配门店
           </Button>
-          <Button type="primary" size="small" danger>
+          <Button type="primary" size="small" icon={<DeleteOutlined />} danger>
             删除
           </Button>
         </Space>
@@ -134,7 +143,12 @@ const Combo: FC = () => {
         <section>
           <span className="site-top-bar__title">套餐管理</span>
         </section>
-        <Button type="primary" size="small">
+        <Button
+          type="primary"
+          size="small"
+          shape="round"
+          onClick={() => setAddModalVisible(true)}
+        >
           添加套餐
         </Button>
       </div>
@@ -162,7 +176,7 @@ const Combo: FC = () => {
           </Form.Item>
           {/* 提交 */}
           <Form.Item>
-            <Button htmlType="submit" type="primary">
+            <Button htmlType="submit" icon={<SearchOutlined />} type="primary">
               搜索
             </Button>
           </Form.Item>
@@ -205,6 +219,34 @@ const Combo: FC = () => {
             })),
         }}
       />
+      {/* 创建套餐 */}
+      <Modal
+        title="添加套餐"
+        visible={addModalVisible}
+        onCancel={() => setAddModalVisible(false)}
+        onOk={() => setAddModalVisible(false)}
+      >
+        <Form {...layout} form={comboForm} autoComplete="off">
+          <Form.Item label="名称：" required>
+            <Input allowClear />
+          </Form.Item>
+          <Form.Item label="描述" required>
+            <TextArea allowClear />
+          </Form.Item>
+          <Form.Item label="价格：" required>
+            <InputNumber />
+          </Form.Item>
+          <Form.Item label="背景图：" required>
+            <UploadFile />
+          </Form.Item>
+          <Form.Item label="轮播图：" required>
+            <UploadFile />
+          </Form.Item>
+          <Form.Item label="详情图：" required>
+            <UploadFile max={10} />
+          </Form.Item>
+        </Form>
+      </Modal>
     </div>
   );
 };

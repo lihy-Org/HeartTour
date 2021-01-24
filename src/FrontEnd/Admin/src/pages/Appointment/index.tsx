@@ -10,6 +10,7 @@ import {
   DatePicker,
   Tabs,
 } from 'antd';
+import { SearchOutlined, DeleteOutlined } from '@ant-design/icons';
 import { ColumnProps } from 'antd/es/table';
 import StoreSelect from '@/components/StoreSelect';
 import moment from 'moment';
@@ -18,10 +19,10 @@ import classNames from 'lg-classnames';
 
 // 过滤条件
 type FilterParamsType = {
-  city?: string;
-  bdUid?: string;
-  type?: string[];
-  searchKey?: string;
+  time?: any[] /** 预约时间 */;
+  storeId?: string /** 门店id */;
+  technicianId?: string[] /** 技师id */;
+  searchKey?: string /** 搜索关键字 */;
 };
 
 // 列表数据类型
@@ -43,7 +44,11 @@ const { RangePicker } = DatePicker;
 
 const Appointment: FC = () => {
   // state
+  const [modalVisible, setModalVisible] = useState(false);
+
   const [filterParams, setFilterParams] = useState<FilterParamsType>({});
+  const [rowSelection, setRowSelection] = useState<any>();
+  const [selectedRowKeys, setSelectedRowKeys] = useState<any[]>([]);
 
   const [form] = Form.useForm();
   const [activeKey, setActiveKey] = useState('1');
@@ -117,6 +122,15 @@ const Appointment: FC = () => {
         break;
     }
   };
+  // 修改预约时间
+  const onChangeTime = () => {
+    setModalVisible(false);
+    message.success('修改成功');
+  };
+  // 删除预约记录
+  const onDeleteAppointment = () => {
+    message.info('已删除');
+  };
   // effects
   useEffect(() => {
     getDataSource();
@@ -131,14 +145,33 @@ const Appointment: FC = () => {
     { title: '套餐名称', dataIndex: 'comboName' },
     { title: '宠物类型', dataIndex: 'petType' },
     {
+      width: 174,
       title: '操作',
       key: 'action',
       render: () => (
         <Space size="small">
-          <Button type="primary" size="small">
+          <Button
+            type="primary"
+            size="small"
+            onClick={() => setModalVisible(true)}
+          >
             修改预约时间
           </Button>
-          <Button type="primary" size="small" danger>
+          <Button
+            type="primary"
+            size="small"
+            danger
+            onClick={() => {
+              Modal.info({
+                content: '您确定取消该预约么？',
+                okText: '确定',
+                closable: true,
+                onOk: () => {
+                  message.success('取消成功');
+                },
+              });
+            }}
+          >
             取消
           </Button>
         </Space>
@@ -154,10 +187,17 @@ const Appointment: FC = () => {
     { title: '套餐名称', dataIndex: 'comboName' },
     { title: '宠物类型', dataIndex: 'petType' },
     {
+      width: 110,
       title: '操作',
       key: 'action',
       render: () => (
-        <Button type="primary" size="small" danger>
+        <Button
+          type="primary"
+          icon={<DeleteOutlined />}
+          size="small"
+          danger
+          onClick={onDeleteAppointment}
+        >
           删除记录
         </Button>
       ),
@@ -174,6 +214,7 @@ const Appointment: FC = () => {
     return (
       <>
         <div className="site-top-bar">
+          {/* 菜单 */}
           <div className="site-top-bar__menu">
             {tabInfos.map((item: { key: string; title: string }) => (
               <Button
@@ -203,6 +244,25 @@ const Appointment: FC = () => {
               </Button>
             ))}
           </div>
+          {/* 额外信息 */}
+          <Button
+            hidden={activeKey !== '2'}
+            type="primary"
+            icon={<DeleteOutlined />}
+            size="small"
+            shape="round"
+            danger
+            onClick={() =>
+              setRowSelection({
+                type: 'checkbox',
+                onChange: (selectedRowKeys: any) =>
+                  setSelectedRowKeys(selectedRowKeys),
+                selectedRowKeys,
+              })
+            }
+          >
+            批量删除
+          </Button>
         </div>
         {/* 过滤栏 */}
         <div className="site-filter-bar">
@@ -239,7 +299,11 @@ const Appointment: FC = () => {
             </Form.Item>
             {/* 提交 */}
             <Form.Item>
-              <Button htmlType="submit" type="primary">
+              <Button
+                htmlType="submit"
+                icon={<SearchOutlined />}
+                type="primary"
+              >
                 搜索
               </Button>
             </Form.Item>
@@ -293,7 +357,8 @@ const Appointment: FC = () => {
             rowKey="id"
             bordered
             size="small"
-            scroll={{ y: 'calc(100vh - 280px)' }}
+            scroll={{ y: `calc(100vh - ${rowSelection ? 300 : 275}px)` }}
+            rowSelection={rowSelection}
             pagination={{
               current: bPage.page /** 当前页数 */,
               hideOnSinglePage: false /** 只有一页时是否隐藏分页器 */,
@@ -315,9 +380,57 @@ const Appointment: FC = () => {
                   page: current,
                 })),
             }}
+            footer={() =>
+              rowSelection ? (
+                <Space>
+                  <span>当前选中 {selectedRowKeys.length} 跳记录</span>
+                  <Button
+                    type="primary"
+                    size="small"
+                    onClick={() => setSelectedRowKeys([])}
+                  >
+                    重选
+                  </Button>
+                  <Button
+                    type="primary"
+                    size="small"
+                    onClick={() => setRowSelection(undefined)}
+                  >
+                    取消
+                  </Button>
+                  <Button
+                    type="primary"
+                    icon={<DeleteOutlined />}
+                    size="small"
+                    danger
+                    onClick={onDeleteAppointment}
+                  >
+                    删除记录
+                  </Button>
+                </Space>
+              ) : null
+            }
           />
         </TabPane>
       </Tabs>
+      {/* 修改预约时间 */}
+      <Modal
+        visible={modalVisible}
+        title="修改预约时间"
+        onCancel={() => setModalVisible(false)}
+        onOk={onChangeTime}
+      >
+        <Space>
+          <span>请选择预约时间：</span>
+          <DatePicker
+            format="YYYY-MM-DD HH:mm:ss"
+            disabledDate={(current) =>
+              current && current < moment().endOf('day')
+            }
+            showTime={{ defaultValue: moment('00:00:00', 'HH:mm:ss') }}
+          />
+        </Space>
+      </Modal>
     </div>
   );
 };
