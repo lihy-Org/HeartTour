@@ -1,7 +1,7 @@
 /*
  * @Author: Li-HONGYAO
  * @Date: 2021-01-04 15:41:47
- * @LastEditTime: 2021-01-20 00:30:03
+ * @LastEditTime: 2021-01-22 12:39:52
  * @LastEditors: Li-HONGYAO
  * @Description:
  * @FilePath: /Admin/src/layouts/Menus/index.tsx
@@ -17,7 +17,8 @@ import {
   AppstoreOutlined,
   ClockCircleOutlined,
   ShopOutlined,
-  AccountBookOutlined
+  AccountBookOutlined,
+  SettingOutlined
 } from '@ant-design/icons';
 import './index.less';
 
@@ -94,11 +95,21 @@ const menus: MenuItemType[] = [
       {
         path: '/accounts/store',
         title: '门店账目',
-      }
+      },
     ],
   },
+  {
+    path: '/banner',
+    title: '配置相关',
+    icon: <SettingOutlined />,
+    children: [
+      {
+        path: '/configs/banner',
+        title: 'banner配置',
+      }
+    ],
+  }
 ];
-
 
 const Menus: FC<IProps> = (props) => {
   return (

@@ -1,10 +1,10 @@
 /*
  * @Author: Li-HONGYAO
  * @Date: 2020-11-19 17:24:26
- * @LastEditTime: 2021-01-18 12:15:42
+ * @LastEditTime: 2021-01-22 12:38:04
  * @LastEditors: Li-HONGYAO
  * @Description: 路由
- * @FilePath: /heart-tour-admin/.umirc.ts
+ * @FilePath: /Admin/.umirc.ts
  */
 
 // ref: https://umijs.org/zh-CN/config
@@ -40,6 +40,7 @@ export default defineConfig({
         { path: '/user', component: '@/pages/User'}, // 用户管理
         { path: '/accounts/shop', component: '@/pages/Accounts/Shop'}, // 账目管理 - 商城
         { path: '/accounts/store', component: '@/pages/Accounts/Store'}, // 账目管理 - 门店
+        { path: '/configs/banner', component: '@/pages/Configs/Banner'}, // 配置相关 - banner配置
         { path: '*', component: '@/pages/404' }, // 404
       ],
     },

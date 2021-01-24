@@ -1,7 +1,7 @@
 /*
  * @Author: Li-HONGYAO
  * @Date: 2021-01-04 16:31:33
- * @LastEditTime: 2021-01-20 00:24:23
+ * @LastEditTime: 2021-01-22 22:54:11
  * @LastEditors: Li-HONGYAO
  * @Description:
  * @FilePath: /Admin/src/layouts/Headers/index.tsx
@@ -182,6 +182,10 @@ const Headers: FC<IProps> = (props) => {
             <img
               src={require(`../../assets/images/qweather/${weather.icon}.png`)}
               className="icon-38x38"
+              style={{
+                position: 'relative',
+                top: '-2px'
+              }}
             />
           )}
           <span>
