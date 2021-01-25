@@ -13,7 +13,5 @@ class Store extends Model
     use \App\Http\Traits\UseUuid;
     protected $table = 'stores';
     protected $primaryKey = 'id';
-    protected $fillable = [
-        'title'//门店名称
-    ];
+    protected $fillable = ['name','lng','lat','phone','address','businessHourStart','businessHourEnd','type'];
 }
