@@ -1,10 +1,10 @@
 /*
  * @Author: Li-HONGYAO
  * @Date: 2021-01-19 17:48:53
- * @LastEditTime: 2021-01-22 12:54:19
+ * @LastEditTime: 2021-01-25 22:34:16
  * @LastEditors: Li-HONGYAO
  * @Description:
- * @FilePath: /Admin/src/components/CityCascader/StoreSelect/index.tsx
+ * @FilePath: /Admin/src/components/StoreSelect/index.tsx
  */
 import React, { FC, memo, useEffect, useState } from 'react';
 import { Select } from 'antd';
@@ -42,6 +42,7 @@ const StoreSelect: FC<IProps> = (props) => {
       defaultValue={props.value}
       onChange={props.onChange}
     >
+      <Option value="-1">全部</Option>
       {stores.map((store, i) => (
         <Option value={store.id} key={`bdm__${i}`}>
           {store.name}

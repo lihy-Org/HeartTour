@@ -1,7 +1,7 @@
 /*
  * @Author: Li-HONGYAO
  * @Date: 2021-01-18 11:15:25
- * @LastEditTime: 2021-01-22 22:55:57
+ * @LastEditTime: 2021-01-26 15:57:47
  * @LastEditors: Li-HONGYAO
  * @Description:
  * @FilePath: /Admin/src/pages/Store/index.tsx
@@ -17,9 +17,13 @@ import {
   Form,
   message,
   Tag,
+  TimePicker,
 } from 'antd';
 import { SearchOutlined, DeleteOutlined } from '@ant-design/icons';
 import { ColumnProps } from 'antd/es/table';
+import { RuleObject } from 'antd/lib/form';
+import Validator from 'lg-validator';
+import moment from 'moment';
 
 // 筛选条件
 type FilterParamsType = {};
@@ -34,6 +38,7 @@ type ShopAssistantType = {
   phone: string /** 电话 */;
   title: string[] /** 头衔 */;
   post: string /** 职位 */;
+  isManager?: boolean /** 是否为店长 */;
 };
 // 列表数据类型
 type ColumnsType = {
@@ -41,18 +46,33 @@ type ColumnsType = {
   name: string /** 门店名称 */;
   shopManager: string /** 店长 */;
   phone: string /** 联系电话 */;
-  coordinate: {
-    /** 经纬度 */ lng: number;
-    lat: number;
-  };
+  lng: string /** 经度 */;
+  lat: string /** 纬度 */;
   address: string /** 详细地址 */;
-  businessHours: string /** 营业时间 */;
-  shopAssistant: ShopAssistantType[] /** 店员 */;
+  businessHours: string[] /** 营业时间 */;
 };
 
+// 表单类型
+type StoreFormType = {
+  name: string /** 门店名称 */;
+  phone: string /** 联系电话 */;
+  lng: string /** 经度 */;
+  lat: string /** 纬度 */;
+  address: string /** 详细地址 */;
+  businessHours: any[] /** 营业时间 */;
+};
+
+const layout = {
+  labelCol: { span: 4 },
+  wrapperCol: { span: 20 },
+};
+
+const { RangePicker } = TimePicker;
 const Store: FC = () => {
   // state
   const [form] = Form.useForm();
+  const [storeForm] = Form.useForm();
+  const [addModalVisible, setAddModalVisible] = useState(false);
   const [shopAssistant, setShopAssistant] = useState<ShopAssistantType[]>([]);
   const [saModalVisible, setSAModalVisible] = useState(false);
   const [dataSource, setDataSource] = useState<ColumnsType[]>([]);
@@ -67,7 +87,6 @@ const Store: FC = () => {
   // methods
   const getDataSource = () => {
     // console.log(filterParams);
-
     message.loading('数据加载中...');
     const tempArr: ColumnsType[] = [];
     for (let i = 0; i < 88; i++) {
@@ -76,91 +95,10 @@ const Store: FC = () => {
         name: '九里晴川店',
         shopManager: '李鸿耀',
         phone: '17398888669',
-        coordinate: {
-          lat: 104.01043703125,
-          lng: 30.503119612406724,
-        },
+        lat: '104.01043703125',
+        lng: '30.503119612406724',
         address: '成都市高新区雅和南四路216号',
-        businessHours: '09:00 ~ 20:00',
-        shopAssistant: [
-          {
-            id: 1,
-            avatar:
-              'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fn.sinaimg.cn%2Ffront%2F342%2Fw700h442%2F20190321%2FxqrY-huqrnan7527352.jpg&refer=http%3A%2F%2Fn.sinaimg.cn&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1613916524&t=a4e12aa1c942ca1b4ac8c2fd35328896',
-            name: '迪丽热巴',
-            gender: '女',
-            age: 28,
-            title: ['性感', '知性'],
-            post: '收营员',
-            phone: '15888899917',
-          },
-          {
-            id: 2,
-            avatar:
-              'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fn.sinaimg.cn%2Ffront%2F342%2Fw700h442%2F20190321%2FxqrY-huqrnan7527352.jpg&refer=http%3A%2F%2Fn.sinaimg.cn&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1613916524&t=a4e12aa1c942ca1b4ac8c2fd35328896',
-            name: '迪丽热巴',
-            gender: '女',
-            age: 28,
-            title: ['性感', '知性'],
-            post: '收营员',
-            phone: '15888899917',
-          },
-          {
-            id: 3,
-            avatar:
-              'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fn.sinaimg.cn%2Ffront%2F342%2Fw700h442%2F20190321%2FxqrY-huqrnan7527352.jpg&refer=http%3A%2F%2Fn.sinaimg.cn&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1613916524&t=a4e12aa1c942ca1b4ac8c2fd35328896',
-            name: '迪丽热巴',
-            gender: '女',
-            age: 28,
-            title: ['性感', '知性'],
-            post: '收营员',
-            phone: '15888899917',
-          },
-          {
-            id: 4,
-            avatar:
-              'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fn.sinaimg.cn%2Ffront%2F342%2Fw700h442%2F20190321%2FxqrY-huqrnan7527352.jpg&refer=http%3A%2F%2Fn.sinaimg.cn&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1613916524&t=a4e12aa1c942ca1b4ac8c2fd35328896',
-            name: '迪丽热巴',
-            gender: '女',
-            age: 28,
-            title: ['性感', '知性'],
-            post: '收营员',
-            phone: '15888899917',
-          },
-          {
-            id: 5,
-            avatar:
-              'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fn.sinaimg.cn%2Ffront%2F342%2Fw700h442%2F20190321%2FxqrY-huqrnan7527352.jpg&refer=http%3A%2F%2Fn.sinaimg.cn&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1613916524&t=a4e12aa1c942ca1b4ac8c2fd35328896',
-            name: '迪丽热巴',
-            gender: '女',
-            age: 28,
-            title: ['性感', '知性'],
-            post: '收营员',
-            phone: '15888899917',
-          },
-          {
-            id: 6,
-            avatar:
-              'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fn.sinaimg.cn%2Ffront%2F342%2Fw700h442%2F20190321%2FxqrY-huqrnan7527352.jpg&refer=http%3A%2F%2Fn.sinaimg.cn&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1613916524&t=a4e12aa1c942ca1b4ac8c2fd35328896',
-            name: '迪丽热巴',
-            gender: '女',
-            age: 28,
-            title: ['性感', '知性'],
-            post: '收营员',
-            phone: '15888899917',
-          },
-          {
-            id: 7,
-            avatar:
-              'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fn.sinaimg.cn%2Ffront%2F342%2Fw700h442%2F20190321%2FxqrY-huqrnan7527352.jpg&refer=http%3A%2F%2Fn.sinaimg.cn&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1613916524&t=a4e12aa1c942ca1b4ac8c2fd35328896',
-            name: '迪丽热巴',
-            gender: '女',
-            age: 28,
-            title: ['性感', '知性'],
-            post: '收营员',
-            phone: '15888899917',
-          },
-        ],
+        businessHours: ['09:30', '20:00'],
       });
     }
 
@@ -171,25 +109,128 @@ const Store: FC = () => {
     }, 500);
   };
 
+  // events
+  const onAddStore = async () => {
+    try {
+      const values: StoreFormType = await storeForm.validateFields();
+      console.log(values);
+      message.success('添加成功');
+      setAddModalVisible(false);
+    } catch (err) {}
+  };
+  const onDeleteStore = (id: number) => {
+    message.success('删除成功');
+  };
+  const onSetShopManager = (id: number) => {
+    message.success('设置成功');
+  };
+  const onQueryShopAssistant = (id: number) => {
+    setShopAssistant([
+      {
+        id: 1,
+        avatar:
+          'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fn.sinaimg.cn%2Ffront%2F342%2Fw700h442%2F20190321%2FxqrY-huqrnan7527352.jpg&refer=http%3A%2F%2Fn.sinaimg.cn&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1613916524&t=a4e12aa1c942ca1b4ac8c2fd35328896',
+        name: '迪丽热巴',
+        gender: '女',
+        age: 28,
+        title: ['性感', '知性'],
+        post: '收营员',
+        phone: '15888899917',
+      },
+      {
+        id: 2,
+        avatar:
+          'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fn.sinaimg.cn%2Ffront%2F342%2Fw700h442%2F20190321%2FxqrY-huqrnan7527352.jpg&refer=http%3A%2F%2Fn.sinaimg.cn&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1613916524&t=a4e12aa1c942ca1b4ac8c2fd35328896',
+        name: '迪丽热巴',
+        gender: '女',
+        age: 28,
+        title: ['性感', '知性'],
+        post: '收营员',
+        phone: '15888899917',
+      },
+      {
+        id: 3,
+        avatar:
+          'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fn.sinaimg.cn%2Ffront%2F342%2Fw700h442%2F20190321%2FxqrY-huqrnan7527352.jpg&refer=http%3A%2F%2Fn.sinaimg.cn&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1613916524&t=a4e12aa1c942ca1b4ac8c2fd35328896',
+        name: '迪丽热巴',
+        gender: '女',
+        age: 28,
+        title: ['性感', '知性'],
+        post: '收营员',
+        phone: '15888899917',
+      },
+      {
+        id: 4,
+        avatar:
+          'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fn.sinaimg.cn%2Ffront%2F342%2Fw700h442%2F20190321%2FxqrY-huqrnan7527352.jpg&refer=http%3A%2F%2Fn.sinaimg.cn&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1613916524&t=a4e12aa1c942ca1b4ac8c2fd35328896',
+        name: '迪丽热巴',
+        gender: '女',
+        age: 28,
+        title: ['性感', '知性'],
+        post: '收营员',
+        phone: '15888899917',
+      },
+      {
+        id: 5,
+        avatar:
+          'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fn.sinaimg.cn%2Ffront%2F342%2Fw700h442%2F20190321%2FxqrY-huqrnan7527352.jpg&refer=http%3A%2F%2Fn.sinaimg.cn&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1613916524&t=a4e12aa1c942ca1b4ac8c2fd35328896',
+        name: '迪丽热巴',
+        gender: '女',
+        age: 28,
+        title: ['性感', '知性'],
+        post: '收营员',
+        phone: '15888899917',
+      },
+      {
+        id: 6,
+        avatar:
+          'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fn.sinaimg.cn%2Ffront%2F342%2Fw700h442%2F20190321%2FxqrY-huqrnan7527352.jpg&refer=http%3A%2F%2Fn.sinaimg.cn&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1613916524&t=a4e12aa1c942ca1b4ac8c2fd35328896',
+        name: '迪丽热巴',
+        gender: '女',
+        age: 28,
+        title: ['性感', '知性'],
+        post: '收营员',
+        phone: '15888899917',
+      },
+      {
+        id: 7,
+        avatar:
+          'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fn.sinaimg.cn%2Ffront%2F342%2Fw700h442%2F20190321%2FxqrY-huqrnan7527352.jpg&refer=http%3A%2F%2Fn.sinaimg.cn&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1613916524&t=a4e12aa1c942ca1b4ac8c2fd35328896',
+        name: '迪丽热巴',
+        gender: '女',
+        age: 28,
+        title: ['性感', '知性'],
+        post: '收营员',
+        phone: '15888899917',
+      },
+    ]);
+    setSAModalVisible(true);
+  };
+  const onDeleteShopAssistant = (id: number) => {
+    message.success('删除成功');
+  };
   // effects
   useEffect(() => {
     getDataSource();
   }, [page]);
   // columns
   const columns: ColumnProps<ColumnsType>[] = [
+    {
+      title: '序号',
+      key: 'No.',
+      render: (record, row, index) => index + 1,
+      width: 60,
+    },
     { title: '门店名称', dataIndex: 'name' },
     { title: '店长', dataIndex: 'shopManager' },
     {
       title: '店员',
-      dataIndex: 'shopAssistant',
-      render: (record) => (
+      key: 'query_shopAssistant',
+      render: (record: ColumnsType) => (
         <Button
           type="link"
           size="small"
-          onClick={() => {
-            setShopAssistant(record);
-            setSAModalVisible(true);
-          }}
+          onClick={() => onQueryShopAssistant(record.id)}
         >
           查看店员
         </Button>
@@ -198,21 +239,44 @@ const Store: FC = () => {
     { title: '联系电话', dataIndex: 'phone' },
     {
       title: '经纬度',
-      dataIndex: 'coordinate',
-      render: (coordinate) => `${coordinate.lat}, ${coordinate.lng}`,
+      key: 'coordinate',
+      render: (record: ColumnsType) => `${record.lat}, ${record.lng}`,
     },
     { title: '门店地址', dataIndex: 'address' },
-    { title: '营业时间', dataIndex: 'businessHours' },
+    {
+      title: '营业时间',
+      dataIndex: 'businessHours',
+      render: (record: string[]) => `${record[0]} ~ ${record[1]}`,
+    },
     {
       width: 170,
       title: '操作',
       key: 'action',
-      render: () => (
+      render: (record: ColumnsType) => (
         <Space size="small">
-          <Button type="primary" size="small">
+          <Button
+            type="primary"
+            size="small"
+            onClick={() => {
+              storeForm.setFieldsValue({
+                ...record,
+                businessHours: [
+                  moment(record.businessHours[0], 'HH:mm'),
+                  moment(record.businessHours[1], 'HH:mm'),
+                ],
+              })
+              setAddModalVisible(true);
+            }}
+          >
             详情/编辑
           </Button>
-          <Button type="primary" size="small" icon={<DeleteOutlined />} danger>
+          <Button
+            type="primary"
+            size="small"
+            icon={<DeleteOutlined />}
+            danger
+            onClick={() => onDeleteStore(record.id)}
+          >
             删除
           </Button>
         </Space>
@@ -259,12 +323,22 @@ const Store: FC = () => {
       width: 164,
       title: '操作',
       key: 'action',
-      render: (record) => (
+      render: (record: ShopAssistantType) => (
         <Space size="small">
-          <Button type="primary" size="small">
+          <Button
+            type="primary"
+            size="small"
+            onClick={() => onSetShopManager(record.id)}
+          >
             设为店长
           </Button>
-          <Button type="primary" size="small" danger icon={<DeleteOutlined />}>
+          <Button
+            type="primary"
+            size="small"
+            danger
+            icon={<DeleteOutlined />}
+            onClick={() => onDeleteShopAssistant(record.id)}
+          >
             删除
           </Button>
         </Space>
@@ -280,7 +354,15 @@ const Store: FC = () => {
         <section>
           <span className="site-top-bar__title">门店管理</span>
         </section>
-        <Button type="primary" size="small" shape="round">
+        <Button
+          type="primary"
+          size="small"
+          shape="round"
+          onClick={() => {
+            storeForm.resetFields();
+            setAddModalVisible(true);
+          }}
+        >
           添加门店
         </Button>
       </div>
@@ -300,7 +382,7 @@ const Store: FC = () => {
           {/* 搜索 */}
           <Form.Item name="searchKey">
             <Input
-              placeholder="套餐名称"
+              placeholder="门店名称"
               style={{ width: 180 }}
               allowClear
               size="middle"
@@ -314,12 +396,6 @@ const Store: FC = () => {
           </Form.Item>
         </Form>
         {/* 右侧内容 */}
-        <Space size="large">
-          <span>
-            <span className="site-top-bar__label">门店数量：</span>
-            <span className="site-top-bar__value">65</span>
-          </span>
-        </Space>
       </div>
       {/* 表格 */}
       <Table
@@ -367,6 +443,68 @@ const Store: FC = () => {
           rowKey="id"
           pagination={false}
         />
+      </Modal>
+      {/* 添加门店 */}
+      <Modal
+        title="添加门店"
+        visible={addModalVisible}
+        onCancel={() => setAddModalVisible(false)}
+        onOk={onAddStore}
+        okButtonProps={{
+          htmlType: 'submit',
+        }}
+        destroyOnClose={true}
+      >
+        <Form
+          {...layout}
+          form={storeForm}
+          // initialValues={defaultStoreForm}
+          autoComplete="off"
+          onFinish={onAddStore}
+        >
+          <Form.Item label="门店名称" name="name" rules={[{ required: true }]}>
+            <Input />
+          </Form.Item>
+          <Form.Item
+            label="联系电话"
+            name="phone"
+            rules={[
+              {
+                validator: (ruls: RuleObject, value: any) => {
+                  if (!value) {
+                    return Promise.reject('请填写联系电话');
+                  } else if (!Validator.tel(value)) {
+                    return Promise.reject('电话格式不正确');
+                  } else {
+                    return Promise.resolve();
+                  }
+                },
+              },
+            ]}
+          >
+            <Input type="tel" />
+          </Form.Item>
+          <Form.Item name="lng" label="坐标经度" rules={[{ required: true }]}>
+            <Input type="number" />
+          </Form.Item>
+          <Form.Item name="lat" label="坐标纬度" rules={[{ required: true }]}>
+            <Input type="number" />
+          </Form.Item>
+          <Form.Item
+            label="门店地址"
+            name="address"
+            rules={[{ required: true }]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            label="营业时间"
+            name="businessHours"
+            rules={[{ required: true }]}
+          >
+            <RangePicker format="HH:mm" />
+          </Form.Item>
+        </Form>
       </Modal>
     </div>
   );
