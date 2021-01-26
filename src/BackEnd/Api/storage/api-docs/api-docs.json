@@ -103,6 +103,314 @@
                     }
                 }
             }
+        },
+        "/api/admin/store/list": {
+            "post": {
+                "tags": [
+                    "总台管理系统-门店管理"
+                ],
+                "summary": "门店列表",
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "header",
+                        "description": "token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "properties": {
+                                    "pageSize": {
+                                        "description": "条数",
+                                        "type": "number",
+                                        "default": "10"
+                                    },
+                                    "page": {
+                                        "description": "页数",
+                                        "type": "number",
+                                        "default": "1"
+                                    },
+                                    "searchKey": {
+                                        "description": "关键字",
+                                        "type": "string",
+                                        "default": ""
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "状态码",
+                                            "type": "number",
+                                            "example": "200"
+                                        },
+                                        "msg": {
+                                            "description": "提示信息",
+                                            "type": "string",
+                                            "example": "获取列表成功!"
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "example": "{'status':200,'msg':'\\u83b7\\u53d6\\u5217\\u8868\\u6210\\u529f!','data':{'pages':{'total':1,'pageNo':'1'},'data':[{'id':'1','name':'\\u6328\\u6253\\u4e86','phone':'1','lng':'111','lat':'1','address':'1','businessHoursStart':'1','businessHoursEnd':'1','type':1,'state':0,'deleted_at':null,'created_at':null,'updated_at':null},{'id':'xxx','name':'\\u597d\\u5389\\u5bb3\\u54e6','phone':'1','lng':'2','lat':'2','address':'2','businessHoursStart':'2','businessHoursEnd':'2','type':1,'state':0,'deleted_at':null,'created_at':null,'updated_at':null},{'id':'\\u5fb7\\u74e6\\u8fbe','name':'ddx\\u738b\\u60f3\\u6328\\u6253\\u00b7','phone':'1','lng':'2','lat':'1','address':'11','businessHoursStart':'1','businessHoursEnd':'11','type':1,'state':0,'deleted_at':null,'created_at':null,'updated_at':null}]}}"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "失败",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "状态码",
+                                            "type": "number",
+                                            "example": "500"
+                                        },
+                                        "msg": {
+                                            "description": "提示信息",
+                                            "type": "string",
+                                            "example": "获取列表失败!"
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "example": "{'page':['\\u8bf7\\u8f93\\u5165\\u5355\\u4f4d\\u540d\\u79f0\\uff01']}"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/store/addOrUpdate": {
+            "post": {
+                "tags": [
+                    "总台管理系统-门店管理"
+                ],
+                "summary": "新增或修改门店信息",
+                "operationId": "App\\Http\\Controllers\\Admin\\StoreController::addOrUpdate",
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "header",
+                        "description": "token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "address",
+                                    "lng",
+                                    "lat",
+                                    "businessHourStart",
+                                    "businessHourEnd"
+                                ],
+                                "properties": {
+                                    "storeId": {
+                                        "description": "门店id",
+                                        "type": "string",
+                                        "default": "dd"
+                                    },
+                                    "name": {
+                                        "description": "名称",
+                                        "type": "string",
+                                        "default": "dd"
+                                    },
+                                    "phone": {
+                                        "description": "联系方式",
+                                        "type": "string",
+                                        "default": "dd"
+                                    },
+                                    "lng": {
+                                        "description": "经度",
+                                        "type": "string",
+                                        "default": "dd"
+                                    },
+                                    "lat": {
+                                        "description": "纬度",
+                                        "type": "string",
+                                        "default": "dd"
+                                    },
+                                    "address": {
+                                        "description": "地址",
+                                        "type": "string",
+                                        "default": "dd"
+                                    },
+                                    "businessHourStart": {
+                                        "description": "起始营业时间",
+                                        "type": "string",
+                                        "default": "dd"
+                                    },
+                                    "businessHourEnd": {
+                                        "description": "结束营业时间",
+                                        "type": "string",
+                                        "default": "dd"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "状态码",
+                                            "type": "number",
+                                            "example": "200"
+                                        },
+                                        "msg": {
+                                            "type": "string",
+                                            "example": "新增/修改信息成功!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "失败",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "状态码",
+                                            "type": "number",
+                                            "example": "500"
+                                        },
+                                        "msg": {
+                                            "type": "string",
+                                            "example": "修改失败!"
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "example": "错误信息"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/store/switch": {
+            "post": {
+                "tags": [
+                    "总台管理系统-门店管理"
+                ],
+                "summary": "禁用启用门店",
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "header",
+                        "description": "token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "storeId"
+                                ],
+                                "properties": {
+                                    "storeId": {
+                                        "description": "门店ID",
+                                        "type": "number",
+                                        "default": "10"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "状态码",
+                                            "type": "number",
+                                            "example": "200"
+                                        },
+                                        "msg": {
+                                            "type": "string",
+                                            "example": "禁用/启用成功!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "失败",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "状态码",
+                                            "type": "number",
+                                            "example": "500"
+                                        },
+                                        "msg": {
+                                            "type": "string",
+                                            "example": "禁用/启用失败!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     },
     "security": [
