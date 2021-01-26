@@ -1,7 +1,7 @@
 /*
  * @Author: Li-HONGYAO
  * @Date: 2021-01-23 11:18:34
- * @LastEditTime: 2021-01-23 12:51:56
+ * @LastEditTime: 2021-01-25 21:47:47
  * @LastEditors: Li-HONGYAO
  * @Description:
  * @FilePath: /Admin/src/components/UploadFile/index.tsx
@@ -13,6 +13,8 @@ import { PlusOutlined } from '@ant-design/icons';
 
 interface IProps {
   max?: number;
+  onChange?: (value: any) => void;
+  value?: any
 }
 
 const UploadFile: FC<IProps> = (props) => {
@@ -29,27 +31,7 @@ const UploadFile: FC<IProps> = (props) => {
         url:
           'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
       },
-      {
-        uid: '-2',
-        name: 'image.png',
-        status: 'done',
-        url:
-          'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
-      },
-      {
-        uid: '-3',
-        name: 'image.png',
-        status: 'done',
-        url:
-          'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
-      },
-      {
-        uid: '-4',
-        name: 'image.png',
-        status: 'done',
-        url:
-          'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
-      },
+     
     ];
   });
 
@@ -74,6 +56,7 @@ const UploadFile: FC<IProps> = (props) => {
     );
   };
   const handleChange = (file: any) => {
+    props.onChange && props.onChange(['https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png']);
     setFileList(file.fileList);
   };
   const uploadButton = (
