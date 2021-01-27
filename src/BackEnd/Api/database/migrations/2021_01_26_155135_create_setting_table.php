@@ -19,7 +19,8 @@ class CreateSettingTable extends Migration
             $table->softDeletes();
             $table->string('type')->comment('配置类型');
             $table->string('key')->comment('配置键');
-            $table->string('value')->comment('配置值');            
+            $table->string('value')->comment('配置值'); 
+            $table->integer('sort')->default(1)->comment('排序');             
         });
     }
 

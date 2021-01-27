@@ -186,6 +186,373 @@
                 }
             }
         },
+        "/api/admin/config/{type}": {
+            "get": {
+                "tags": [
+                    "总台管理系统-配置管理"
+                ],
+                "summary": "获取配置列表",
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "header",
+                        "description": "token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "type",
+                        "in": "query",
+                        "description": "分类",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "状态码",
+                                            "type": "number",
+                                            "example": "200"
+                                        },
+                                        "msg": {
+                                            "description": "提示信息",
+                                            "type": "string",
+                                            "example": "获取列表成功!"
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "example": ""
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "失败",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "状态码",
+                                            "type": "number",
+                                            "example": "500"
+                                        },
+                                        "msg": {
+                                            "description": "提示信息",
+                                            "type": "string",
+                                            "example": "获取列表失败!"
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "example": "{'type':['\\u8bf7\\u8f93\\u5165\\u5355\\u4f4d\\u540d\\u79f0\\uff01']}"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/config/{type}/{key}": {
+            "get": {
+                "tags": [
+                    "总台管理系统-配置管理"
+                ],
+                "summary": "获取单个配置",
+                "operationId": "App\\Http\\Controllers\\Admin\\ConfigController::getOne",
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "header",
+                        "description": "token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "key",
+                        "in": "query",
+                        "description": "键",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "状态码",
+                                            "type": "number",
+                                            "example": "200"
+                                        },
+                                        "msg": {
+                                            "type": "string",
+                                            "example": "新增/修改信息成功!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "失败",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "状态码",
+                                            "type": "number",
+                                            "example": "500"
+                                        },
+                                        "msg": {
+                                            "type": "string",
+                                            "example": "修改失败!"
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "example": "错误信息"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/config/addOrUpdate": {
+            "post": {
+                "tags": [
+                    "总台管理系统-配置管理"
+                ],
+                "summary": "添加或修改配置",
+                "operationId": "App\\Http\\Controllers\\Admin\\ConfigController::addOrUpdate",
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "header",
+                        "description": "token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "type",
+                                    "key",
+                                    "value"
+                                ],
+                                "properties": {
+                                    "configId": {
+                                        "description": "配置id",
+                                        "type": "string",
+                                        "default": ""
+                                    },
+                                    "type": {
+                                        "description": "分类",
+                                        "type": "string",
+                                        "default": ""
+                                    },
+                                    "key": {
+                                        "description": "配置键",
+                                        "type": "string",
+                                        "default": ""
+                                    },
+                                    "value": {
+                                        "description": "配置值",
+                                        "type": "string",
+                                        "default": ""
+                                    },
+                                    "sort": {
+                                        "description": "排序",
+                                        "type": "string",
+                                        "default": ""
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "状态码",
+                                            "type": "number",
+                                            "example": "200"
+                                        },
+                                        "msg": {
+                                            "description": "提示信息",
+                                            "type": "string",
+                                            "example": "登录成功!"
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "example": ""
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "失败",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "状态码",
+                                            "type": "number",
+                                            "example": "500"
+                                        },
+                                        "msg": {
+                                            "description": "提示信息",
+                                            "type": "string",
+                                            "example": "登录失败!"
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "example": "错误信息"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/config/delete": {
+            "post": {
+                "tags": [
+                    "总台管理系统-配置管理"
+                ],
+                "summary": "删除配置",
+                "operationId": "App\\Http\\Controllers\\Admin\\ConfigController::delete",
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "header",
+                        "description": "token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "configId"
+                                ],
+                                "properties": {
+                                    "configId": {
+                                        "description": "配置id",
+                                        "type": "string",
+                                        "default": ""
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "状态码",
+                                            "type": "number",
+                                            "example": "200"
+                                        },
+                                        "msg": {
+                                            "description": "提示信息",
+                                            "type": "string",
+                                            "example": "登录成功!"
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "example": ""
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "失败",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "状态码",
+                                            "type": "number",
+                                            "example": "500"
+                                        },
+                                        "msg": {
+                                            "description": "提示信息",
+                                            "type": "string",
+                                            "example": "登录失败!"
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "example": "错误信息"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/admin/store/list": {
             "post": {
                 "tags": [

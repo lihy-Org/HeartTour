@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TestController;
 use App\Http\Controllers\Admin\StoreController;
+use App\Http\Controllers\Admin\ConfigController;
 
 Route::post('api/admin/login', 'Admin\AccountController@Auth');
 
@@ -21,9 +22,15 @@ Route::get('/test',[TestController::class,'Test']);
 
 //后台
 //门店管理
-Route::post('api/store/list', [StoreController::class,'list']);
-Route::post('api/store/addOrUpdate', [StoreController::class,'addOrUpdate']);
-Route::post('api/store/switch', [StoreController::class,'switch']);
+Route::post('/store/list', [StoreController::class,'list']);
+Route::post('/store/addOrUpdate', [StoreController::class,'addOrUpdate']);
+Route::post('/store/switch', [StoreController::class,'switch']);
+
+//配置
+Route::get('/config/{type}', [ConfigController::class,'list']);
+Route::get('/config/{type}/{key}', [ConfigController::class,'getOne']); 
+Route::post('/config/addOrUpdate', [ConfigController::class,'addOrUpdate']);
+Route::post('/config/delete', [ConfigController::class,'delete']);
 
 Route::prefix('api/admin')->middleware(['auth:sanctum', 'adminapi'])->group(function () {
     //商品管理
