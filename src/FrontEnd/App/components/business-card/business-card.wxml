@@ -1,0 +1,20 @@
+<!-- components/business-card/business-card.wxml -->
+<view class="ml-24 businessCard px-14 py-14 d-flex">
+    <view class="technicianHead mr-20" hover-class="none" hover-stop-propagation="false">
+        <image class="" src="{{options.pic.src}}"></image>
+    </view>
+    <view class="flex-right" hover-class="none" hover-stop-propagation="false">
+        <view class="mb-20" hover-class="none" hover-stop-propagation="false">
+            <span class="f28 f-bold color-384359 mr-10 va-middle">{{options.technicianName.name }}</span>
+            <span wx:if="{{options.technicianTitle.showTitle}}" class="bg-FFD5D5 color-F63D24 rounded-50 f20 f-bold py-6 px-15">{{options.technicianTitle.title}}</span>
+        </view>
+        <view class="" hover-class="none" hover-stop-propagation="false">
+            <span class="f24 color-384359 mr-20" style="{{options.technicianTitle2.style}}" >{{options.technicianTitle2.title2}}</span>
+            <span class="f24 color-384359">{{options.praise.praise}}</span>
+        </view>
+    </view>
+    <view class="technicianMore" hover-class="none" hover-stop-propagation="false">
+        <p class="color-384359 f-bold f24">美容师</p>
+        <image src="../../assets/images/you.png"></image>
+    </view>
+</view>

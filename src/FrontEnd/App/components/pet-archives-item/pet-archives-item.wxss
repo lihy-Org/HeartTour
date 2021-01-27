@@ -1,0 +1,15 @@
+.pet-archives-item {
+  display: inline-block;
+  width: 436rpx;
+  height: 186rpx;
+}
+
+.pet-archives-item > view {
+  top: 20rpx;
+  left: 20rpx;
+}
+.pet-avatar {
+  width: 80rpx;
+  height: 80rpx;
+  background-color: pink;
+}
