@@ -1,0 +1,164 @@
+<view class="container" hover-class="none" hover-stop-propagation="false">
+    <!-- logo -->
+    <view class="logo text-center mt-72 mb-32">
+        <image src="../../assets/images/bLogo.png"></image>
+    </view>
+    <!-- 积攒 -->
+    <view class="praiseList flex-wrap flex-center">
+        <block wx:for="{{praiseList}}" wx:key="index">
+            <image class="mr-4" src="{{item.url}}"></image>
+        </block>
+    </view>
+    <!-- 定位和添加宠物 -->
+    <view class="flex-wrap flex-center add-pet-wrap my-32">
+        <view class="location flex-wrap flex-center">
+            <image class="" src="../../assets/images/location.png"></image>
+            <view class="add-pet ml-10">
+                <text class="f-bold f36">定位</text>
+                <image class="" src="../../assets/images/loca.png" lazy-load="false" binderror="" bindload=""></image>
+            </view>
+        </view>
+        <image class="" style="width:4rpx;height:60rpx" src="../../assets/images/zhi.png"></image>
+        <view class="location flex-wrap flex-center">
+            <image style="width:56rpx;height:56rpx;" src="../../assets/images/addasstes.png"></image>
+            <view class="add-pet ml-10">
+                <text class="f-bold f36">添加</text>
+                <image style="width:108rpx;" src="../../assets/images/ADDTO.png" lazy-load="false" binderror="" bindload=""></image>
+            </view>
+        </view>
+    </view>
+    <!-- 超值套餐 -->
+    <view class="flex-wrap flex-center mb-24">
+        <image class="line" src="../../assets/images/heng.png"></image>
+        <view class="flex-v-center mx-22">
+            <h6 class="f32 f-bold color-384359">超值套餐</h6>
+            <image class="" style="width:145rpx;height:40rpx" src="../../assets/images/valuemeals.png"></image>
+        </view>
+        <image class="line" src="../../assets/images/heng.png"></image>
+    </view>
+    <scroll-view scroll-x>
+        <view style="width: 100%;white-space:nowrap;" class="py-20 px-24">
+            <block wx:for="{{mockPet}}" wx:key='index'>
+                <view class="setMeal mr-8 py-12 px-12 position-relative">
+                    <view class="d-flex" hover-class="none" hover-stop-propagation="false">
+                        <view class="mr-20" hover-class="none" hover-stop-propagation="false">
+                            <image class="" style="width:150rpx;height:150rpx" src="../../assets/images/shan.png" lazy-load="false" binderror="" bindload=""></image>
+                        </view>
+                        <view class="" style="display: flex;flex-wrap: wrap;align-content: space-between;">
+                            <view class="" hover-class="none" hover-stop-propagation="false">
+                                <h4 class="d-block f20 f-bold color-384359">{{item.name}}</h4>
+                                <p class="d-block f16 f-bold color-384359" selectable="false" space="false" decode="false">
+                                    {{item.details}}
+                                </p>
+                                <p class="d-block f16 f-bold line-clamp-2 color-384359" style="width:200rpx;white-space:normal;" selectable="false" space="false" decode="false">
+                                    {{item.details1}}
+                                </p>
+                            </view>
+                            <view class="d-flex justify-content-between " style="width:200rpx;align-items: center;" hover-class="none" hover-stop-propagation="false">
+                                <p class="f20 f-bold">{{item.price}}</p>
+                            </view>
+                            <view class="position-absolute addSelet bg-E2F6FF " bind:tap='selectMeal'>
+                                <image class="position-absolute" src="../../assets/images/jia.png"></image>
+                            </view>
+                        </view>
+                    </view>
+                </view>
+            </block>
+        </view>
+    </scroll-view>
+    <!-- 建议增项 -->
+    <view class="px-24 f32 f-bold mt-32">
+        <p class="color-384359">建议增项</p>
+    </view>
+    <scroll-view scroll-x>
+        <view style="width: 100%;white-space:nowrap;" class="py-20 px-24">
+            <view class="addItem mr-20 d-inline-block">
+                <p class="color-384359 f-bold f24 mt-16 ml-16">刷牙</p>
+                <view class="flex-center">
+                    <p class="color-384359 f-bold f20 mr-8">¥45.00</p>
+                    <image class="" style="width:20rpx;height:20rpx;" src="../../assets/images/jia.png"></image>
+                </view>
+            </view>
+            <view class="addItem mr-20 d-inline-block">
+                <p class="color-384359 f-bold f24 mt-16 ml-16">刷牙</p>
+                <view class="flex-center">
+                    <p class="color-384359 f-bold f20 mr-8">¥45.00</p>
+                    <image class="" style="width:20rpx;height:20rpx;" src="../../assets/images/jia.png"></image>
+                </view>
+            </view>
+            <view class="addItem mr-20 d-inline-block">
+                <p class="color-384359 f-bold f24 mt-16 ml-16">刷牙</p>
+                <view class="flex-center">
+                    <p class="color-384359 f-bold f20 mr-8">¥45.00</p>
+                    <image class="" style="width:20rpx;height:20rpx;" src="../../assets/images/jia.png"></image>
+                </view>
+            </view>
+            <view class="addItem mr-20 d-inline-block">
+                <p class="color-384359 f-bold f24 mt-16 ml-16">刷牙</p>
+                <view class="flex-center">
+                    <p class="color-384359 f-bold f20 mr-8">¥45.00</p>
+                    <image class="" style="width:20rpx;height:20rpx;" src="../../assets/images/jia.png"></image>
+                </view>
+            </view>
+            <view class="addItem mr-20 d-inline-block">
+                <p class="color-384359 f-bold f24 mt-16 ml-16">刷牙</p>
+                <view class="flex-center">
+                    <p class="color-384359 f-bold f20 mr-8">¥45.00</p>
+                    <image class="" style="width:20rpx;height:20rpx;" src="../../assets/images/jia.png"></image>
+                </view>
+            </view>
+            <view class="addItem mr-20 d-inline-block">
+                <p class="color-384359 f-bold f24 mt-16 ml-16">刷牙</p>
+                <view class="flex-center">
+                    <p class="color-384359 f-bold f20 mr-8">¥45.00</p>
+                    <image class="" style="width:20rpx;height:20rpx;" src="../../assets/images/jia.png"></image>
+                </view>
+            </view>
+            <view class="addItem mr-20 d-inline-block">
+                <p class="color-384359 f-bold f24 mt-16 ml-16">刷牙</p>
+                <view class="flex-center">
+                    <p class="color-384359 f-bold f20 mr-8">¥45.00</p>
+                    <image class="" style="width:20rpx;height:20rpx;" src="../../assets/images/jia.png"></image>
+                </view>
+            </view>
+        </view>
+    </scroll-view>
+    <!-- 预约时间 -->
+    <view class="px-24 flex-center my-20 flex-wrap ">
+        <block wx:for="{{timers}}" wx:key="index">
+            <view class="reservationTime mr-20 mb-10 text-center" bind:tap="seletTime" data-item="{{item}}" >
+                <p class="color-384359 f24">{{item.date}}</p>
+                <view class="">
+                    <span class="color-384359 f-bold f32">{{item.times}}</span>
+                    <image class="timeImage" wx:if="{{showTime===item.id}}" style="width:20rpx;height:20rpx;" src="../../assets/images/yes.png"></image>
+                </view>
+            </view>
+        </block>
+        <view class="reservationTime  mr-20 mb-10 text-center">
+            <span class="f34 color-384359 mr-10" style="line-height:80rpx">更多时间</span>
+            <image class="" style="width:8rpx;height:16rpx;" src="../../assets/images/you.png"></image>
+        </view>
+    </view>
+    <!-- 技师 -->
+    <business-card options="{{options}}"></business-card>
+    <!-- 广告位 -->
+    <swiper class="banners ml-24 mt-60 mb-180" indicator-dots="{{true}}" indicator-color="rgba(0, 0, 0, .3)" indicator-active-color="#F5F5F5" duration="400" circular="{{true}}">
+        <swiper-item class="h-100 " wx:for="{{banners}}" wx:key="index">
+            <view class="swiper-item h-100 ">
+                <image src="{{item.image}}" class=" w-100  h-100 " />
+            </view>
+        </swiper-item>
+    </swiper>
+
+    <!-- 结算按钮 -->
+    <view id="setTlement" animation="{{animation}}" class="setTlement position-fixed">
+        <view class="ml-24 lh-94 va-middle">
+            <p class="d-inline-block va-middle mr-12 f36 f-bold color-333333">¥45.00</p>
+            <image class="d-inline-block" style="width:18rpx;height:10rpx;" src="../../assets/images/shang.png"></image>
+        </view>
+        <view class="bg-F63D24 setTlement-F63D24 flex-v-center">
+            <p class="f28 f-bold color-FFFFFF">预约</p>
+            <p class="color-FFFFFF f24">限时送粮0.00</p>
+        </view>
+    </view>
+</view>

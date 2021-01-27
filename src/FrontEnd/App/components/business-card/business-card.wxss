@@ -1,0 +1,30 @@
+/* components/business-card/business-card.wxss */
+.businessCard{
+    width: 700rpx;
+    height: 148rpx;
+    background-color: #ffffff;
+    box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.16);
+    border-radius: 15rpx;
+    position: relative;
+}
+.technicianMore{
+ position: absolute;
+ right:14rpx;
+ top:14rpx;
+}
+.technicianMore>image{
+    margin-left: 10rpx;
+    width: 8rpx;
+    height: 16rpx;
+}
+.technicianHead{
+    width:120rpx;
+    height: 120rpx;
+    overflow: hidden;
+    border-radius: 16rpx;
+}
+.technicianHead image{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}

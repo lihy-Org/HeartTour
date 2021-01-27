@@ -1,0 +1,54 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/mine/mine",
+    "pages/pet/pet",
+    "pages/goods/goods",
+    "pages/rim/rim"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#fff",
+    "navigationBarTitleText": "Weixin",
+    "navigationBarTextStyle": "black"
+  },
+  "tabBar": {
+    "color": "#cccccc",
+    "selectedColor": "#F63D24",
+    "borderStyle": "white",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "预约",
+        "iconPath": "./assets/images/icon_index.png",
+        "selectedIconPath": "./assets/images/icon_index_sel.png"
+      },
+      {
+        "pagePath": "pages/pet/pet",
+        "text": "活体",
+        "iconPath": "./assets/images/icon_pet.png",
+        "selectedIconPath": "./assets/images/icon_pet_sel.png"
+      },
+      {
+        "pagePath": "pages/mine/mine",
+        "text": "我的",
+        "iconPath": "./assets/images/icon_mine.png",
+        "selectedIconPath": "./assets/images/icon_mine_sel.png"
+      },
+      {
+        "pagePath": "pages/goods/goods",
+        "text": "产品",
+        "iconPath": "./assets/images/icon_goods.png",
+        "selectedIconPath": "./assets/images/icon_goods_sel.png"
+      },
+      {
+        "pagePath": "pages/rim/rim",
+        "text": "周边",
+        "iconPath": "./assets/images/icon_rim.png",
+        "selectedIconPath": "./assets/images/icon_rim_sel.png"
+      }
+    ]
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}

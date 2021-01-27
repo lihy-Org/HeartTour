@@ -1,0 +1,145 @@
+/* pages/index/index.wxss */
+
+.logo image {
+    width: 280rpx;
+    height: 260rpx;
+}
+
+.praiseList image {
+    width: 58rpx;
+    height: 52rpx;
+}
+
+.location image {
+    width: 48rpx;
+    height: 60rpx;
+}
+
+.location view image {
+    width: 137rpx;
+    height: 45rpx;
+}
+
+.location {
+    width: 340rpx;
+}
+
+.add-pet-wrap {
+    margin-left: 25rpx;
+    width: 700rpx;
+    height: 120rpx;
+    box-shadow: 0px 0px 5px 2px rgba(0, 0, 0, 0.16);
+    border-radius: 10rpx;
+}
+
+.add-pet {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.line {
+    height: 4rpx;
+    width: 216rpx;
+}
+
+.setMeal {
+    width: 420rpx;
+    background: #FFFFFF;
+    box-shadow: 0px 0px 5px 2px rgba(0, 0, 0, 0.16);
+    border-radius: 8rpx;
+    display: inline-block;
+}
+
+.addItem {
+    width: 180rpx;
+    height: 102rpx;
+    background: #FFFFFF;
+    box-shadow: 0px 8rpx 14rpx rgba(0, 0, 0, 0.16);
+    opacity: 1;
+    border-radius: 16rpx;
+    position: relative;
+}
+
+.addItem view {
+    width: 112rpx;
+    height: 35rpx;
+    background: #F7FAFF;
+    opacity: 1;
+    border-radius: 0px 16rpx 0px 16rpx;
+    position: absolute;
+    bottom: 0;
+}
+
+.banners {
+    width: 700rpx;
+    height: 242rpx;
+}
+
+.setTlement {
+    width: 424rpx;
+    height: 94rpx;
+    bottom: 24rpx;
+    right: 0;
+    background: #FFFFFF;
+    box-shadow: 0px 2rpx 6rpx rgba(0, 0, 0, 0.16);
+    opacity: 1;
+    border-radius: 47rpx 0px 0px 47rpx;
+}
+
+.setTlement-F63D24 {
+    width: 192rpx;
+    height: 77rpx;
+    box-shadow: 0px 2rpx 6rpx rgba(0, 0, 0, 0.16);
+    border-radius: 41rpx;
+    position: absolute;
+    top: 8rpx;
+    right: 25rpx;
+}
+
+.addSelet {
+    width: 65rpx;
+    height: 65rpx;
+    /* background-color: #ccc; */
+    bottom: 0;
+    right: 0;
+    border-radius: 90% 0px 0px 0px;
+}
+
+.addSelet image {
+    width: 36rpx;
+    height: 36rpx;
+    line-height: 65rpx;
+    bottom: 8rpx;
+    right: 8rpx;
+}
+
+.reservationTime {
+    width: 220rpx;
+    height: 80rpx;
+    background: #E4F4FE;
+    border-radius: 15rpx;
+    position: relative;
+}
+.moreTime{
+    width: 220rpx;
+    height: 80rpx;
+    background: #E4F4FE;
+    border-radius: 15rpx; 
+}
+.reservationTime view {
+    position: absolute;
+    bottom: 5rpx;
+    width: 220rpx;
+}
+
+.reservationTime .timeImage {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    margin-left: 16rpx;   
+}
+
+.reservationTime:nth-child(3n+0) {
+    margin-right: 0;
+}
