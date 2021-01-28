@@ -860,6 +860,335 @@
                     }
                 }
             }
+        },
+        "/api/admin/user/list": {
+            "post": {
+                "tags": [
+                    "总台管理系统-用户管理"
+                ],
+                "summary": "用户列表",
+                "operationId": "App\\Http\\Controllers\\Admin\\UserController::userList",
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "header",
+                        "description": "token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "storeId",
+                                    "post"
+                                ],
+                                "properties": {
+                                    "storeId": {
+                                        "description": "门店编号",
+                                        "type": "number",
+                                        "default": "13888888888"
+                                    },
+                                    "post": {
+                                        "description": "职位",
+                                        "type": "string",
+                                        "default": ""
+                                    },
+                                    "gender": {
+                                        "description": "性别",
+                                        "type": "string",
+                                        "default": ""
+                                    },
+                                    "pageSize": {
+                                        "description": "条数",
+                                        "type": "number",
+                                        "default": "10"
+                                    },
+                                    "page": {
+                                        "description": "页数",
+                                        "type": "number",
+                                        "default": "1"
+                                    },
+                                    "searchKey": {
+                                        "description": "关键字",
+                                        "type": "string",
+                                        "default": ""
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "状态码",
+                                            "type": "number",
+                                            "example": "200"
+                                        },
+                                        "msg": {
+                                            "description": "提示信息",
+                                            "type": "string",
+                                            "example": "获取列表成功!"
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "example": ""
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "失败",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "状态码",
+                                            "type": "number",
+                                            "example": "500"
+                                        },
+                                        "msg": {
+                                            "description": "提示信息",
+                                            "type": "string",
+                                            "example": "获取列表失败!"
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "example": "{'page':['\\u8bf7\\u8f93\\u5165\\u5355\\u4f4d\\u540d\\u79f0\\uff01']}"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/user/addOrUpdate": {
+            "post": {
+                "tags": [
+                    "总台管理系统-用户管理"
+                ],
+                "summary": "新增或修改用户信息",
+                "operationId": "App\\Http\\Controllers\\Admin\\UserController::addOrUpdate",
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "header",
+                        "description": "token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "avatar",
+                                    "gender",
+                                    "age",
+                                    "post",
+                                    "phone"
+                                ],
+                                "properties": {
+                                    "userId": {
+                                        "description": "用户ID",
+                                        "type": "string",
+                                        "default": "dd"
+                                    },
+                                    "name": {
+                                        "description": "姓名",
+                                        "type": "string",
+                                        "default": "dd"
+                                    },
+                                    "phone": {
+                                        "description": "电话",
+                                        "type": "string",
+                                        "default": "dd"
+                                    },
+                                    "avatar": {
+                                        "description": "头像",
+                                        "type": "string",
+                                        "default": "dd"
+                                    },
+                                    "gender": {
+                                        "description": "性别",
+                                        "type": "string",
+                                        "default": "dd"
+                                    },
+                                    "age": {
+                                        "description": "年龄",
+                                        "type": "string",
+                                        "default": "dd"
+                                    },
+                                    "post": {
+                                        "description": "职位",
+                                        "type": "string",
+                                        "default": "dd"
+                                    },
+                                    "title": {
+                                        "description": "头衔",
+                                        "type": "string",
+                                        "default": "dd"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "状态码",
+                                            "type": "number",
+                                            "example": "200"
+                                        },
+                                        "msg": {
+                                            "type": "string",
+                                            "example": "新增/修改信息成功!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "失败",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "状态码",
+                                            "type": "number",
+                                            "example": "500"
+                                        },
+                                        "msg": {
+                                            "type": "string",
+                                            "example": "修改失败!"
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "example": "错误信息"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/user/remove": {
+            "post": {
+                "tags": [
+                    "总台管理系统-用户管理"
+                ],
+                "summary": "删除用户",
+                "operationId": "App\\Http\\Controllers\\Admin\\UserController::remove",
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "header",
+                        "description": "token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "storeId"
+                                ],
+                                "properties": {
+                                    "userId": {
+                                        "description": "用户ID",
+                                        "type": "number",
+                                        "default": "10"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "状态码",
+                                            "type": "number",
+                                            "example": "200"
+                                        },
+                                        "msg": {
+                                            "type": "string",
+                                            "example": "禁用/启用成功!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "失败",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "状态码",
+                                            "type": "number",
+                                            "example": "500"
+                                        },
+                                        "msg": {
+                                            "type": "string",
+                                            "example": "禁用/启用失败!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     },
     "security": [
