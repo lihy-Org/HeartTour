@@ -1,1 +1,32 @@
-/* pages/mine/mine.wxss */
+
+.functional-area{
+ display: flex;
+ align-items: center;
+}
+.user-info {
+  height: 360rpx;
+  background: linear-gradient(135deg, #FF6565, #F51358);
+  padding-left: 65rpx;
+  padding-top:60rpx;
+}
+.my-headphoto{
+  width: 136rpx;
+  height: 136rpx;
+}
+.my-headphoto image{
+  width: 100%;
+  height: 100%;
+  border-radius: 70rpx;
+}
+.user-info-card{
+  width: 700rpx;
+  height: 200rpx;
+  box-shadow: 0px 0px 5px 2px rgba(0, 0, 0, 0.16);
+  border-radius: 10rpx;
+  bottom:-100rpx;
+  justify-content: space-evenly;
+}
+
+.aaa:nth-child(2)>.van-cell{
+  margin-bottom: 20rpx;
+}
