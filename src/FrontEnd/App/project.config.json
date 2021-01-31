@@ -22,13 +22,13 @@
 			"disablePlugins": [],
 			"outputPath": ""
 		},
-		"useCompilerModule": false,
+		"useCompilerModule": true,
 		"userConfirmedUseCompilerModuleSwitch": false
 	},
 	"compileType": "miniprogram",
 	"libVersion": "2.14.4",
 	"appid": "wx4a280848c42798c6",
-	"projectname": "HeartTour",
+	"projectname": "App",
 	"debugOptions": {
 		"hidedInDevtools": []
 	},

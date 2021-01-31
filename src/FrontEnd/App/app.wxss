@@ -53,6 +53,7 @@ button::after {
 .bg-FF9972 { background-color: #FF9972; }
 .bg-F63D24 { background-color: #F63D24; }
 .bg-FFD5D5 {background-color: #FFD5D5;}
+.bg-F7F8FA {background-color: #F7F8FA;}
 .bg-cover { background-size: cover;}
 
 
@@ -90,6 +91,7 @@ button::after {
 .color-384359 { color: #384359;}
 .color-333333 { color: #333333;}
 .color-F63D24 { color: #F63D24; }
+.color-999999 { color: #999999; }
 
 
 
@@ -149,6 +151,7 @@ button::after {
 
 .l-full { left: 100%;  }
 .l-20   { left: 20rpx; }
+.l-25   { left: 25rpx; }
 
 .r-30 { right: 30rpx; }
 
