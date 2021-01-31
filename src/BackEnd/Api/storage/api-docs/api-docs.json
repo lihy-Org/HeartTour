@@ -186,12 +186,13 @@
                 }
             }
         },
-        "/api/admin/config/{type}": {
+        "/api/admin/config/{type}/{key?}": {
             "get": {
                 "tags": [
                     "总台管理系统-配置管理"
                 ],
-                "summary": "获取配置列表",
+                "summary": "获取单个配置",
+                "operationId": "App\\Http\\Controllers\\Admin\\ConfigController::getConfig",
                 "parameters": [
                     {
                         "name": "token",
@@ -205,81 +206,7 @@
                     {
                         "name": "type",
                         "in": "query",
-                        "description": "分类",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "成功",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "status": {
-                                            "description": "状态码",
-                                            "type": "number",
-                                            "example": "200"
-                                        },
-                                        "msg": {
-                                            "description": "提示信息",
-                                            "type": "string",
-                                            "example": "获取列表成功!"
-                                        },
-                                        "data": {
-                                            "type": "object",
-                                            "example": ""
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "失败",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "status": {
-                                            "description": "状态码",
-                                            "type": "number",
-                                            "example": "500"
-                                        },
-                                        "msg": {
-                                            "description": "提示信息",
-                                            "type": "string",
-                                            "example": "获取列表失败!"
-                                        },
-                                        "data": {
-                                            "type": "object",
-                                            "example": "{'type':['\\u8bf7\\u8f93\\u5165\\u5355\\u4f4d\\u540d\\u79f0\\uff01']}"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/api/admin/config/{type}/{key}": {
-            "get": {
-                "tags": [
-                    "总台管理系统-配置管理"
-                ],
-                "summary": "获取单个配置",
-                "operationId": "App\\Http\\Controllers\\Admin\\ConfigController::getOne",
-                "parameters": [
-                    {
-                        "name": "token",
-                        "in": "header",
-                        "description": "token",
+                        "description": "类型",
                         "required": true,
                         "schema": {
                             "type": "string"
@@ -289,7 +216,7 @@
                         "name": "key",
                         "in": "query",
                         "description": "键",
-                        "required": true,
+                        "required": false,
                         "schema": {
                             "type": "string"
                         }
@@ -309,7 +236,11 @@
                                         },
                                         "msg": {
                                             "type": "string",
-                                            "example": "新增/修改信息成功!"
+                                            "example": "获取成功!"
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "example": "{'status':200,'msg':'\\u83b7\\u53d6\\u6210\\u529f!','data':[{'id':'855a4b22-ae76-404b-915b-9b3dcbdc9908','type':'15828242712','key':'1','value':'1','sort':1,'children':[{'id':'9638c2f2-4042-4748-8bbf-42ebdd835b9d','type':'15828242712','key':'44','value':'33','sort':1,'parentId':'855a4b22-ae76-404b-915b-9b3dcbdc9908','children':[]}]},{'id':'a58d75e9-e95f-4eb2-afa5-0f765d8f2a21','type':'15828242712','key':'2','value':'2','sort':1,'children':[]},{'id':'ae9b506b-51d0-4d6a-8ba7-861bf0e06e11','type':'15828242712','key':'11','value':'11','sort':1,'children':[]},{'id':'80270597-e8e9-4f03-9f49-f256063fb5fc','type':'15828242712','key':'22','value':'22','sort':1,'children':[]},{'id':'43287466-0b1b-46de-803d-efa3219814e7','type':'15828242712','key':'33','value':'22','sort':1,'children':[]}]}"
                                         }
                                     },
                                     "type": "object"
@@ -330,7 +261,7 @@
                                         },
                                         "msg": {
                                             "type": "string",
-                                            "example": "修改失败!"
+                                            "example": "获取失败!"
                                         },
                                         "data": {
                                             "type": "object",
@@ -397,6 +328,16 @@
                                         "description": "排序",
                                         "type": "string",
                                         "default": ""
+                                    },
+                                    "parentId": {
+                                        "description": "父级ID",
+                                        "type": "string",
+                                        "default": ""
+                                    },
+                                    "delAll": {
+                                        "description": "是否清空,1则清空所有type下配置",
+                                        "type": "number",
+                                        "default": "0"
                                     }
                                 },
                                 "type": "object"
@@ -1180,6 +1121,341 @@
                                         "msg": {
                                             "type": "string",
                                             "example": "禁用/启用失败!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/user/login": {
+            "post": {
+                "tags": [
+                    "小程序-用户管理"
+                ],
+                "summary": "登录",
+                "operationId": "App\\Http\\Controllers\\WechatUser\\WechatUserController::WeAppLogin",
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "code"
+                                ],
+                                "properties": {
+                                    "code": {
+                                        "description": "登录code",
+                                        "type": "string",
+                                        "default": "dd"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "状态码",
+                                            "type": "number",
+                                            "example": "200"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "token": {
+                                                    "description": "token",
+                                                    "type": "string",
+                                                    "example": "wa312131dwa42141"
+                                                },
+                                                "isBindPhone": {
+                                                    "description": "是否绑定手机",
+                                                    "type": "number"
+                                                },
+                                                "isFirstIn": {
+                                                    "description": "是否新用户",
+                                                    "type": "number"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/user/edit": {
+            "post": {
+                "tags": [
+                    "小程序-用户管理"
+                ],
+                "summary": "修改用户信息",
+                "operationId": "App\\Http\\Controllers\\WechatUser\\WechatUserController::Edit",
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "header",
+                        "description": "token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "nickname",
+                                    "avatar"
+                                ],
+                                "properties": {
+                                    "nickname": {
+                                        "description": "昵称",
+                                        "type": "string",
+                                        "default": "dd"
+                                    },
+                                    "avatar": {
+                                        "description": "头像",
+                                        "type": "string",
+                                        "default": "dd"
+                                    },
+                                    "country": {
+                                        "description": "国家",
+                                        "type": "string",
+                                        "default": "dd"
+                                    },
+                                    "province": {
+                                        "description": "省",
+                                        "type": "string",
+                                        "default": "dd"
+                                    },
+                                    "city": {
+                                        "description": "市",
+                                        "type": "string",
+                                        "default": "dd"
+                                    },
+                                    "gender": {
+                                        "description": "性别",
+                                        "type": "int",
+                                        "default": "dd"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "状态码",
+                                            "type": "number",
+                                            "example": "200"
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "example": "user"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "失败",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "状态码",
+                                            "type": "number",
+                                            "example": "500"
+                                        },
+                                        "msg": {
+                                            "type": "string",
+                                            "example": "error field"
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "example": "{'avatar':['\\u8bf7\\u8f93\\u5165\\u5355\\u4f4d\\u540d\\u79f0\\uff01']}"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/user/editphone": {
+            "post": {
+                "tags": [
+                    "小程序-用户管理"
+                ],
+                "summary": "修改手机",
+                "operationId": "App\\Http\\Controllers\\WechatUser\\WechatUserController::EditPhone",
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "header",
+                        "description": "token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "iv",
+                                    "encryptedData"
+                                ],
+                                "properties": {
+                                    "iv": {
+                                        "description": "iv",
+                                        "type": "string",
+                                        "default": "dd"
+                                    },
+                                    "encryptedData": {
+                                        "description": "encryptedData",
+                                        "type": "string",
+                                        "default": "dd"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "状态码",
+                                            "type": "number",
+                                            "example": "200"
+                                        },
+                                        "msg": {
+                                            "type": "string",
+                                            "example": "修改用户手机成功"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "失败",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "状态码",
+                                            "type": "number",
+                                            "example": "500"
+                                        },
+                                        "msg": {
+                                            "type": "string",
+                                            "example": "修改用户手机失败"
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "example": "错误信息"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/user": {
+            "get": {
+                "tags": [
+                    "小程序-用户管理"
+                ],
+                "summary": "获取用户信息",
+                "operationId": "App\\Http\\Controllers\\WechatUser\\WechatUserController::GetUserInfo",
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "header",
+                        "description": "token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "状态码",
+                                            "type": "number",
+                                            "example": "200"
+                                        },
+                                        "msg": {
+                                            "type": "string",
+                                            "example": "获取用户信息成功"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "avatar": {
+                                                    "type": "string",
+                                                    "example": "https:\\/\\/wx.qlogo.cn\\/mmopen\\/vi_32\\/DYAIOgq83epgjuGZNgB6sb8XuGO4qEQFgM1T2oNPUD0cLPicfawiabOOx1kyXMQq6GQwyH92gmNhjHmxCzS4lqvA\\/0"
+                                                },
+                                                "nickname": {
+                                                    "type": "string",
+                                                    "example": "dadwa"
+                                                },
+                                                "phone": {
+                                                    "type": "string",
+                                                    "example": "1388888888"
+                                                },
+                                                "coupon": {
+                                                    "type": "int",
+                                                    "example": 0
+                                                }
+                                            },
+                                            "type": "object"
                                         }
                                     },
                                     "type": "object"
