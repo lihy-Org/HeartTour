@@ -1,7 +1,7 @@
 /*
  * @Author: Li-HONGYAO
  * @Date: 2021-01-18 11:15:25
- * @LastEditTime: 2021-01-26 18:21:23
+ * @LastEditTime: 2021-01-31 09:58:03
  * @LastEditors: Li-HONGYAO
  * @Description:
  * @FilePath: /Admin/src/pages/Personnel/index.tsx
@@ -22,7 +22,7 @@ import {
   Checkbox,
   InputNumber,
   Row,
-  Col
+  Col,
 } from 'antd';
 import { SearchOutlined, DeleteOutlined } from '@ant-design/icons';
 import { ColumnProps } from 'antd/es/table';
@@ -33,9 +33,9 @@ import UploadFile from '@/components/UploadFile';
 
 // 筛选条件
 type FilterParamsType = {
-  storeId?: number; /** 所在门店id */
-  post?: string;
-  gender?: string;
+  storeId?: number /** 所在门店id */;
+  postId?: string;
+  gender?: number /** 1-男  2-女 */;
   searchKey?: string;
 };
 
@@ -50,19 +50,20 @@ type ColumnsType = {
   title?: string[] /** 头衔 */;
   post: string /** 职位 */;
   store?: string /** 所属门店 */;
-  storeId?: number; /** 所属门店id */
+  storeId?: number /** 所属门店id */;
 };
 
 // 表单类型
 type PersonnelFormType = {
-  name: string; /** 姓名 */
-  avatar: string[];  /** 头像 */
-  gender: string; /** 性别 */
-  age: number; /** 年龄 */
-  post: string; /** 职位 */
-  title?: string[]; /** 头衔 */
-  phone: string; /** 联系电话 */
-}
+  name: string /** 姓名 */;
+  avatar: string[] /** 头像 */;
+  gender: number /** 性别 1-男  2-女 */;
+  age: number /** 年龄 */;
+  postId: string /** 职位id */;
+  phone: string /** 联系电话 */;
+  title: string[] /** 头衔 */;
+  isTechnician: number; /** 是否技师 0-否 1-是 */
+};
 
 const { Option } = Select;
 const layout = {
@@ -82,6 +83,15 @@ const stores = [
   { id: 9, store: '环球中心店' },
 ];
 
+const titles = [
+  '美容达人',
+  '中级技师',
+  '高级技师',
+  '金牌技师',
+  '初级技师',
+  '爱宠人士',
+];
+
 const Personnel: FC = () => {
   // state
   const [addModalVisible, setAddModalVisible] = useState(false);
@@ -96,9 +106,7 @@ const Personnel: FC = () => {
       pageSize: 20,
       page: 1,
       filters: {
-        post: '全部',
         storeId: -1,
-        gender: '全部',
       },
     }),
   );
@@ -120,7 +128,7 @@ const Personnel: FC = () => {
         post: '收营员',
         phone: '15888899917',
         store: i % 5 === 0 ? '' : '九里晴川店',
-        storeId: 2
+        storeId: 2,
       });
     }
 
@@ -147,13 +155,12 @@ const Personnel: FC = () => {
       okText: '确定',
       onOk: () => {
         message.success('删除成功');
-      }
-    })
-   
-  }
+      },
+    });
+  };
 
   const onDistributeStore = () => {
-    if(selectedStore === -1) {
+    if (selectedStore === -1) {
       message.info('请选择分配门店');
       return;
     }
@@ -186,7 +193,8 @@ const Personnel: FC = () => {
     {
       title: '所属门店',
       dataIndex: 'store',
-      render: (record) => record || <span className="color-C5C5C5">当前未分配</span>,
+      render: (record) =>
+        record || <span className="color-C5C5C5">当前未分配</span>,
     },
     { title: '性别', dataIndex: 'gender' },
     { title: '年龄', dataIndex: 'age' },
@@ -195,15 +203,18 @@ const Personnel: FC = () => {
     {
       title: '头衔',
       dataIndex: 'title',
-      render: (record?: string[]) => record ? (
-        <Space size="small">
-          {record.map((title, i) => (
-            <Tag style={{ fontSize: 10 }} color="#87d068" key={`title__${i}`}>
-              {title}
-            </Tag>
-          ))}
-        </Space>
-      ) : <span className="color-C5C5C5">暂无头衔</span>
+      render: (record?: string[]) =>
+        record ? (
+          <Space size="small">
+            {record.map((title, i) => (
+              <Tag style={{ fontSize: 10 }} color="#87d068" key={`title__${i}`}>
+                {title}
+              </Tag>
+            ))}
+          </Space>
+        ) : (
+          <span className="color-C5C5C5">暂无头衔</span>
+        ),
     },
     {
       width: 220,
@@ -211,21 +222,35 @@ const Personnel: FC = () => {
       key: 'action',
       render: (record: ColumnsType) => (
         <Space size="small">
-          <Button type="primary" size="small" onClick={() => {
-            personnelForm.setFieldsValue({
-              ...record
-            })
-            setAddModalVisible(true);
-          }}>
+          <Button
+            type="primary"
+            size="small"
+            onClick={() => {
+              personnelForm.setFieldsValue({
+                ...record,
+              });
+              setAddModalVisible(true);
+            }}
+          >
             编辑
           </Button>
-          <Button type="primary" size="small" onClick={() => {
-            setStoreModalVisible(true);
-            record.storeId && setSelectedStore(record.storeId);
-          }}>
+          <Button
+            type="primary"
+            size="small"
+            onClick={() => {
+              setStoreModalVisible(true);
+              record.storeId && setSelectedStore(record.storeId);
+            }}
+          >
             分配门店
           </Button>
-          <Button type="primary" size="small" danger icon={<DeleteOutlined />} onClick={() => onDeletePersonnel(record.id)} >
+          <Button
+            type="primary"
+            size="small"
+            danger
+            icon={<DeleteOutlined />}
+            onClick={() => onDeletePersonnel(record.id)}
+          >
             删除
           </Button>
         </Space>
@@ -273,8 +298,7 @@ const Personnel: FC = () => {
           </Form.Item>
           {/* 职位 */}
           <Form.Item label="职位：" name="post">
-            <Select placeholder="请选择">
-              <Option value="全部">全部</Option>
+            <Select placeholder="全部" allowClear>
               <Option value="店长">店长</Option>
               <Option value="技师">技师</Option>
               <Option value="收银">收银</Option>
@@ -283,10 +307,9 @@ const Personnel: FC = () => {
           </Form.Item>
           {/* 性别 */}
           <Form.Item label="性别：" name="gender">
-            <Select placeholder="请选择">
-              <Option value="全部">全部</Option>
-              <Option value="男">男</Option>
-              <Option value="女">女</Option>
+            <Select placeholder="全部" allowClear>
+              <Option value={1}>男</Option>
+              <Option value={2}>女</Option>
             </Select>
           </Form.Item>
           {/* 搜索 */}
@@ -367,28 +390,35 @@ const Personnel: FC = () => {
             </Radio.Group>
           </Form.Item>
           <Form.Item name="age" label="年龄" rules={[{ required: true }]}>
-            <InputNumber  min={18} max={65} />
+            <InputNumber min={18} max={65} />
           </Form.Item>
-          <Form.Item
-            name="post"
-            label="职位"
-            rules={[{ required: true }]}
-          >
+          <Form.Item name="post" label="职位" rules={[{ required: true }]}>
             <Radio.Group>
               <Radio value="技师">技师</Radio>
               <Radio value="收营员">收营员</Radio>
               <Radio value="保洁">保洁</Radio>
             </Radio.Group>
           </Form.Item>
-          <Form.Item
-            name="title"
-            label="头衔"
-          >
+          <Form.Item name="title" label="头衔" rules={[{ required: true }]}>
             <Checkbox.Group>
-              <Checkbox value="高级">高级</Checkbox>
-              <Checkbox value="中级">中级</Checkbox>
-              <Checkbox value="初级">初级</Checkbox>
+              <Row>
+                {titles.map((item, i) => (
+                  <Col span={6} key={item}>
+                    <Checkbox value={item}>{item}</Checkbox>
+                  </Col>
+                ))}
+              </Row>
             </Checkbox.Group>
+          </Form.Item>
+          <Form.Item
+            name="isTechnician"
+            label="是否技师"
+            rules={[{ required: true }]}
+          >
+            <Radio.Group>
+              <Radio value={0}>否</Radio>
+              <Radio value={1}>是</Radio>
+            </Radio.Group>
           </Form.Item>
           <Form.Item
             label="联系电话"

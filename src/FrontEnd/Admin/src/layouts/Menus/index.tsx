@@ -1,7 +1,7 @@
 /*
  * @Author: Li-HONGYAO
  * @Date: 2021-01-04 15:41:47
- * @LastEditTime: 2021-01-26 21:59:19
+ * @LastEditTime: 2021-02-01 20:10:58
  * @LastEditors: Li-HONGYAO
  * @Description:
  * @FilePath: /Admin/src/layouts/Menus/index.tsx
@@ -15,10 +15,10 @@ import {
   TeamOutlined,
   ShoppingOutlined,
   AppstoreOutlined,
-  ClockCircleOutlined,
   ShopOutlined,
   AccountBookOutlined,
-  SettingOutlined
+  SettingOutlined,
+  OrderedListOutlined,
 } from '@ant-design/icons';
 import './index.less';
 
@@ -40,9 +40,27 @@ const menus: MenuItemType[] = [
     icon: <BarChartOutlined />,
   },
   {
-    path: '/appointment',
-    title: '预约管理',
-    icon: <ClockCircleOutlined />,
+    path: '/orders',
+    title: '订单管理',
+    icon: <OrderedListOutlined />,
+    children: [
+      {
+        path: '/orders/appointment',
+        title: '预约订单',
+      },
+      {
+        path: '/orders/living',
+        title: '活体订单',
+      },
+      {
+        path: '/orders/product',
+        title: '产品订单',
+      },
+      {
+        path: '/orders/ambitus',
+        title: '周边订单',
+      },
+    ],
   },
   {
     path: '/combo',
@@ -59,12 +77,12 @@ const menus: MenuItemType[] = [
         title: '活体',
       },
       {
-        path: '/shop/ambitus',
-        title: '周边',
-      },
-      {
         path: '/shop/product',
         title: '产品',
+      },
+      {
+        path: '/shop/ambitus',
+        title: '周边',
       },
     ],
   },
@@ -99,16 +117,10 @@ const menus: MenuItemType[] = [
     ],
   },
   {
-    path: '/banner',
+    path: '/configs',
     title: '配置相关',
     icon: <SettingOutlined />,
-    children: [
-      {
-        path: '/configs/banner',
-        title: 'banner配置',
-      }
-    ],
-  }
+  },
 ];
 
 const Menus: FC<IProps> = (props) => {
