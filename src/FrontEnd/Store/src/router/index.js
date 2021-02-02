@@ -7,9 +7,11 @@ Vue.use(Router)
 import Layout from '@/layout'
 
 /* Router Modules */
+import goodsRouter from './modules/goods'
+import staffRouter from './modules/staff'
 // import componentsRouter from './modules/components'
 // import chartsRouter from './modules/charts'
-// import tableRouter from './modules/table'
+import tableRouter from './modules/table'
 // import nestedRouter from './modules/nested'
 
 /**
@@ -70,6 +72,8 @@ export const constantRoutes = [
     component: () => import('@/views/error-page/401'),
     hidden: true
   },
+
+  // 首页-数据统计
   {
     path: '/',
     component: Layout,
@@ -79,7 +83,59 @@ export const constantRoutes = [
         path: 'dashboard',
         component: () => import('@/views/dashboard/index'),
         name: 'Dashboard',
-        meta: { title: 'dashboard', icon: 'dashboard', affix: true }
+        meta: { title: 'dashboard', icon: 'chart', affix: true }
+      }
+    ]
+  },
+
+  // 预约管理
+  {
+    path: '/booking',
+    component: Layout,
+    redirect: 'noRedirect',
+    children: [
+      {
+        path: 'management',
+        component: () => import('@/views/booking/management/index'),
+        name: 'Management',
+        meta: { title: 'bookingManage', icon: 'component', affix: true }
+      }
+    ]
+  },
+
+  // 商品管理
+  goodsRouter,
+
+  // 人员管理
+  staffRouter,
+
+  // 账目管理
+  {
+    path: '/account',
+    component: Layout,
+    redirect: 'noRedirect',
+    children: [
+      {
+        path: 'management',
+        component: () => import('@/views/account/management/index'),
+        name: 'Management',
+        meta: { title: 'accountManage', icon: 'money', affix: true }
+      }
+    ]
+  },
+
+  // 个人中心
+  {
+    path: '/profile',
+    component: Layout,
+    redirect: '/profile/index',
+    hidden: true,
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/profile/index'),
+        name: 'Profile',
+        meta: { title: 'profile', icon: 'user', noCache: true }
       }
     ]
   },
@@ -113,21 +169,8 @@ export const constantRoutes = [
   //   ]
   // },
 
-  // 个人中心
-  {
-    path: '/profile',
-    component: Layout,
-    redirect: '/profile/index',
-    hidden: true,
-    children: [
-      {
-        path: 'index',
-        component: () => import('@/views/profile/index'),
-        name: 'Profile',
-        meta: { title: 'profile', icon: 'user', noCache: true }
-      }
-    ]
-  }
+  // 404 page must be placed at the end !!!
+  { path: '*', redirect: '/404', hidden: true }
 ]
 
 /**
@@ -176,24 +219,24 @@ export const asyncRoutes = [
   //   ]
   // },
 
-  // {
-  //   path: '/icon',
-  //   component: Layout,
-  //   children: [
-  //     {
-  //       path: 'index',
-  //       component: () => import('@/views/icons/index'),
-  //       name: 'Icons',
-  //       meta: { title: 'icons', icon: 'icon', noCache: true }
-  //     }
-  //   ]
-  // },
+  {
+    path: '/icon',
+    component: Layout,
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/icons/index'),
+        name: 'Icons',
+        meta: { title: 'icons', icon: 'icon', noCache: true }
+      }
+    ]
+  },
 
   // /** when your routing map is too long, you can split it into small modules **/
   // componentsRouter,
   // chartsRouter,
   // nestedRouter,
-  // tableRouter,
+  tableRouter
 
   // {
   //   path: '/example',

@@ -39,7 +39,7 @@
             </el-dropdown-item>
           </router-link>
 
-          <!-- 首页 -->
+          <!-- 数据统计 -->
           <router-link to="/">
             <el-dropdown-item>
               {{ $t('navbar.dashboard') }}
