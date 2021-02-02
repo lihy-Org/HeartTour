@@ -14,7 +14,7 @@ class CreateUserTitleTable extends Migration
     public function up()
     {
         Schema::create('userTitles', function (Blueprint $table) {
-            $table->uuid('id');
+            $table->uuid('id')->primary;
             $table->string('uid')->comment('用户编号');
             $table->string('titleId')->comment('头衔编号(配置id)');
             $table->string('title')->comment('头衔');

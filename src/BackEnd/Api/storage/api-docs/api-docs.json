@@ -982,13 +982,13 @@
                                         "type": "string",
                                         "default": "dd"
                                     },
-                                    "post": {
-                                        "description": "职位",
+                                    "postId": {
+                                        "description": "职位编号",
                                         "type": "string",
                                         "default": "dd"
                                     },
-                                    "title": {
-                                        "description": "头衔",
+                                    "titleIds": {
+                                        "description": "头衔编号",
                                         "type": "string",
                                         "default": "dd"
                                     }
@@ -1392,70 +1392,6 @@
                                         "data": {
                                             "type": "object",
                                             "example": "错误信息"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/api/user": {
-            "get": {
-                "tags": [
-                    "小程序-用户管理"
-                ],
-                "summary": "获取用户信息",
-                "operationId": "App\\Http\\Controllers\\WechatUser\\WechatUserController::GetUserInfo",
-                "parameters": [
-                    {
-                        "name": "token",
-                        "in": "header",
-                        "description": "token",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "成功",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "status": {
-                                            "description": "状态码",
-                                            "type": "number",
-                                            "example": "200"
-                                        },
-                                        "msg": {
-                                            "type": "string",
-                                            "example": "获取用户信息成功"
-                                        },
-                                        "data": {
-                                            "properties": {
-                                                "avatar": {
-                                                    "type": "string",
-                                                    "example": "https:\\/\\/wx.qlogo.cn\\/mmopen\\/vi_32\\/DYAIOgq83epgjuGZNgB6sb8XuGO4qEQFgM1T2oNPUD0cLPicfawiabOOx1kyXMQq6GQwyH92gmNhjHmxCzS4lqvA\\/0"
-                                                },
-                                                "nickname": {
-                                                    "type": "string",
-                                                    "example": "dadwa"
-                                                },
-                                                "phone": {
-                                                    "type": "string",
-                                                    "example": "1388888888"
-                                                },
-                                                "coupon": {
-                                                    "type": "int",
-                                                    "example": 0
-                                                }
-                                            },
-                                            "type": "object"
                                         }
                                     },
                                     "type": "object"

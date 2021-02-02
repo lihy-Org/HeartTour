@@ -14,7 +14,7 @@ class CreatePetTable extends Migration
     public function up()
     {
         Schema::create('pets', function (Blueprint $table) {
-            $table->uuid('id');
+            $table->uuid('id')->primary;
             $table->timestamps();
             $table->softDeletes();   
             $table->string('wcid')->comment('小程序用户id');

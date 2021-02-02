@@ -13,8 +13,8 @@ class CreateWechatUserTable extends Migration
      */
     public function up()
     {
-        Schema::create('wechat_user', function (Blueprint $table) {
-            $table->uuid('id');
+        Schema::create('wechatUser', function (Blueprint $table) {
+            $table->uuid('id')->primary;
             $table->string('sessionkey')->comment('微信sessionkey');
             $table->string('openid')->comment('微信openid');
             $table->string('code')->comment('code');
