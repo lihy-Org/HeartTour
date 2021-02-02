@@ -1,0 +1,174 @@
+<template>
+  <el-form-item
+    :prop="
+      item.prop
+        ? item.prop
+        : item.slot
+          ? item.slot
+          : item.type
+            ? item.value
+            : ''
+    "
+    :label="item.label"
+    :rules="item.rules"
+    :class="item.class"
+  >
+    <!-- slot -->
+    <slot v-if="item.slot" />
+    <!-- 详情项 -->
+    <span v-if="!item.type">{{ item.value }}</span>
+    <!-- 普通输入框 -->
+    <el-input
+      v-if="item.type === 'input' || item.type === 'password'"
+      v-model.trim="form[item.value]"
+      :show-password="item.type === 'password' ? true : false"
+      v-bind="item"
+      :readonly="item.readonly"
+      :placeholder="item.placeholder"
+      @focus="typeof item.focus === 'function' ? item.focus($event) : () => {}"
+    >
+      <template v-if="item.prepend" #prepend>
+        <i :class="item.prepend" />
+      </template>
+      <template #[item.innerSlotName]>
+        <slot :name="item.subSlotName" />
+      </template>
+    </el-input>
+    <!-- 文本输入框 -->
+    <el-input
+      v-if="item.type === 'textarea'"
+      v-model.trim="form[item.value]"
+      v-bind="item"
+      :placeholder="item.placeholder"
+    />
+    <!-- 计数器 -->
+    <el-input-number
+      v-if="item.type === 'inputNumber'"
+      v-model="form[item.value]"
+      v-bind="item"
+      :placeholder="item.placeholder"
+    />
+    <!-- 选择框 -->
+    <el-select
+      v-if="item.type === 'select'"
+      v-model="form[item.value]"
+      v-bind="item"
+      :placeholder="item.placeholder"
+      :disabled="
+        typeof item.disabled === 'function' ? item.disabled() : item.disabled
+      "
+      @change="
+        typeof item.change === 'function' ? item.change($event) : () => {}
+      "
+    >
+      <el-option
+        v-for="childItem in typeof item.list === 'function'
+          ? item.list()
+          : item.list"
+        :key="childItem.value"
+        :label="childItem.label"
+        :value="childItem.value"
+      />
+      <slot :name="item.subSlotName" />
+    </el-select>
+    <!-- 单选框 -->
+    <el-radio-group
+      v-if="item.type === 'radio'"
+      v-model="form[item.value]"
+      v-bind="item"
+      @change="
+        typeof item.change === 'function' ? item.change($event) : () => {}
+      "
+    >
+      <el-radio
+        v-for="childItem in item.list"
+        :key="childItem.value"
+        :label="childItem.value"
+        :disabled="childItem.disabled"
+      >{{ childItem.label }}</el-radio>
+    </el-radio-group>
+    <!-- 日期选择框 -->
+    <el-date-picker
+      v-if="[ 'datetime', 'date', 'month', 'week', 'year' ].includes(item.type)"
+      v-model="form[item.value]"
+      v-bind="item"
+      :placeholder="item.placeholder"
+      :value-format="item.valueFormat || 'timestamp'"
+    />
+    <!-- 日期时间范围选择框 -->
+    <el-date-picker
+      v-if="item.type === 'datetimerange'"
+      v-model="form[item.value]"
+      :range-separator="item.separator"
+      :start-placeholder="item.startPlaceholder"
+      :end-placeholder="item.endPlaceholder"
+      v-bind="item"
+      :value-format="item.valueFormat || 'timestamp'"
+      :default-time="defaultTime"
+    />
+    <!-- 级联选择框 -->
+    <el-cascader v-if="item.type === 'cascader'" v-model="form[item.value]" v-bind="item" />
+    <el-switch v-if="item.type === 'switch'" v-model="form[item.value]" v-bind="item" />
+    <!-- 文字链接 -->
+    <el-link
+      v-if="item.type === 'link'"
+      type="primary"
+      :underline="false"
+      v-bind="item"
+      :href="form[item.value]"
+    >{{ form[item.value] }}</el-link>
+    <!-- 图片 -->
+    <el-image
+      v-if="item.type === 'image'"
+      lazy
+      v-bind="item"
+      :src="form[item.value]"
+      :preview-src-list="[form[item.value]]"
+    />
+    <el-button-group v-if="item.type === 'buttonGroup'">
+      <el-button
+        v-for="button in item.buttons.filter(
+          button =>
+            button.notRender !== true ||
+            (button.render && button.render(button))
+        )"
+        :key="button.value"
+        v-bind="button"
+        :type="
+          (typeof button.type === 'function' && button.type()) || button.type
+        "
+        :size="button.size"
+        :icon="button.icon"
+        :disabled="button.disabled"
+        :loading="button.loading"
+        @click="button.click"
+      >{{ button.label }}</el-button>
+    </el-button-group>
+  </el-form-item>
+</template>
+
+<script>
+export default {
+  name: 'FormItemCompontent',
+  props: {
+    form: {
+      type: Object,
+      default: () => { }
+    },
+    item: {
+      type: Object,
+      required: true
+    }
+  }
+}
+</script>
+
+<style lang="scss" scoped>
+::v-deep .el-image {
+  width: 100px;
+  height: 100px;
+}
+::v-deep .el-input__inner {
+  font-family: Microsoft YaHei;
+}
+</style>

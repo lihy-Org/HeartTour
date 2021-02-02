@@ -1,7 +1,7 @@
 export default {
   route: {
-    dashboard: '首页',
-    reservationManage: '预约管理',
+    dashboard: '数据统计',
+    bookingManage: '预约管理',
     goodsManage: '商品管理',
     staffManage: '人员管理',
     accountManage: '账目管理',
@@ -67,10 +67,30 @@ export default {
     clipboardDemo: 'Clipboard',
     i18n: '国际化',
     externalLink: '外链',
-    profile: '个人中心'
+    profile: '个人中心',
+
+    /**
+     * 商品管理二级菜单
+     * @param goodsLiving 活体
+     * @param goodsProduct 产品
+     * @param goodsDerivatives 周边
+     */
+    goodsLiving: '活体',
+    goodsProduct: '产品',
+    goodsDerivatives: '周边',
+
+    /**
+     * 人员管理二级菜单
+     * @param rota 排班
+     * @param booking 预约
+     * @param performance 业绩
+     */
+    rota: '排班',
+    booking: '预约',
+    performance: '业绩'
   },
   navbar: {
-    dashboard: '首页',
+    dashboard: '数据统计',
     github: '项目地址',
     logOut: '退出登录',
     profile: '个人中心',
