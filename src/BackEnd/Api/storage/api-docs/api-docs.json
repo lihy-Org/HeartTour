@@ -8,7 +8,7 @@
         "/api/admin/login": {
             "post": {
                 "tags": [
-                    "总台管理系统-用户管理"
+                    "总台管理系统-授权"
                 ],
                 "summary": "登录",
                 "operationId": "App\\Http\\Controllers\\Admin\\AccountController::Login",
@@ -107,7 +107,7 @@
         "/api/admin/verifCode": {
             "post": {
                 "tags": [
-                    "总台管理系统-用户管理"
+                    "总台管理系统-授权"
                 ],
                 "summary": "获取登录验证码",
                 "operationId": "App\\Http\\Controllers\\Admin\\AccountController::GetVerifCode",
@@ -808,7 +808,7 @@
                     "总台管理系统-用户管理"
                 ],
                 "summary": "用户列表",
-                "operationId": "App\\Http\\Controllers\\Admin\\UserController::userList",
+                "operationId": "App\\Http\\Controllers\\Admin\\UserController::GetList",
                 "parameters": [
                     {
                         "name": "token",
@@ -991,6 +991,11 @@
                                         "description": "头衔编号",
                                         "type": "string",
                                         "default": "dd"
+                                    },
+                                    "isWorker": {
+                                        "description": "是否技师",
+                                        "type": "number",
+                                        "default": "dd"
                                     }
                                 },
                                 "type": "object"
@@ -1054,7 +1059,7 @@
                     "总台管理系统-用户管理"
                 ],
                 "summary": "删除用户",
-                "operationId": "App\\Http\\Controllers\\Admin\\UserController::remove",
+                "operationId": "App\\Http\\Controllers\\Admin\\UserController::Remove",
                 "parameters": [
                     {
                         "name": "token",

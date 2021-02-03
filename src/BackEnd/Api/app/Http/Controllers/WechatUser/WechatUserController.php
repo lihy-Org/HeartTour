@@ -81,8 +81,7 @@ class WechatUserController extends Controller
             $user = WechatUser::create([
                 'code' => $code,
                 'openid' => $weappOpenid,
-                'sessionkey' => $weixinSessionKey,
-                'password' => $weixinSessionKey,
+                'sessionkey' => $weixinSessionKey,               
                 'token' => $token,
             ]);
         };
@@ -180,7 +179,7 @@ class WechatUserController extends Controller
         if ($validator->fails()) {
             return json_encode(array(
                 'status' => 500,
-                'msg' => '修改用户信息失败！',
+                'msg' => '验证失败！',
                 'data' => $validator->errors(),
             ));
         } else {
@@ -287,7 +286,7 @@ class WechatUserController extends Controller
         if ($validator->fails()) {
             return json_encode(array(
                 'status' => 500,
-                'msg' => 'error field',
+                'msg' => '验证失败',
                 'data' => $validator->errors(),
             ));
         } else {

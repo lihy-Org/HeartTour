@@ -279,4 +279,160 @@ class UserController extends Controller
     {
         return json_encode($this->userRepository->Remove($request->userId));
     }
+
+
+    /**
+     * @OA\Post(
+     *     path="/api/admin/user/SetStore",
+     *     tags={"总台管理系统-用户管理"},
+     *     summary="分配门店",
+     *     @OA\Parameter(name="token", in="header", @OA\Schema(type="string"), required=true, description="token"),
+     *     @OA\RequestBody(
+     *     @OA\MediaType(
+     *       mediaType="multipart/form-data",
+     *         @OA\Schema(
+     *           @OA\Property(description="用户ID", property="userId", type="number", default="10"),
+     *           @OA\Property(description="门店ID", property="storeId", type="number", default="10"),
+     *           required={"storeId","userId"}
+     *           )
+     *       )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="成功",
+     *         @OA\JsonContent(
+     *            type="object",
+     *            @OA\Property(
+     *                   example="200",
+     *                   property="status",
+     *                   description="状态码",
+     *                   type="number",
+     *               ),
+     *            @OA\Property(
+     *                  type="string",
+     *                  property="msg",
+     *                  example="成功!",
+     *              )
+     *         ),
+     *     ),
+     *      @OA\Response(
+     *         response=500,
+     *         description="失败",
+     *         @OA\JsonContent(
+     *            type="object",
+     *            @OA\Property(
+     *                   example="500",
+     *                   property="status",
+     *                   description="状态码",
+     *                   type="number",
+     *               ),
+     *           @OA\Property(
+     *                  type="string",
+     *                  property="msg",
+     *                  example="失败!",
+     *               )
+     *           )
+     *       ),
+     * )
+     */
+    public function SetStore(Request $request)
+    {
+        $rules = [
+            'storeId' => ['required', 'exists:stores,id'],
+            'userId' => ['required', Rule::exists('users', 'id')->where(function ($query) {
+                $query->where('state', 0)->whereNotIn('type', [0, 1]);
+            }),
+            ],
+        ];
+        $messages = [
+            'storeId.required' => '请输入门店编号!',
+            'userId.required' => '请输入人员编号!',
+            'storeId.exists' => '错误的门店编号!',
+            'userId.exists' => '错误的人员编号!',
+        ];
+        $validator = Validator::make($request->all(), $rules, $messages);
+        if ($validator->fails()) {
+            return json_encode(array(
+                'status' => 500,
+                'msg' => '验证失败!',
+                'data' => $validator->errors(),
+            ));
+        }
+        return json_encode($this->userRepository->SetStore((object) $request->all()));
+    }
+
+    /**
+     * @OA\Post(
+     *     path="/api/admin/user/SetStoreManage",
+     *     tags={"总台管理系统-用户管理"},
+     *     summary="分配店长",
+     *     @OA\Parameter(name="token", in="header", @OA\Schema(type="string"), required=true, description="token"),
+     *     @OA\RequestBody(
+     *     @OA\MediaType(
+     *       mediaType="multipart/form-data",
+     *         @OA\Schema(
+     *           @OA\Property(description="用户ID", property="userId", type="number", default="10"),
+     *           required={"userId"}
+     *           )
+     *       )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="成功",
+     *         @OA\JsonContent(
+     *            type="object",
+     *            @OA\Property(
+     *                   example="200",
+     *                   property="status",
+     *                   description="状态码",
+     *                   type="number",
+     *               ),
+     *            @OA\Property(
+     *                  type="string",
+     *                  property="msg",
+     *                  example="成功!",
+     *              )
+     *         ),
+     *     ),
+     *      @OA\Response(
+     *         response=500,
+     *         description="失败",
+     *         @OA\JsonContent(
+     *            type="object",
+     *            @OA\Property(
+     *                   example="500",
+     *                   property="status",
+     *                   description="状态码",
+     *                   type="number",
+     *               ),
+     *           @OA\Property(
+     *                  type="string",
+     *                  property="msg",
+     *                  example="失败!",
+     *               )
+     *           )
+     *       ),
+     * )
+     */
+    public function SetStoreManage(Request $request)
+    {
+        $rules = [
+            'userId' => ['required', Rule::exists('users', 'id')->where(function ($query) {
+                $query->where('state', 0)->whereNotIn('type', [0, 1])->where('storeId','!=', '')->whereNotNull('storeId');
+            })],
+        ];
+        $messages = [
+            'userId.required' => '请输入人员编号!',
+            'userId.exists' => '错误的人员编号或该用户还未分配门店!',
+        ];
+        $validator = Validator::make($request->all(), $rules, $messages);
+        if ($validator->fails()) {
+            return json_encode(array(
+                'status' => 500,
+                'msg' => '验证失败!',
+                'data' => $validator->errors(),
+            ));
+        }
+        return json_encode($this->userRepository->SetStoreManage((object) $request->all()));
+    }
 }
