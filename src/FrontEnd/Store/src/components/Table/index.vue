@@ -1,97 +1,112 @@
 <template>
-  <div v-loading="loading" class="table">
-    <el-table
-      ref="table"
-      v-bind="$attrs"
-      :data="tableData"
-      border
-      height="auto"
-      align="left"
-      tooltip-effect="dark"
-      :row-class-name="tableRowClassName"
-      :header-row-class-name="tableHeaderClassName"
-      :header-cell-style="getRowClass"
-      :cell-style="getCellClass"
-      @selection-change="selectedChange"
-    >
-      <template v-for="column in columns">
-        <template
-          v-if="
-            !(typeof column.hidden === 'function'
-              ? column.hidden()
-              : column.hidden)
-          "
-        >
-          <slot v-if="column.slot" :name="column.slot" />
-          <el-table-column
-            v-else-if="column.type"
-            :key="column.type"
-            v-bind="column"
-            :width="column.width || '45'"
-          />
-          <el-table-column
-            v-else-if="column.buttons"
-            :key="column.value"
-            v-bind="column"
-            :label="column.label"
-          >
-            <template #default="{row}">
-              <el-button
-                v-for="button in column.buttons.filter(button =>
-                  typeof button.hidden === 'function'
-                    ? !button.hidden(row)
-                    : !button.hidden
-                )"
-                :key="button.value"
-                :class="
-                  typeof button.class === 'function'
-                    ? button.class(row)
-                    : button.class
-                "
-                :loading="button.loading"
-                :type="button.type"
-                :size="button.size"
-                :icon="button.icon"
-                :disabled="
-                  typeof button.disabled === 'function'
-                    ? button.disabled(row)
-                    : button.disabled
-                "
-                @click="button.click(row)"
+  <div class="content-wrap" :style="tableHeight">
+    <div ref="table-wrap" class="table-wrap">
+      <el-table
+        ref="multipleTable"
+        v-loading="loading"
+        :data="tableData"
+        :max-height="mHeight"
+        border
+        tooltip-effect="dark"
+        style="width: 100%"
+        :row-class-name="tableRowClassName"
+        :header-cell-style="getRowClass"
+        :header-row-class-name="tableHeaderClassName"
+        :cell-style="getCellClass"
+        @selection-change="selectedChange"
+      >
+        <el-table-column type="selection" width="45px" align="left" />
+        <el-table-column v-if="!hasIndex" type="index" width="40px" align="left" />
+        <template v-for="(item, key) in columns">
+          <template v-if="item.type !='tag'">
+            <el-table-column
+              v-if="!item.contentType"
+              :key="key"
+              :prop="item.prop"
+              :label="item.label"
+              :type="item.type"
+              :width="item.width"
+              :formatter="item.formatter"
+              show-overflow-tooltip
+            />
+            <el-table-column
+              v-else-if="item.contentType==='img'"
+              :key="key"
+              :prop="item.prop"
+              :label="item.name"
+              :type="item.type"
+              :width="item.width"
+              :formatter="item.formatter"
+            >
+              <template v-slot="{row}">
+                <img :src="row[item.prop]" width="85" height="96">
+              </template>
+            </el-table-column>
+
+            <el-table-column
+              v-else-if="item.contentType==='button'"
+              :key="item.prop"
+              v-bind="item"
+              :label="item.name"
+            >
+              <template #default="{row}">
+                <el-button
+                  v-for="(button, index) in item.buttons.filter(button =>
+                    typeof button.hidden === 'function'
+                      ? !button.hidden(row)
+                      : !button.hidden
+                  )"
+                  :key="index"
+                  :class="
+                    typeof button.class === 'function'
+                      ? button.class(row)
+                      : button.class
+                  "
+                  :loading="button.loading"
+                  :type="button.type"
+                  :size="button.size"
+                  :icon="button.icon"
+                  :disabled="
+                    typeof button.disabled === 'function'
+                      ? button.disabled(row)
+                      : button.disabled
+                  "
+                  @click="button.click(row)"
+                >
+                  {{
+                    typeof button.label === 'function'
+                      ? button.label(row)
+                      : button.label
+                  }}
+                </el-button>
+              </template>
+            </el-table-column>
+          </template>
+          <el-table-column v-else :key="key">
+            <template>
+              <el-popover
+                placement="top-start"
+                :title="showTitle"
+                width="100"
+                trigger="click"
+                :content="showInfo"
               >
-                {{
-                  typeof button.label === 'function'
-                    ? button.label(row)
-                    : button.label
-                }}
-              </el-button>
+                <el-button slot="reference">{{ item.name }}</el-button>
+              </el-popover>
             </template>
           </el-table-column>
-          <el-table-column
-            v-else-if="
-              !(typeof column.hidden === 'function'
-                ? column.hidden()
-                : column.hidden)
-            "
-            :key="column.value"
-            v-bind="column"
-            :label="column.label"
-            :formatter="column.formatter"
-            :show-overflow-tooltip="showTip"
-          />
         </template>
-      </template>
-    </el-table>
+      </el-table>
+    </div>
     <el-pagination
-      v-if="pagination"
-      :page-sizes="pageSizes"
-      :page-size="pagination.pageSize"
-      :page-count="pageCount"
-      :current-page="pagination.page"
+      style="display: flex; justify-content: flex-end;background: white; align-items: center; height: 50px"
+      :page-sizes="[20, 30, 40]"
+      :page-size="20"
+      :current-page="refreshCurrentPage || 1"
+      layout="total, sizes, prev, pager, next, jumper"
       :total="total"
-      :layout="layout"
-      @current-change="currentChange"
       @size-change="sizeChange"
+      @current-change="currentChange"
     />
   </div>
 </template>
@@ -101,6 +116,17 @@ export default {
   name: 'TableCompontent',
   inheritAttrs: false,
   props: {
+    tableHeight: {
+      type: String,
+      default: 'height: calc(100vh - 184px)'
+    },
+    hasIndex: {
+      type: Boolean
+    },
+    refreshCurrentPage: {
+      type: Number,
+      default: 1
+    },
     loading: {
       type: Boolean
     },
@@ -108,42 +134,18 @@ export default {
       type: Array,
       required: true
     },
-    selectedRow: {
-      type: String,
-      default: ''
-    },
     columns: {
       type: Array,
       required: true
-    },
-    showTip: {
-      type: Boolean,
-      /* eslint-disable-next-line */
-      default: true,
     },
     selectedChange: {
       type: Function,
       /* eslint-disable-next-line */
       default: () => { },
     },
-    singleSelect: {
-      type: Boolean
-    },
     pagination: {
       type: Object,
       default: null
-    },
-    pageCount: {
-      type: Number,
-      default: 5
-    },
-    pageSizes: {
-      type: Array,
-      default: () => [
-        20,
-        30,
-        40
-      ]
     },
     total: {
       type: Number,
@@ -165,7 +167,15 @@ export default {
     }
   },
   data() {
-    return {}
+    return {
+      mHeight: 0
+    }
+  },
+  mounted() {
+    const mHeight = this.$refs['table-wrap'].offsetHeight
+    this.$nextTick(() => {
+      this.$set(this, 'mHeight', mHeight)
+    })
   },
   methods: {
 
@@ -182,9 +192,9 @@ export default {
     // 所有表头单元格设置一样的 Style
     getRowClass({ row, column, rowIndex, columnIndex }) {
       if (rowIndex === 0) {
-        return 'border-bottom:1px solid #DBDCE2;padding:7px 5px;background:#F0F3F6;font-size:14px;color:#737981;'
+        return 'border-bottom:1px solid #DBDCE2;padding:7px 0px;background:#F0F3F6;font-size:14px;color:#737981;'
       }
-      return 'padding:7px 5px;'
+      return 'padding:7px 0px;'
     },
 
     // 所有单元格设置一样的 Style
@@ -253,17 +263,16 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.table {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  background: #fff;
+.content-wrap{
+  .table-wrap {
+    height: calc(100% - 60px) !important;
+  }
 }
 ::v-deep .el-table th > .cell {
   word-break: keep-all;
 }
 ::v-deep .el-pagination {
-  margin: 10px;
+  margin: 10px 10px 0 10px;
   text-align: right;
 }
 </style>

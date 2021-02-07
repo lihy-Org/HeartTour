@@ -5,7 +5,7 @@
       <el-col
         v-for="(item, index) in formItems"
         :key="index"
-        :span="mutipleCols ? 24 / mutipleCols : 24"
+        style="width: auto"
       >
         <FormItem :form="form" :item="item">
           <template #[item.subSlotName]>
@@ -61,10 +61,6 @@ export default {
     formSpan: {
       type: Number,
       default: 24
-    },
-    mutipleCols: {
-      type: Number,
-      default: 0
     },
     formItems: {
       type: Array,

@@ -36,9 +36,4 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.btns {
-  ::v-deep .el-button {
-    margin-bottom: 10px;
-  }
-}
 </style>

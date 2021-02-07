@@ -6,13 +6,20 @@
 
     <div class="right-menu">
       <template v-if="device!=='mobile'">
+        <!-- 日期显示 -->
+        <DateTime id="header-dateTime" class="right-menu-item" />
+
+        <Weather id="header-weather" class="right-menu-item" />
+
+        <!-- 天气 -->
+
         <!-- 搜索 -->
-        <search id="header-search" class="right-menu-item" />
+        <search v-if="false" id="header-search" class="right-menu-item" />
 
         <error-log class="errLog-container right-menu-item hover-effect" />
 
         <!-- 全屏 -->
-        <screenfull v-if="false" id="screenfull" class="right-menu-item hover-effect" />
+        <screenfull id="screenfull" class="right-menu-item hover-effect" />
 
         <!-- 布局大小 -->
         <el-tooltip v-if="false" :content="$t('navbar.size')" effect="dark" placement="bottom">
@@ -77,6 +84,8 @@ import Screenfull from '@/components/Screenfull'
 import SizeSelect from '@/components/SizeSelect'
 import LangSelect from '@/components/LangSelect'
 import Search from '@/components/HeaderSearch'
+import DateTime from '@/components/HeaderDate'
+import Weather from '@/components/HeaderWeather'
 
 export default {
   components: {
@@ -86,7 +95,9 @@ export default {
     Screenfull,
     SizeSelect,
     LangSelect,
-    Search
+    Search,
+    DateTime,
+    Weather
   },
   computed: {
     ...mapGetters([

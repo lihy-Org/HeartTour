@@ -97,7 +97,7 @@ export const constantRoutes = [
       {
         path: 'management',
         component: () => import('@/views/booking/management/index'),
-        name: 'Management',
+        name: 'BookingManagement',
         meta: { title: 'bookingManage', icon: 'component', affix: true }
       }
     ]
@@ -118,7 +118,7 @@ export const constantRoutes = [
       {
         path: 'management',
         component: () => import('@/views/account/management/index'),
-        name: 'Management',
+        name: 'AccountManagement',
         meta: { title: 'accountManage', icon: 'money', affix: true }
       }
     ]

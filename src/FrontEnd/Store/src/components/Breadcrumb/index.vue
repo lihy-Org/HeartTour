@@ -5,7 +5,8 @@
         <span v-if="item.redirect==='noRedirect'||index==levelList.length-1" class="no-redirect">
           {{ generateTitle(item.meta.title) }}
         </span>
-        <a v-else @click.prevent="handleLink(item)">{{ generateTitle(item.meta.title) }}</a>
+        <!-- <a v-else @click.prevent="handleLink(item)">{{ generateTitle(item.meta.title) }}</a> -->
+        <a v-else @click.prevent="handleLink(item)">锦华万达店</a>
       </el-breadcrumb-item>
     </transition-group>
   </el-breadcrumb>

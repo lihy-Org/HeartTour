@@ -25,6 +25,7 @@
       v-bind="item"
       :readonly="item.readonly"
       :placeholder="item.placeholder"
+      :style="item.style"
       @focus="typeof item.focus === 'function' ? item.focus($event) : () => {}"
     >
       <template v-if="item.prepend" #prepend>
@@ -40,6 +41,7 @@
       v-model.trim="form[item.value]"
       v-bind="item"
       :placeholder="item.placeholder"
+      :style="item.style"
     />
     <!-- 计数器 -->
     <el-input-number
@@ -47,6 +49,7 @@
       v-model="form[item.value]"
       v-bind="item"
       :placeholder="item.placeholder"
+      :style="item.style"
     />
     <!-- 选择框 -->
     <el-select
@@ -54,6 +57,7 @@
       v-model="form[item.value]"
       v-bind="item"
       :placeholder="item.placeholder"
+      :style="item.style"
       :disabled="
         typeof item.disabled === 'function' ? item.disabled() : item.disabled
       "
@@ -76,6 +80,7 @@
       v-if="item.type === 'radio'"
       v-model="form[item.value]"
       v-bind="item"
+      :style="item.style"
       @change="
         typeof item.change === 'function' ? item.change($event) : () => {}
       "
@@ -91,6 +96,7 @@
     <el-date-picker
       v-if="[ 'datetime', 'date', 'month', 'week', 'year' ].includes(item.type)"
       v-model="form[item.value]"
+      :style="item.style"
       v-bind="item"
       :placeholder="item.placeholder"
       :value-format="item.valueFormat || 'timestamp'"
@@ -99,22 +105,35 @@
     <el-date-picker
       v-if="item.type === 'datetimerange'"
       v-model="form[item.value]"
+      :style="item.style"
       :range-separator="item.separator"
       :start-placeholder="item.startPlaceholder"
       :end-placeholder="item.endPlaceholder"
       v-bind="item"
+      :picker-options="item.pickerOptions"
       :value-format="item.valueFormat || 'timestamp'"
-      :default-time="defaultTime"
+      :default-time="item.defaultTime||['00:00:00', '23:59:59']"
     />
     <!-- 级联选择框 -->
-    <el-cascader v-if="item.type === 'cascader'" v-model="form[item.value]" v-bind="item" />
-    <el-switch v-if="item.type === 'switch'" v-model="form[item.value]" v-bind="item" />
+    <el-cascader
+      v-if="item.type === 'cascader'"
+      v-model="form[item.value]"
+      v-bind="item"
+      :style="item.style"
+    />
+    <el-switch
+      v-if="item.type === 'switch'"
+      v-model="form[item.value]"
+      v-bind="item"
+      :style="item.style"
+    />
     <!-- 文字链接 -->
     <el-link
       v-if="item.type === 'link'"
       type="primary"
       :underline="false"
       v-bind="item"
+      :style="item.style"
       :href="form[item.value]"
     >{{ form[item.value] }}</el-link>
     <!-- 图片 -->
@@ -124,6 +143,7 @@
       v-bind="item"
       :src="form[item.value]"
       :preview-src-list="[form[item.value]]"
+      :style="item.style"
     />
     <el-button-group v-if="item.type === 'buttonGroup'">
       <el-button
@@ -170,5 +190,14 @@ export default {
 }
 ::v-deep .el-input__inner {
   font-family: Microsoft YaHei;
+  vertical-align: middle;
+}
+.el-form-item {
+  margin-bottom: 0;
+  margin-right: 16px;
+}
+::v-deep .el-form-item__label {
+  font-weight: normal;
+  padding: 0 8px 0 0;
 }
 </style>
