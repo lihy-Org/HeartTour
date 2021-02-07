@@ -81,8 +81,7 @@ class WechatUserController extends Controller
             $user = WechatUser::create([
                 'code' => $code,
                 'openid' => $weappOpenid,
-                'sessionkey' => $weixinSessionKey,
-                'password' => $weixinSessionKey,
+                'sessionkey' => $weixinSessionKey,               
                 'token' => $token,
             ]);
         };
@@ -180,7 +179,7 @@ class WechatUserController extends Controller
         if ($validator->fails()) {
             return json_encode(array(
                 'status' => 500,
-                'msg' => '修改用户信息失败！',
+                'msg' => '验证失败！',
                 'data' => $validator->errors(),
             ));
         } else {
@@ -287,7 +286,7 @@ class WechatUserController extends Controller
         if ($validator->fails()) {
             return json_encode(array(
                 'status' => 500,
-                'msg' => 'error field',
+                'msg' => '验证失败',
                 'data' => $validator->errors(),
             ));
         } else {
@@ -313,73 +312,5 @@ class WechatUserController extends Controller
                 ));
             }
         }
-    }
-
-    /**
-     * @OA\Get(
-     *     path="/api/user",
-     *     tags={"小程序-用户管理"},
-     *     summary="获取用户信息",
-     *     @OA\Parameter(name="token", in="header", @OA\Schema(type="string"), required=true, description="token"),
-     *     @OA\Response(
-     *         response=200,
-     *         description="成功",
-     *         @OA\JsonContent(
-     *            type="object",
-     *            @OA\Property(
-     *                   example="200",
-     *                   property="status",
-     *                   description="状态码",
-     *                   type="number",
-     *               ),
-     *            @OA\Property(
-     *                  type="string",
-     *                  property="msg",
-     *                  example="获取用户信息成功",
-     *              ),
-     *            @OA\Property(
-     *                  type="object",
-     *                  property="data",
-     *               @OA\Property(
-     *                  type="string",
-     *                  property="avatar",
-     *                  example="https:\/\/wx.qlogo.cn\/mmopen\/vi_32\/DYAIOgq83epgjuGZNgB6sb8XuGO4qEQFgM1T2oNPUD0cLPicfawiabOOx1kyXMQq6GQwyH92gmNhjHmxCzS4lqvA\/0",
-     *                ),
-     *               @OA\Property(
-     *                  type="string",
-     *                  property="nickname",
-     *                  example="dadwa",
-     *                ),
-     *               @OA\Property(
-     *                  type="string",
-     *                  property="phone",
-     *                  example="1388888888",
-     *                ),
-     *                @OA\Property(
-     *                  type="int",
-     *                  property="coupon",
-     *                  example=0,
-     *                )
-     *              )
-     *         ))
-     *     )
-     * )
-     */
-    public function GetUserInfo(Request $request)
-    {
-        $CouponService = new CouponRepository();
-        $useful = $CouponService->GetUsefulCoupon($request->user->id)->count();
-        return json_encode(
-            array(
-                'status' => 200,
-                'msg' => '获取用户信息成功!',
-                'data' => array(
-                    'avatar' => $request->user->avatar,
-                    'nickname' => $request->user->nickname,
-                    'phone' => $request->user->phone,
-                    'coupon' => $useful,
-                ),
-            )
-        );
-    }
+    }   
 }

@@ -14,7 +14,7 @@ class CreateStoresTable extends Migration
     public function up()
     {
         Schema::create('stores', function (Blueprint $table) {
-            $table->uuid('id');
+            $table->uuid('id')->primary;
             $table->string('name')->comment('门店名称');
             $table->string('phone')->comment('联系电话');
             $table->string('lng')->comment('经度');

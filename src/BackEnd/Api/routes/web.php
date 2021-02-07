@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\AccountController as AdminAccountController;
 use App\Http\Controllers\Admin\ConfigController;
 use App\Http\Controllers\Admin\StoreController;
+use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\TestController;
 use Illuminate\Support\Facades\Route;
 
@@ -29,8 +30,15 @@ Route::prefix('api/admin')->middleware(['auth:sanctum', 'adminapi'])->group(func
     Route::post('/store/addOrUpdate', [StoreController::class, 'addOrUpdate']);
     Route::post('/store/switch', [StoreController::class, 'switch']);
 
-//配置
+    //配置
     Route::get('/config/{type}/{key?}', [ConfigController::class, 'getConfig']);
     Route::post('/config/addOrUpdate', [ConfigController::class, 'addOrUpdate']);
     Route::post('/config/delete', [ConfigController::class, 'delete']);
+
+    //用户管理
+    Route::post('/user/addOrUpdate', [UserController::class, 'addOrUpdate']);
+    Route::post('/user/list', [UserController::class, 'GetList']);
+    Route::post('/user/remove', [UserController::class, 'Remove']);
+    Route::post('/user/setStore', [UserController::class, 'SetStore']);
+    Route::post('/user/setStoreManage', [UserController::class, 'SetStoreManage']);
 });

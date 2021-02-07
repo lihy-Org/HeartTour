@@ -199,7 +199,7 @@ class ConfigController extends Controller
                 'data' => $validator->errors(),
             ));
         }
-        return $this->configRepository->AddOrUpdate((object) $request->all());;
+        return json_encode($this->configRepository->AddOrUpdate((object) $request->all()));
     }
 
     /**
