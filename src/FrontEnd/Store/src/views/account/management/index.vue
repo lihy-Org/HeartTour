@@ -12,6 +12,8 @@ export default {
     return {}
   },
   computed: {},
-  created() {}
+  created() {
+    console.log('账目管理')
+  }
 }
 </script>

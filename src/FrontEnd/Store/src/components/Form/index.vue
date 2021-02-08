@@ -1,12 +1,16 @@
 <template>
-  <el-form ref="form" v-bind="$attrs" :model="form" :rules="formRules" :inline="inline" :label-width="labelWidth">
+  <el-form
+    ref="form"
+    v-bind="$attrs"
+    :model="form"
+    :rules="formRules"
+    :inline="inline"
+    :label-width="labelWidth"
+    :label-position="labelPosition"
+  >
     <slot />
     <el-row>
-      <el-col
-        v-for="(item, index) in formItems"
-        :key="index"
-        style="width: auto"
-      >
+      <el-col v-for="(item, index) in formItems" :key="index" :style="formColStyle">
         <FormItem :form="form" :item="item">
           <template #[item.subSlotName]>
             <slot :name="item.topSlotName" />
@@ -57,6 +61,14 @@ export default {
     labelWidth: {
       type: String,
       default: ''
+    },
+    labelPosition: {
+      type: String,
+      default: 'left'
+    },
+    formColStyle: {
+      type: String,
+      default: 'width: auto'
     },
     formSpan: {
       type: Number,

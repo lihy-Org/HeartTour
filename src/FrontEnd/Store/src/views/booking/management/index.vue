@@ -10,12 +10,31 @@
     <Table
       :loading="tableLoading"
       :table-data="tableData"
+      :has-select="false"
+      :has-index="true"
       :columns="columns"
       :pagination="pagination"
       :total="total"
       :current-change="currentChange"
       :size-change="sizeChange"
     />
+
+    <!-- 编辑dialog -->
+    <el-dialog title="预约信息修改" :visible.sync="dialogVisible" width="450px" :before-close="handleClose">
+      <Form
+        class="search-form"
+        :inline="true"
+        :form="editForm"
+        :form-items="editFormItems"
+        :form-col-style="formColStyle"
+        :label-width="labelWidth"
+        :label-position="labelPosition"
+      />
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="dialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -113,8 +132,10 @@ export default {
        * @param total 数据总量
        * @param statusMap 状态对应字典
        * @param petTypeMap 宠物类型对应字典
+       * @param dialogVisible 编辑弹框
        */
       tableLoading: false,
+      dialogVisible: false,
       tableData: [],
       statusMap: {
         0: '已预约',
@@ -168,15 +189,57 @@ export default {
         //   prop: 'imgSrc'
         // },
         {
+          contentType: 'button',
           label: '操作',
           buttons: [
             {
-              type: 'text',
+              type: 'primary',
               size: 'mini',
-              label: '详情',
-              click: this.aaa
+              label: '编辑',
+              click: row => this.editRowData(row)
             }
           ]
+        }
+      ],
+      /**
+       * 预约编辑form
+       * @param {technician, time} editForm 编辑的字段:技师、时间
+       * @param editFormItems 编辑内容组
+       * @param formColStyle 表单元素样式
+       * @param labelWidth form中label文字宽度
+       * @param labelPosition 对齐方式
+       */
+      formColStyle: 'width: 100%',
+      labelWidth: '80px',
+      labelPosition: 'right',
+      editForm: {
+        technician: '',
+        time: ''
+      },
+      editFormItems: [
+        {
+          type: 'select',
+          size: 'mini',
+          placeholder: '请选择预约技师',
+          label: '预约技师 :',
+          value: 'placeId',
+          clearable: true,
+          list: () => this.communitys,
+          change: () => this.currentChange(1),
+          filterable: true,
+          style: 'width: 320px'
+        },
+        {
+          type: 'select',
+          size: 'mini',
+          placeholder: '请选择预约时间',
+          label: '时间 :',
+          value: 'placeId',
+          clearable: true,
+          list: () => this.communitys,
+          change: () => this.currentChange(1),
+          filterable: true,
+          style: 'width: 320px'
         }
       ],
       pagination: {
@@ -188,17 +251,40 @@ export default {
   },
   computed: {},
   created() {
-    getBookingList().then(res => {
-      this.tableData = res.data
-      console.log(this.tableData)
-    }).catch(err => {
-      this.$message({
-        message: err.msg,
-        type: 'error'
-      })
-    })
+    console.log('预约管理')
+    this.getBookingList()
   },
   methods: {
+    // 获取列表数据
+    getBookingList() {
+      this.tableLoading = true
+      getBookingList().then(res => {
+        this.tableLoading = false
+        this.tableData = res.data
+        console.log(this.tableData)
+      }).catch(err => {
+        this.tableLoading = false
+        this.$message({
+          message: err.msg,
+          type: 'error'
+        })
+      })
+    },
+
+    // 编辑预约
+    editRowData(row) {
+      console.log(row)
+      this.dialogVisible = true
+    },
+    // 关闭编辑弹框的提示
+    handleClose(done) {
+      this.$confirm('确认关闭？')
+        .then(_ => {
+          done()
+        })
+        .catch(_ => { })
+    },
+
     /**
      * 分页
      * @param currentChange 页码改变
@@ -227,7 +313,8 @@ export default {
     align-items: center;
     height: 50px;
     margin-bottom: 10px;
-    .search-form, .search-btn {
+    .search-form,
+    .search-btn {
       display: inline-block;
     }
     .search-form {

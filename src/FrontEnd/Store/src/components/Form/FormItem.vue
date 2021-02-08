@@ -195,6 +195,7 @@ export default {
 .el-form-item {
   margin-bottom: 0;
   margin-right: 16px;
+  width: 100%;
 }
 ::v-deep .el-form-item__label {
   font-weight: normal;

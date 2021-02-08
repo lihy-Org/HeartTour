@@ -83,7 +83,7 @@ export const constantRoutes = [
         path: 'dashboard',
         component: () => import('@/views/dashboard/index'),
         name: 'Dashboard',
-        meta: { title: 'dashboard', icon: 'chart', affix: true }
+        meta: { title: 'dashboard', icon: 'chart', affix: true, keepAlive: false, keepComponentPages: [] }
       }
     ]
   },
@@ -98,7 +98,7 @@ export const constantRoutes = [
         path: 'management',
         component: () => import('@/views/booking/management/index'),
         name: 'BookingManagement',
-        meta: { title: 'bookingManage', icon: 'component', affix: true }
+        meta: { title: 'bookingManage', icon: 'component', affix: true, keepAlive: false, keepComponentPages: [] }
       }
     ]
   },
@@ -119,7 +119,7 @@ export const constantRoutes = [
         path: 'management',
         component: () => import('@/views/account/management/index'),
         name: 'AccountManagement',
-        meta: { title: 'accountManage', icon: 'money', affix: true }
+        meta: { title: 'accountManage', icon: 'money', affix: true, keepAlive: false, keepComponentPages: [] }
       }
     ]
   },
@@ -135,7 +135,7 @@ export const constantRoutes = [
         path: 'index',
         component: () => import('@/views/profile/index'),
         name: 'Profile',
-        meta: { title: 'profile', icon: 'user', noCache: true }
+        meta: { title: 'profile', icon: 'user', noCache: true, keepAlive: false, keepComponentPages: [] }
       }
     ]
   },

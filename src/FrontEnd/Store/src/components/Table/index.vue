@@ -15,8 +15,8 @@
         :cell-style="getCellClass"
         @selection-change="selectedChange"
       >
-        <el-table-column type="selection" width="45px" align="left" />
-        <el-table-column v-if="!hasIndex" type="index" width="40px" align="left" />
+        <el-table-column v-if="hasSelect" type="selection" width="45px" align="left" />
+        <el-table-column v-if="hasIndex" label="序号" type="index" width="50px" align="left" />
         <template v-for="(item, key) in columns">
           <template v-if="item.type !='tag'">
             <el-table-column
@@ -47,7 +47,7 @@
               v-else-if="item.contentType==='button'"
               :key="item.prop"
               v-bind="item"
-              :label="item.name"
+              :label="item.label"
             >
               <template #default="{row}">
                 <el-button
@@ -119,6 +119,9 @@ export default {
     tableHeight: {
       type: String,
       default: 'height: calc(100vh - 184px)'
+    },
+    hasSelect: {
+      type: Boolean
     },
     hasIndex: {
       type: Boolean

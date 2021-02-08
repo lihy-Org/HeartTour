@@ -1,7 +1,7 @@
 <template>
   <section class="app-main">
     <transition name="fade-transform" mode="out-in">
-      <keep-alive :include="cachedViews">
+      <keep-alive :include="keepAlivePage">
         <router-view :key="key" />
       </keep-alive>
     </transition>
@@ -9,15 +9,22 @@
 </template>
 
 <script>
+
 export default {
   name: 'AppMain',
   computed: {
+    keepAlivePage() {
+      return this.$store.state.settings.keepAlivePage
+    },
     cachedViews() {
       return this.$store.state.tagsView.cachedViews
     },
     key() {
       return this.$route.path
     }
+  },
+  created() {
+    console.log(this.$store.state)
   }
 }
 </script>
