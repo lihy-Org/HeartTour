@@ -9,7 +9,8 @@ const state = {
   tagsView,
   fixedHeader,
   sidebarLogo,
-  supportPinyinSearch
+  supportPinyinSearch,
+  keepAlivePage: []
 }
 
 const mutations = {
@@ -18,12 +19,37 @@ const mutations = {
     if (state.hasOwnProperty(key)) {
       state[key] = value
     }
+  },
+
+  ADD_KEEP_ALIVE: (state, name) => {
+    if (!state.keepAlivePage.includes(name)) {
+      state.keepAlivePage = state.keepAlivePage.concat(name)
+    }
+    console.log('ADD_KEEP', state.keepAlivePage)
+  },
+
+  REMOVE_KEEP_ALIVE: (state, name) => {
+    const keepAlivePage = state.keepAlivePage
+    const index = keepAlivePage.indexOf(name)
+    if (index > -1) {
+      keepAlivePage.splice(index, 1)
+    }
   }
 }
 
 const actions = {
   changeSetting({ commit }, data) {
     commit('CHANGE_SETTING', data)
+  },
+
+  // 添加需要被缓存的页面组件名
+  addKeepAlivePage({ commit }, name) {
+    commit('ADD_KEEP_ALIVE', name)
+  },
+
+  // 删除被缓存的页面组件名
+  removeKeepAlive({ commit }, name) {
+    commit('REMOVE_KEEP_ALIVE', name)
   }
 }
 

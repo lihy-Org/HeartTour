@@ -66,9 +66,20 @@ router.beforeEach(async(to, from, next) => {
       NProgress.done()
     }
   }
+  if (to.meta.keepAlive) {
+    store.dispatch('settings/addKeepAlivePage', to.name)
+  }
 })
 
-router.afterEach(() => {
+router.afterEach((to, from) => {
   // finish progress bar
+  if (from.meta.keepAlive) {
+    const {
+      meta: { keepComponentPages, alwaysKeep }
+    } = from
+    if (!alwaysKeep && (!keepComponentPages || !keepComponentPages.includes(to.name))) {
+      store.dispatch('settings/removeKeepAlive', from.name)
+    }
+  }
   NProgress.done()
 })
