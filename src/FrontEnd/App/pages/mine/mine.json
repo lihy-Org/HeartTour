@@ -2,6 +2,7 @@
   "navigationStyle": "custom",
   "usingComponents": {
     "van-cell":"../../miniprogram_npm/@vant/weapp/cell/",
-    "lg-app-header": "../../components/@lgs/app-header/index"
+    "lg-app-header": "../../components/@lgs/app-header/index",
+    "van-button": "../../miniprogram_npm/@vant/weapp/button/"
   }
 }

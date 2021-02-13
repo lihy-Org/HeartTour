@@ -1,7 +1,7 @@
 /* 字体名称 */
 
 
-page { height: 100%; }
+page { height: 100%; font-family: PingFang SC;}
 .container {
 	height: calc(100% - constant(safe-area-inset-bottom));
 	height: calc(100% - env(safe-area-inset-bottom));
@@ -92,9 +92,6 @@ button::after {
 .color-333333 { color: #333333;}
 .color-F63D24 { color: #F63D24; }
 .color-999999 { color: #999999; }
-
-
-
 
 
 /* 字体尺寸 */
@@ -198,6 +195,11 @@ button::after {
 .flex-v-center { display: flex; flex-direction: column; justify-content: center; align-items: center;}
 .flex-vertical { flex-direction: column; }
 .flex-horizontal { flex-direction: row; }
+.flex-align-items {align-items: center;}
+.flex-between { display: flex; justify-content: space-between; align-items: center; }
+.flex-between-top{
+	display: flex; justify-content: space-between;
+}
 .flex-right{
 	display: flex;
 	flex-direction: column;
@@ -250,6 +252,7 @@ button::after {
 .py-28 { padding-top: 28rpx; padding-bottom: 28rpx;}
 .py-34 { padding-top: 34rpx; padding-bottom: 34rpx;}
 .py-36 { padding-top: 36rpx; padding-bottom: 36rpx;}
+.py-40 { padding-top: 40rpx; padding-bottom: 40rpx;}
 
 
 
@@ -276,13 +279,14 @@ button::after {
 .pr-42 { padding-right: 42rpx;}
 .pr-46 { padding-right: 46rpx;}
 
-
+.pb-10 { padding-bottom: 10rpx;}
 .pb-20 { padding-bottom: 20rpx;}
 .pb-24 { padding-bottom: 24rpx;}
 .pb-26 { padding-bottom: 26rpx;}
 .pb-28 { padding-bottom: 28rpx;}
 .pb-30 { padding-bottom: 30rpx;}
 .pb-32 { padding-bottom: 32rpx;}
+.pb-36 { padding-bottom: 36rpx; }
 .pb-38 { padding-bottom: 38rpx;}
 .pb-42 { padding-bottom: 42rpx;}
 .pb-44 { padding-bottom: 44rpx;}
@@ -408,8 +412,16 @@ button::after {
 /* 边框 */
 .border { border: 2rpx solid #F5F5F5;}
 .border-top { border-top: 2rpx solid #F5F5F5 ;}
-.border-bottom { border-bottom: 2rpx solid #F5F5F5;}
+.border-bottom { border-bottom: 2rpx solid #E1E1E1;}
 .border-left { border-left: 2rpx solid #F5F5F5;}
+.border-padding-bottom::after {
+		content: '';
+		width: 100%;
+		height: 1px;
+		display: block;
+		margin: 0 auto;
+		border-bottom: 1px solid #E1E1E1;
+}
 
 .border-FF7F2A { border-color: #FF7F2A; }
 .border-F5F5F5 { border-color: #F5F5F5; }

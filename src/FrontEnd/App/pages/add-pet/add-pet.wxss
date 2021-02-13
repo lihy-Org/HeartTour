@@ -1,0 +1,41 @@
+/* pages/add-pet/add-pet.wxss */
+.avatar-uploader .van-uploader__upload {
+    width: 230rpx !important;
+    height: 230rpx !important;
+    border-radius: 50% !important;
+    background-color: #717171 !important;
+    margin: 0 !important;
+  }
+  
+  .form-item {
+    height: 92rpx;
+  }
+  
+  .form-item:not(:last-child) {
+    border-bottom: 2rpx #F5F5F5 solid;
+  }
+  .item-title {
+    width: 104rpx;
+  }
+  .vaccines-item {
+    height: 70rpx;
+  }
+  .vaccines-item .title {
+    width: 140rpx;
+  }
+  .icon_check {
+    width: 32rpx;
+    height: 32rpx;
+  }
+  
+  input {
+    height: 100%;
+    text-align: right;
+    padding-right: 50rpx;
+  }
+
+  .van-uploader__preview-image{
+    width: 230rpx !important;
+    height: 230rpx !important;
+    border-radius: 50% !important;
+  }

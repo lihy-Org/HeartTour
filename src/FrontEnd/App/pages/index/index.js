@@ -10,6 +10,7 @@ Page({
       },
       technicianName: {
         name: '刘博杭',
+        style:'vertical-align:middle;margin-right:20rpx;'
       },
       technicianTitle: {
         title: '美容之星',
@@ -21,7 +22,10 @@ Page({
       },
       praise: {
         praise: "好评率100%",
-      }
+      },
+      show:true,
+      businessCard:'businessCard',
+      technicianHead:'technicianHead'
     },
     praiseList: [{
         url: '../../assets/images/praise_sel.png'
@@ -64,7 +68,7 @@ Page({
       },
       mealAnimationY: {
         show: 0,
-        hidden: -600
+        hidden: -620
       },
     },
     setMeal: false,
@@ -164,7 +168,190 @@ Page({
     showTime: '',
     activeMeal: '',
     initial: true,
-    suggestAdd: []
+    suggestAdd: [],
+    addPetShow: false,
+    mainActiveIndex: 0,
+    activeId: null,
+    items: [{
+        // 导航名称
+        text: '汪星人',
+        children: [{
+            // 名称
+            text: '小型犬',
+            // id，作为匹配选中状态的标识
+            children: [{
+                // 名称
+                text: '泰迪狗1',
+                // id，作为匹配选中状态的标识
+                id: 1,
+
+              },
+              {
+                text: '吉娃娃2',
+                id: 2,
+              },
+            ],
+          },
+          {
+            // 名称
+            text: '中型犬',
+            // id，作为匹配选中状态的标识
+            children: [{
+                // 名称
+                text: '哈巴狗3',
+                // id，作为匹配选中状态的标识
+                id: 3,
+
+              },
+              {
+                text: '比特4',
+                id: 4,
+              },
+            ],
+          },
+          {
+            // 名称
+            text: '大型犬',
+            // id，作为匹配选中状态的标识
+
+            children: [{
+                // 名称
+                text: '金毛5',
+                // id，作为匹配选中状态的标识
+                id: 5,
+
+              },
+              {
+                text: '2哈6',
+                id: 6,
+              },
+            ],
+          },
+        ],
+      },
+      {
+        // 导航名称
+        text: '喵星人',
+        // 导航名称右上角徽标，1.5.0 版本开始支持
+
+        // 该导航下所有的可选项
+        children: [{
+            // 名称
+            text: '长毛猫',
+            // id，作为匹配选中状态的标识
+
+            children: [{
+                // 名称
+                text: '蓝猫',
+                // id，作为匹配选中状态的标识
+                id: 7,
+              },
+              {
+                text: '绿毛',
+                id: 8,
+              },
+            ],
+          },
+          {
+            // 名称
+            text: '短毛猫',
+            // id，作为匹配选中状态的标识
+
+            children: [{
+              // 名称
+              text: '加肥猫',
+              // id，作为匹配选中状态的标识
+              id: 9,
+            }],
+          },
+          {
+            // 名称
+            text: '其他猫',
+            // id，作为匹配选中状态的标识
+
+            children: [{
+              // 名称
+              text: '比鲁斯',
+              // id，作为匹配选中状态的标识
+              id: 10,
+            }],
+          },
+        ],
+      },
+      {
+        // 导航名称
+        text: '其他',
+
+        children: [{
+          text: '其他',
+          children: [{
+              // 名称
+              text: '羊驼',
+              // id，作为匹配选中状态的标识
+              id: 11,
+            },
+            {
+              text: '蛇',
+              id: 12,
+            },
+          ]
+        }],
+      },
+    ],
+    radio:0,
+    whichPet: []
+  },
+  initPet: function (e) {
+    if (e) {
+      this.data.items.forEach(item => {
+        if (item.text === e.currentTarget.dataset.text) {
+          this.setData({
+            whichPet: item.children,
+            activeId: item.children[0].children[0].id,
+            mainActiveIndex: 0
+          })
+        }
+      });
+    } else {
+      this.setData({
+        whichPet: this.data.items[0].children,
+        activeId: this.data.items[0].children[0].children[0].id,
+        mainActiveIndex: 0
+      })
+    }
+  },
+  getPetList(e) {
+    this.initPet(e);
+    console.log(e);
+    this.setData({
+      radio:e.currentTarget.dataset.index
+    })
+  },
+  addPet: function () {
+    this.setData({
+      addPetShow: true
+    })
+  },
+  onClose() {
+    this.setData({
+      addPetShow: false
+    });
+  },
+  onChange(event) {
+    this.setData({
+      activeNames: event.detail,
+    });
+  },
+  onClickNav(e) {
+    const detail = e.detail;
+    this.setData({
+      mainActiveIndex: detail.index || 0,
+      activeId: e.currentTarget.dataset.items[detail.index].children[0].id,
+    });
+  },
+  onClickItem() {
+
+    console.log(this.data.activeId);
   },
   a: function (e) {
     if (e.currentTarget.dataset.item.id === this.data.activeMeal) {
@@ -224,12 +411,12 @@ Page({
     })
   },
   suggestItem: function (e) {
-      let that = this,
+    let that = this,
       index = e.currentTarget.dataset.index,
       id = e.currentTarget.dataset.id,
       items = that.data.addItem,
       suggestAdd = that.data.suggestAdd,
-      val = items[index].checked;//点击前的值
+      val = items[index].checked; //点击前的值
 
     if (!val) {
       suggestAdd.push(id);
@@ -262,7 +449,9 @@ Page({
   /**
    * 生命周期函数--监听页面加载
    */
-  onLoad: function (options) {},
+  onLoad: function (options) {
+    this.initPet()
+  },
 
   /**
    * 生命周期函数--监听页面初次渲染完成

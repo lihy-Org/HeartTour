@@ -1,0 +1,33 @@
+<!-- pages/my-pet/my-pet.wxml -->
+<view class="bg-F7F8FA" style="padding-bottom:200rpx" hover-class="none" hover-stop-propagation="false">
+    <view class="py-12 px-24 rounded-16" hover-class="none" hover-stop-propagation="false">
+        <business-card options="{{options}}"></business-card>
+    </view>
+    <view class="py-12 px-24 rounded-16" hover-class="none" hover-stop-propagation="false">
+        <business-card options="{{options}}"></business-card>
+    </view>
+        <view class="py-12 px-24 rounded-16" hover-class="none" hover-stop-propagation="false">
+        <business-card options="{{options}}"></business-card>
+    </view>
+        <view class="py-12 px-24 rounded-16" hover-class="none" hover-stop-propagation="false">
+        <business-card options="{{options}}"></business-card>
+    </view>
+        <view class="py-12 px-24 rounded-16" hover-class="none" hover-stop-propagation="false">
+        <business-card options="{{options}}"></business-card>
+    </view>
+        <view class="py-12 px-24 rounded-16" hover-class="none" hover-stop-propagation="false">
+        <business-card options="{{options}}"></business-card>
+    </view>
+        <view class="py-12 px-24 rounded-16" hover-class="none" hover-stop-propagation="false">
+        <business-card options="{{options}}"></business-card>
+    </view>
+        <view class="py-12 px-24 rounded-16" hover-class="none" hover-stop-propagation="false">
+        <business-card options="{{options}}"></business-card>
+    </view>
+        <view class="py-12 px-24 rounded-16" hover-class="none" hover-stop-propagation="false">
+        <business-card options="{{options}}"></business-card>
+    </view>
+    <view class="position-fixed" style="bottom:60rpx;left:25rpx; z-index:1000" hover-class="none" hover-stop-propagation="false">
+        <van-button icon="add-o" color="#F63D24" class="add-pet" type="primary">添加宠物</van-button>
+    </view>
+</view>

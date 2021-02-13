@@ -1,4 +1,4 @@
-<view class="container bg-F7F8FA" hover-class="none" hover-stop-propagation="false">
+<view class="bg-F7F8FA" hover-class="none" hover-stop-propagation="false">
   <!-- 导航栏 -->
   <lg-app-header title="个人中心" backgroundColor="linear-gradient(30deg, #FF6565, #F51358)" tintColor="#FFFFFF" />
   <view class="user-info d-flex position-relative" hover-class="none" hover-stop-propagation="false">
@@ -32,6 +32,6 @@
           </view>
         </van-cell>
       </block>
-
   </view>
+  <van-button type="primary" color="#E7F3FC" round hairline block custom-style="width:550rpx;height:100rpx; color:#F63D24;margin-top:90rpx; margin-bottom:60rpx;font-size:32rpx;">退出登录</van-button>
 </view>

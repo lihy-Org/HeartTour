@@ -11,7 +11,7 @@ Page({
       {name:"大重九",src:'https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=3160107510,784197751&fm=26&gp=0.jpg'},
       {name:"天九王",src:'https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=3160107510,784197751&fm=26&gp=0.jpg'},
       {name:"二娃",src:'https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=3160107510,784197751&fm=26&gp=0.jpg'},
-      {name:"包鹏智",src:'https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=3160107510,784197751&fm=26&gp=0.jpg'},
+      {name:"包雨兮",src:'https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=3160107510,784197751&fm=26&gp=0.jpg'},
       {name:"李红耀",src:'https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=3160107510,784197751&fm=26&gp=0.jpg'},
       {name:"封宗鑫",src:'https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=3160107510,784197751&fm=26&gp=0.jpg'},
       {name:"陈林浩",src:'https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=3160107510,784197751&fm=26&gp=0.jpg'},
@@ -69,18 +69,13 @@ Page({
     for (var bukn = 0; bukn < name.length; bukn++) {
       var o = new Object()
       var ken = Pinyin.getSpell(name[bukn], function (charactor, spell) {
-        console.log(charactor, spell);
         return spell[1];
       });
       o.name = name[bukn]
       o.pinyin = ken.split(',').join('')
-      console.log(arr[bukn].src);
       o.src = arr[bukn].src
-      console.log(o);
       pinyinArray.push(o)
     }
-    console.log("pinyinArray")
-    console.log(pinyinArray)
     // pinyinArray = pinyinArray.sort(compare("pinyin"))
     let map = {
       title: '',
@@ -100,8 +95,6 @@ Page({
       })
     }
     )
-    console.log("map")
-    console.log(map)
     var turn = new Array()
     var letters = "*ABCDEFGHIJKLNMOPQRSTUVWXYZ".split('');
     for (var i = 1; i < letters.length; i++) {
@@ -113,14 +106,18 @@ Page({
         turn.push(obj)
       }
     }
-    console.log("trun")
-    console.log(turn)
     return turn;
   },
-  petName:function(){
-    wx.navigateTo({
-      url:'../add-pet/add-pet'
-    })
+  petName:function(e){
+    let petName = e.currentTarget.dataset.text;
+    let pages =  getCurrentPages();
+    let prevPage = pages[pages.length - 2];
+    prevPage.setData({
+      [`values.breed`] : petName
+    }) 
+    wx.navigateBack({
+      delta: 1
+    });
   },
   /**
    * 生命周期函数--监听页面加载
@@ -133,7 +130,6 @@ Page({
     indexData.forEach(element => {
       arr.push(element.title)
     }); 
-    console.log(indexData);
     this.setData({
       bbb:indexData,
       indexList:arr

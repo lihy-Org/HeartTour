@@ -1,0 +1,5 @@
+<!--pages/map/map.wxml-->
+
+<view class="" hover-class="none" hover-stop-propagation="false" style="width: 100%; height: 100%;">
+  <map id="map" longitude="104.06583470367431" latitude=" 30.65767157040648" markers="{{makers}}" scale="11" show-location style="width: 100%; height: 40%;"></map>
+</view>

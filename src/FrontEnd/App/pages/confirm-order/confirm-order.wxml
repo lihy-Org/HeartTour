@@ -1,0 +1,67 @@
+<!-- pages/confirm-order/confirm-order.wxml -->
+<view class="container bg-F7F8FA px-24 pt-8" style="height: calc(100vh - 166rpx);overflow:scroll;-webkit-overflow-scrolling : touch;padding-bottom: 20rpx;">
+    <view class="w-100 bg-FFFFFF rounded-16 mb-20 pb-10">
+        <view class="flex-between px-12 border-bottom " style="height:120rpx;">
+            <p class="f32 f-bold color-384359">成都·前海荔湾店</p>
+            <image class="" src="../../assets/images/phone.png" style="width:98rpx;height:98rpx;"></image>
+        </view>
+        <view class="px-12 py-40 border-bottom">
+            <image class="rounded-half mr-20" src="../../assets/images/shan.png" style="width:94rpx;height:94rpx;"></image>
+            <view class="d-inline-block" style="vertical-align: -47px">
+                <p class="d-flex flex-align-items">
+                    <span class="f32 f-bold color-384359 mr-10 mb-6">刘博杭</span>
+                    <image class="" src="../../assets/images/nv.png" style="width:24rpx;height:24rpx;"></image>
+                </p>
+                <p class="color-384359 f28 mb-14 d-block">中级美容师</p>
+                <p class="f24 color-384359 f-bold d-block">预约时间 2021-01-23 15:50:00</p>
+            </view>
+        </view>
+        <view class="px-12 border-bottom py-40">
+            <image class="rounded-half mr-20" src="../../assets/images/shan.png" style="width:94rpx;height:94rpx;"></image>
+            <view class="d-inline-block" style="vertical-align: -80px">
+                <p class="f32 f-bold color-384359 mb-26 d-block">迷你杜宾</p>
+                <p class="flex-between f28 f-bold color-384359 mb-12" style="width:550rpx;">
+                    <span>服务项目：洗护套餐</span>
+                    <span>¥45.00</span>
+                </p>
+                <p class="flex-between f28 f-bold color-384359 mb-16" style="width:550rpx;">
+                    <span>添加单项：共1项</span>
+                    <span>¥9.00</span>
+                </p>
+                <p class="d-block f24 f-bold mr-10" style="color:#CDD6E8;">刷牙 ¥9.00</p>
+            </view>
+        </view>
+        <van-cell custom-class="van-cell1" title-class="van-title1" title="优惠券" border="{{ false }}" is-link value="无可用优惠券" />
+    </view>
+    <view class="py-40 bg-FFFFFF rounded-16 mb-20">
+        <van-cell custom-class="van-cell2" title-class="van-title1" title="联系人" border="{{ false }}" is-link value="GikL 18086806214" />
+        <van-cell custom-class="van-cell2" title-class="van-title1" title="订单备注" border="{{ false }}" is-link value="未填写备注信息" />
+    </view>
+    <view class="px-12 pt-10 bg-FFFFFF rounded-16 mb-20 ">
+        <view class="border-bottom pt-20 pb-38 flex-between">
+            <span class="f32 f-bold color-384359">订单总价</span>
+            <span class="f28 f-bold color-384359">¥54</span>
+        </view>
+        <view class="pt-36 pb-36 flex-between">
+            <p></p>
+            <p>
+                <span class="f24 color-384359">微信付款：</span>
+                <span class="f24 f-bold color-384359">¥54</span>
+            </p>
+        </view>
+    </view>
+    <view class="px-12 py-24 bg-FFFFFF rounded-16 flex-between-top">
+        <image class="" src="../../assets/images/dengpao.png" style="width:34rpx;height:44rpx;"></image>
+        <span class="color-F63D24 f24 d-line-block" style="width:620rpx">
+            取消订单需要提前24小时，24小时内需要扣除10%的手续
+费请您确认爱宠是否有怀孕、发情、受伤、咬人等不适合服
+务的情况，下单前先与店内沟通哦~
+        </span>
+    </view>
+</view>
+<view class="position-fixed bg-FFFFFF w-100 flex-center" style="bottom:0; height:166rpx; left:0;">
+    <van-button type="primary" custom-style="width:700rpx; background:#4BC065;height:100rpx;border-radius:27rpx;" block>
+        <span class="f32 mx-10">支付</span>
+        <span class="f24">限时送粮饷540</span>
+    </van-button>
+</view>

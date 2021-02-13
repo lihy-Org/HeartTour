@@ -30,3 +30,7 @@
 .aaa:nth-child(2)>.van-cell{
   margin-bottom: 20rpx;
 }
+page{
+  background-color: #F7F8FA;
+  padding-bottom: 60rpx;
+}

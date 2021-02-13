@@ -1,21 +1,29 @@
 {
   "pages": [
-    "pages/mine/mine",
+    "pages/map/map",
+    "pages/address-management/address-management",
+    "pages/add-pet/add-pet",
     "pages/index/index",
+    "pages/my-pet/my-pet",
     "pages/pet/pet",
+    "pages/my-order/my-order",
+    "pages/confirm-order/confirm-order",
+    "pages/mine/mine",
     "pages/goods/goods",
-    "pages/rim/rim"
+    "pages/rim/rim",
+    "pages/select-variety/select-variety",
+    "pages/update-address/update-address"
+ 
   ],
   "window": {
-    "backgroundTextStyle": "light",
-    "navigationBarBackgroundColor": "#fff",
-    "navigationBarTitleText": "Weixin",
+    "backgroundTextStyle": "dark",
+    "navigationBarBackgroundColor": "#FFFFFF",
     "navigationBarTextStyle": "black"
   },
   "tabBar": {
     "color": "#cccccc",
     "selectedColor": "#F63D24",
-    "borderStyle": "white",
+    "borderStyle": "black",
     "list": [
       {
         "pagePath": "pages/index/index",
