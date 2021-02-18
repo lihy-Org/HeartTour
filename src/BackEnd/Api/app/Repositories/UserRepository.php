@@ -15,7 +15,7 @@ class UserRepository
         $ConfigRepository = new ConfigRepository();
         $user = null;
         if (isset($data->userId)) {
-            $user = user::find($data->userId);
+            $user = User::find($data->userId);
         }
         if (!$user) {
             try {
@@ -59,7 +59,7 @@ class UserRepository
                     'data' => '');
 
             } catch (\Exception $exception) {
-                dd($exception);
+                // dd($exception);
                 Db::rollback(); // 回滚事务
                 return array(
                     'status' => 500,

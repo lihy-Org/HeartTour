@@ -191,7 +191,7 @@
                 "tags": [
                     "总台管理系统-配置管理"
                 ],
-                "summary": "获取单个配置",
+                "summary": "获取配置",
                 "operationId": "App\\Http\\Controllers\\Admin\\ConfigController::getConfig",
                 "parameters": [
                     {
@@ -805,9 +805,9 @@
         "/api/admin/user/list": {
             "post": {
                 "tags": [
-                    "总台管理系统-用户管理"
+                    "总台管理系统-人员管理"
                 ],
-                "summary": "用户列表",
+                "summary": "人员列表",
                 "operationId": "App\\Http\\Controllers\\Admin\\UserController::GetList",
                 "parameters": [
                     {
@@ -924,9 +924,9 @@
         "/api/admin/user/addOrUpdate": {
             "post": {
                 "tags": [
-                    "总台管理系统-用户管理"
+                    "总台管理系统-人员管理"
                 ],
-                "summary": "新增或修改用户信息",
+                "summary": "新增或修改人员信息",
                 "operationId": "App\\Http\\Controllers\\Admin\\UserController::addOrUpdate",
                 "parameters": [
                     {
@@ -1056,9 +1056,9 @@
         "/api/admin/user/remove": {
             "post": {
                 "tags": [
-                    "总台管理系统-用户管理"
+                    "总台管理系统-人员管理"
                 ],
-                "summary": "删除用户",
+                "summary": "删除人员",
                 "operationId": "App\\Http\\Controllers\\Admin\\UserController::Remove",
                 "parameters": [
                     {
@@ -1126,6 +1126,468 @@
                                         "msg": {
                                             "type": "string",
                                             "example": "禁用/启用失败!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/user/SetStore": {
+            "post": {
+                "tags": [
+                    "总台管理系统-人员管理"
+                ],
+                "summary": "分配门店",
+                "operationId": "App\\Http\\Controllers\\Admin\\UserController::SetStore",
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "header",
+                        "description": "token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "storeId",
+                                    "userId"
+                                ],
+                                "properties": {
+                                    "userId": {
+                                        "description": "用户ID",
+                                        "type": "number",
+                                        "default": "10"
+                                    },
+                                    "storeId": {
+                                        "description": "门店ID",
+                                        "type": "number",
+                                        "default": "10"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "状态码",
+                                            "type": "number",
+                                            "example": "200"
+                                        },
+                                        "msg": {
+                                            "type": "string",
+                                            "example": "成功!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "失败",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "状态码",
+                                            "type": "number",
+                                            "example": "500"
+                                        },
+                                        "msg": {
+                                            "type": "string",
+                                            "example": "失败!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/user/SetManage": {
+            "post": {
+                "tags": [
+                    "总台管理系统-人员管理"
+                ],
+                "summary": "设置店长",
+                "operationId": "App\\Http\\Controllers\\Admin\\UserController::SetManage",
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "header",
+                        "description": "token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "userId"
+                                ],
+                                "properties": {
+                                    "userId": {
+                                        "description": "用户ID",
+                                        "type": "number",
+                                        "default": "10"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "状态码",
+                                            "type": "number",
+                                            "example": "200"
+                                        },
+                                        "msg": {
+                                            "type": "string",
+                                            "example": "成功!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "失败",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "状态码",
+                                            "type": "number",
+                                            "example": "500"
+                                        },
+                                        "msg": {
+                                            "type": "string",
+                                            "example": "失败!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/pet/addOrUpdate": {
+            "post": {
+                "tags": [
+                    "小程序-宠物"
+                ],
+                "summary": "新增或修改宠物",
+                "operationId": "App\\Http\\Controllers\\WechatUser\\PetController::AddOrUpdate",
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "header",
+                        "description": "token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "avatar",
+                                    "nickname",
+                                    "gender",
+                                    "varietyId"
+                                ],
+                                "properties": {
+                                    "petId": {
+                                        "description": "宠物id",
+                                        "type": "string",
+                                        "default": "dd"
+                                    },
+                                    "avatar": {
+                                        "description": "头像",
+                                        "type": "string",
+                                        "default": "dd"
+                                    },
+                                    "nickname": {
+                                        "description": "昵称",
+                                        "type": "string",
+                                        "default": "dd"
+                                    },
+                                    "gender": {
+                                        "description": "性别",
+                                        "type": "string",
+                                        "default": "dd"
+                                    },
+                                    "varietyId": {
+                                        "description": "品种编号",
+                                        "type": "string",
+                                        "default": "dd"
+                                    },
+                                    "birthday": {
+                                        "description": "生日",
+                                        "type": "string",
+                                        "default": "dd"
+                                    },
+                                    "color": {
+                                        "description": "毛色",
+                                        "type": "string",
+                                        "default": "dd"
+                                    },
+                                    "shoulderHeight": {
+                                        "description": "肩高",
+                                        "type": "string",
+                                        "default": "dd"
+                                    },
+                                    "is_sterilization": {
+                                        "description": "是否绝育，0：未绝育，1：已绝育",
+                                        "type": "int",
+                                        "default": "dd"
+                                    },
+                                    "remark": {
+                                        "description": "备注",
+                                        "type": "string",
+                                        "default": "dd"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "状态码",
+                                            "type": "number",
+                                            "example": "200"
+                                        },
+                                        "msg": {
+                                            "type": "string",
+                                            "example": "新增/修改成功!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "失败",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "状态码",
+                                            "type": "number",
+                                            "example": "500"
+                                        },
+                                        "msg": {
+                                            "type": "string",
+                                            "example": "修改信息失败!"
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "example": "错误信息"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/pet/list": {
+            "get": {
+                "tags": [
+                    "小程序-宠物"
+                ],
+                "summary": "获取宠物列表",
+                "operationId": "App\\Http\\Controllers\\WechatUser\\PetController::GetList",
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "header",
+                        "description": "token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "状态码",
+                                            "type": "number",
+                                            "example": "200"
+                                        },
+                                        "msg": {
+                                            "type": "string",
+                                            "example": "获取宠物列表成功!"
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "example": "[{'id':1,'avatar':'11','nickname':'11','breed':'11','gender':'11'}]"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/pet/{id}": {
+            "get": {
+                "tags": [
+                    "小程序-宠物"
+                ],
+                "summary": "获取宠物详细信息",
+                "operationId": "App\\Http\\Controllers\\WechatUser\\PetController::GetOne",
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "header",
+                        "description": "token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "petId",
+                        "in": "query",
+                        "description": "petId",
+                        "required": true,
+                        "schema": {
+                            "type": "int"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "状态码",
+                                            "type": "number",
+                                            "example": "200"
+                                        },
+                                        "msg": {
+                                            "type": "string",
+                                            "example": "获取宠物信息成功!"
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "example": "{'id':2,'avatar':'https:\\/\\/alicdn.imichong.com\\/pet\\/1597581562.png','nickname':'lucky','breed':'\\u96ea\\u7eb3\\u745e','gender':'\\u59b9\\u59b9','birthday':'2020-07-16','grade':'\\u5ba0\\u7269\\u7ea7','isSterilization':1}"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/pet/delete": {
+            "post": {
+                "tags": [
+                    "小程序-宠物"
+                ],
+                "summary": "删除宠物信息",
+                "operationId": "App\\Http\\Controllers\\WechatUser\\PetController::Delete",
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "header",
+                        "description": "token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "petId",
+                        "in": "query",
+                        "description": "petId",
+                        "required": true,
+                        "schema": {
+                            "type": "int"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "状态码",
+                                            "type": "number",
+                                            "example": "200"
+                                        },
+                                        "msg": {
+                                            "type": "string",
+                                            "example": "删除宠物信息成功!"
                                         }
                                     },
                                     "type": "object"
@@ -1314,7 +1776,7 @@
                 }
             }
         },
-        "/api/user/editphone": {
+        "/api/user/editPhone": {
             "post": {
                 "tags": [
                     "小程序-用户管理"

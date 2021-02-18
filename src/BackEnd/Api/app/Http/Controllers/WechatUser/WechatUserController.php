@@ -217,7 +217,7 @@ class WechatUserController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/api/user/editphone",
+     *     path="/api/user/editPhone",
      *     tags={"小程序-用户管理"},
      *     summary="修改手机",
      *     @OA\Parameter(name="token", in="header", @OA\Schema(type="string"), required=true, description="token"),

@@ -13,7 +13,7 @@ class WechatAppApi
         if (!$token) {
             return response()->json(array('status' => 401, 'msg' => 'no token'));
         }
-        $user = WechatUser::where('token', $token)->where('status', 0)->first();
+        $user = WechatUser::where('token', $token)->where('state', 0)->first();
         //没有用户
         if (!$user) {
             return response()->json(array('status' => 401, 'msg' => 'error token'));

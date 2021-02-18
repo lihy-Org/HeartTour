@@ -20,8 +20,8 @@ class UserController extends Controller
     /**
      * @OA\Post(
      *     path="/api/admin/user/list",
-     *     tags={"总台管理系统-用户管理"},
-     *     summary="用户列表",
+     *     tags={"总台管理系统-人员管理"},
+     *     summary="人员列表",
      *     @OA\Parameter(name="token", in="header", @OA\Schema(type="string"), required=true, description="token"),
      *     @OA\RequestBody(
      *     @OA\MediaType(
@@ -129,8 +129,8 @@ class UserController extends Controller
     /**
      * @OA\Post(
      *     path="/api/admin/user/addOrUpdate",
-     *     tags={"总台管理系统-用户管理"},
-     *     summary="新增或修改用户信息",
+     *     tags={"总台管理系统-人员管理"},
+     *     summary="新增或修改人员信息",
      *     @OA\Parameter(name="token", in="header", @OA\Schema(type="string"), required=true, description="token"),
      *     @OA\RequestBody(
      *     @OA\MediaType(
@@ -225,8 +225,8 @@ class UserController extends Controller
     /**
      * @OA\Post(
      *     path="/api/admin/user/remove",
-     *     tags={"总台管理系统-用户管理"},
-     *     summary="删除用户",
+     *     tags={"总台管理系统-人员管理"},
+     *     summary="删除人员",
      *     @OA\Parameter(name="token", in="header", @OA\Schema(type="string"), required=true, description="token"),
      *     @OA\RequestBody(
      *     @OA\MediaType(
@@ -284,7 +284,7 @@ class UserController extends Controller
     /**
      * @OA\Post(
      *     path="/api/admin/user/SetStore",
-     *     tags={"总台管理系统-用户管理"},
+     *     tags={"总台管理系统-人员管理"},
      *     summary="分配门店",
      *     @OA\Parameter(name="token", in="header", @OA\Schema(type="string"), required=true, description="token"),
      *     @OA\RequestBody(
@@ -363,9 +363,9 @@ class UserController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/api/admin/user/SetStoreManage",
-     *     tags={"总台管理系统-用户管理"},
-     *     summary="分配店长",
+     *     path="/api/admin/user/SetManage",
+     *     tags={"总台管理系统-人员管理"},
+     *     summary="设置店长",
      *     @OA\Parameter(name="token", in="header", @OA\Schema(type="string"), required=true, description="token"),
      *     @OA\RequestBody(
      *     @OA\MediaType(
@@ -414,7 +414,7 @@ class UserController extends Controller
      *       ),
      * )
      */
-    public function SetStoreManage(Request $request)
+    public function SetManage(Request $request)
     {
         $rules = [
             'userId' => ['required', Rule::exists('users', 'id')->where(function ($query) {
