@@ -100,7 +100,7 @@ class UserController extends Controller
         if ($validator->fails()) {
             return json_encode(array(
                 'status' => 500,
-                'msg' => '登录失败!',
+                'msg' => '验证失败!',
                 'data' => $validator->errors(),
             ));
         } else {
@@ -215,7 +215,7 @@ class UserController extends Controller
         if ($validator->fails()) {
             return json_encode(array(
                 'status' => 500,
-                'msg' => '添加信息失败!',
+                'msg' => '验证失败!',
                 'data' => $validator->errors(),
             ));
         }

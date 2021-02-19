@@ -7,15 +7,22 @@ use App\Models\WechatUser;
 use App\Repositories\CouponRepository;
 use App\Utilities\WXBizDataCrypt;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
+use App\Repositories\WechatUserRepository;
 use Illuminate\Support\Facades\Validator;
 
 class WechatUserController extends Controller
 {
+    protected $wechatUserRepository;
 
+    public function __construct(WechatUserRepository $_wechatUserRepository)
+    {
+        $this->wechatUserRepository = $_wechatUserRepository;
+    }
     /**
      * @OA\Post(
      *     path="/api/user/login",
-     *     tags={"小程序-用户管理"},
+     *     tags={"小程序-授权"},
      *     summary="登录",
      *      @OA\RequestBody(
      *     @OA\MediaType(
@@ -83,11 +90,13 @@ class WechatUserController extends Controller
                 'openid' => $weappOpenid,
                 'sessionkey' => $weixinSessionKey,               
                 'token' => $token,
+                'lastlogin'=>Carbon::now(),
             ]);
         };
         //如果注册过的，就更新下下面的信息
         $user->sessionkey = $weixinSessionKey;
         $user->token = $token;
+        $user->lastlogin = Carbon::now();
         // 更新用户数据
         $user->save();
         return json_encode(array(

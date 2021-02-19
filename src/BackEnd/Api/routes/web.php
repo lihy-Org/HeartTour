@@ -4,9 +4,11 @@ use App\Http\Controllers\Admin\AccountController as AdminAccountController;
 use App\Http\Controllers\Admin\ConfigController;
 use App\Http\Controllers\Admin\StoreController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\ComboController;
 use App\Http\Controllers\TestController;
 use App\Http\Controllers\WechatUser\PetController;
 use App\Http\Controllers\WechatUser\WechatUserController;
+use App\Http\Controllers\Admin\WechatUserController as AdminWechatUserController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/test', [TestController::class, 'Test']);
@@ -37,12 +39,20 @@ Route::prefix('api/admin')->middleware(['auth:sanctum', 'adminapi'])->group(func
     Route::post('/config/addOrUpdate', [ConfigController::class, 'addOrUpdate']);
     Route::post('/config/delete', [ConfigController::class, 'delete']);
 
-    //用户管理
+    //人员管理
     Route::post('/user/addOrUpdate', [UserController::class, 'addOrUpdate']);
     Route::post('/user/list', [UserController::class, 'GetList']);
     Route::post('/user/remove', [UserController::class, 'Remove']);
     Route::post('/user/setStore', [UserController::class, 'SetStore']);
     Route::post('/user/setStoreManage', [UserController::class, 'SetStoreManage']);
+    
+    //用户
+    Route::post('/wechat/list', [AdminWechatUserController::class, 'GetList']);
+    Route::post('/wechat/remove', [AdminWechatUserController::class, 'Remove']);
+    Route::post('/pet/list', [AdminWechatUserController::class, 'GetPetList']);
+
+    //套餐管理
+    Route::post('/combo/addOrUpdate', [ComboController::class, 'addOrUpdate']);
 });
 
 // --------------------------------小程序---------------------------------------------
@@ -53,7 +63,7 @@ Route::prefix('api')->middleware(['web', 'wechatapi'])->group(function () {
     Route::post('/user/edit', [WechatUserController::class, 'Edit']);
     Route::post('/user/editPhone', [WechatUserController::class, 'EditPhone']);
     //  Route::get('/user', 'WechatUser\WechatUserController@GetUserInfo');
-
+  
     //宠物
     Route::post('/pet/addOrUpdate', [PetController::class, 'AddOrUpdate']);
     Route::get('/pet/list', [PetController::class, 'GetList']);

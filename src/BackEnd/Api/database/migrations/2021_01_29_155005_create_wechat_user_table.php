@@ -28,6 +28,7 @@ class CreateWechatUserTable extends Migration
             $table->string('country')->nullable()->comment('区县'); 
             $table->string('address')->nullable()->comment('地址'); 
             $table->string('phone')->nullable()->comment('用户手机');
+            $table->string('lastlogin')->nullable()->comment('最后登录时间');
             $table->unsignedTinyInteger('state')->default(0)->comment('状态，0：正常，1：禁用 ');
             $table->timestamps();           
             $table->softDeletes();
