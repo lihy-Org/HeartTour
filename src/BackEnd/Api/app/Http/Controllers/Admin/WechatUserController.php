@@ -3,13 +3,9 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\WechatUser;
-use App\Repositories\CouponRepository;
-use App\Utilities\WXBizDataCrypt;
-use Illuminate\Http\Request;
-use Carbon\Carbon;
-use App\Repositories\WechatUserRepository;
 use App\Repositories\PetRepository;
+use App\Repositories\WechatUserRepository;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
 class WechatUserController extends Controller
@@ -17,13 +13,13 @@ class WechatUserController extends Controller
     protected $wechatUserRepository;
     protected $petRepository;
 
-    public function __construct(WechatUserRepository $_wechatUserRepository,PetRepository $_petRepository)
+    public function __construct(WechatUserRepository $_wechatUserRepository, PetRepository $_petRepository)
     {
         $this->wechatUserRepository = $_wechatUserRepository;
         $this->petRepository = $_petRepository;
     }
-     
-      /**
+
+    /**
      * @OA\Post(
      *     path="/api/admin/wechat/list",
      *     tags={"总台管理系统-用户管理"},
@@ -94,7 +90,7 @@ class WechatUserController extends Controller
      */
     public function GetList(Request $request)
     {
-        $rules = [           
+        $rules = [
             'gender' => ['string'],
             'searchKey' => ['string'],
             'pageSize' => ['integer', 'gt:0'],
@@ -109,14 +105,14 @@ class WechatUserController extends Controller
                 'data' => $validator->errors(),
             ));
         } else {
-            $data = $request->all();
+            $data = (object) $request->all();
             $takeNum = isset($data->pageSize) ? $data->pageSize : 10;
             $page = isset($data->page) ? $data->page : 1;
             $skipNum = ($page - 1) * $takeNum;
-            $users = $this->wechatUserRepository->GetList((object) $data);
+            $users = $this->wechatUserRepository->GetList($data);
             $total = $users->count();
             $list = $users->skip($skipNum)->take($takeNum)
-            ->selectRaw("*")->get();
+                ->selectRaw("*")->get();
             $pageTotal = $total / $takeNum;
             $result['pages']['total'] = is_int($pageTotal) ? ($pageTotal) : (floor($pageTotal) + 1);
             $result['pages']['pageNo'] = $page;
@@ -130,7 +126,7 @@ class WechatUserController extends Controller
             );
 
         }
-    }   
+    }
 
     /**
      * @OA\Post(

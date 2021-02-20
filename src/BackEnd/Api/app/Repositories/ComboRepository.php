@@ -2,9 +2,11 @@
 namespace App\Repositories;
 
 use App\Models\Combo;
+use App\Models\ComboStore;
 use App\Models\ComboVariety;
 use App\Models\GoodsBanner;
 use App\Models\GoodsDetail;
+use App\Models\Store;
 use App\Repositories\ConfigRepository;
 use Illuminate\Support\Facades\DB;
 
@@ -62,7 +64,7 @@ class ComboRepository
                     'data' => '');
 
             } catch (\Exception $exception) {
-                 dd($exception);
+                dd($exception);
                 Db::rollback(); // 回滚事务
                 return array(
                     'status' => 500,
@@ -71,7 +73,7 @@ class ComboRepository
             }
         } else {
             try {
-                DB::beginTransaction(); // 开启事务 
+                DB::beginTransaction(); // 开启事务
                 $combo->comboType = $data->comboType;
                 $combo->name = $data->name;
                 $combo->desc = $data->desc;
@@ -83,8 +85,8 @@ class ComboRepository
                 ComboVariety::where('cid', $combo->id)->delete();
                 GoodsBanner::where('gid', $combo->id)->delete();
                 GoodsDetail::where('gid', $combo->id)->delete();
-                 //保存套餐适配品种
-                 if (isset($data->varietyIds)) {
+                //保存套餐适配品种
+                if (isset($data->varietyIds)) {
                     foreach ($data->varietyIds as $v) {
                         $variety = $ConfigRepository->GetOneById($v);
                         if (!$variety) {
@@ -122,90 +124,81 @@ class ComboRepository
 
     public function GetList($data)
     {
-        $users = User::where('state', 0)->whereNotIn('type', [0, 1])->orderBy('created_at');
+        $combo = Combo::orderBy('created_at');
         if (isset($data->searchKey)) {
-            $users = $users->where(function ($query) use ($data) {
+            $combo = $combo->where(function ($query) use ($data) {
                 $query->where('name', 'like', '%' . $data->searchKey . '%')
-                    ->orWhere('phone', 'like', '%' . $data->searchKey . '%');
+                    ->orWhere('desc', 'like', '%' . $data->searchKey . '%');
             });
         }
+        if (isset($data->state)) {
+            $combo = $combo->where('state', $data->state);
+        }
+        if (isset($data->comboType)) {
+            $combo = $combo->where('comboType', $data->comboType);
+        }
         if (isset($data->storeId)) {
-            $users = $users->where('storeId', $data->storeId);
+            $combo = $combo->whereIn('id', function ($query) use ($data) {
+                $query->select('cid')
+                    ->from('comboStores')
+                    ->where('storeId', $data->storeId);
+            });
         }
-        if (isset($data->postId)) {
-            $users = $users->where('postId', $data->postId);
+        if (isset($data->varietyId)) {
+            $combo = $combo->whereIn('id', function ($query) use ($data) {
+                $query->select('cid')
+                    ->from('comboVarieties')
+                    ->where('varietyId', $data->varietyId);
+            });
         }
-        if (isset($data->gender)) {
-            $users = $users->where('gender', $data->gender);
-        }
-        return $users;
+        return $combo;
     }
 
-    public function Remove($userId)
+    public function Remove($comboId)
     {
-        $user = User::find($userId);
-        if ($user) {
-            $user->state = 1;
-            $user->save();
-            UserTitle::where('uid', $userId)->delete();
+        $combo = Combo::find($comboId);
+        if ($combo) {
+            $combo->state = $combo->state == 1 ? 0 : 1;
+            $combo->save();
             return array(
                 'status' => 200,
-                'msg' => '删除成功!',
+                'msg' => '操作成功!',
                 'data' => '');
         }
         return array(
             'status' => 500,
-            'msg' => '删除失败,找不到该人员!',
+            'msg' => '操作失败,找不到该套餐!',
             'data' => '');
 
     }
 
     public function SetStore($data)
     {
-        try {
-            DB::beginTransaction(); // 开启事务
-            $store = Store::find($data->storeId);
-            $user = User::find($data->userId);
-            $user->storeId = $store->id;
-            $user->store = $store->name;
-            $user->save();
-            Db::commit(); // 提交事务
-            return array(
-                'status' => 200,
-                'msg' => '设置成功!',
-                'data' => '');
-        } catch (\Exception $ex) {
-            Db::rollback(); // 回滚事务
-            return array(
-                'status' => 500,
-                'msg' => '失败!' . $ex->getMessage(),
-                'data' => '');
-        }
-    }
 
-    public function SetStoreManage($data)
-    {
         try {
+            $combo = Combo::find($data->comboId);
             DB::beginTransaction(); // 开启事务
-            $user = User::find($data->userId);
-            $store = Store::find($user->storeId);
-            //禁用此前的店长
-            $dUser = User::where('storeId', $user->storeId)->where('type', 2)->get();
-            foreach ($dUser as $v) {
-                $v->type = 3;
-                $v->save();
+            ComboStore::where('cid', $data->comboId)->delete();
+            if (isset($data->storeIds)) {
+                foreach (array_unique($data->storeIds) as $v) {
+                    $store = Store::find($v);
+                    if (!$store) {
+                        Db::rollback(); // 回滚事务
+                        return array(
+                            'status' => 500,
+                            'msg' => '无ID:' . $v . '的门店信息!',
+                            'data' => '');
+                    }
+                    ComboStore::create(['cid' => $combo->id, 'cname' => $combo->name, 'storeId' => $store->id, 'storeName' => $store->name]);
+                }
             }
-            $user->type = 2;
-            $user->save();
-            $store->shopManagerId = $user->id;
-            $store->shopManager = $user->name;
-            $store->save();
             Db::commit(); // 提交事务
             return array(
                 'status' => 200,
                 'msg' => '设置成功!',
                 'data' => '');
         } catch (\Exception $ex) {
+            dd($ex);
             Db::rollback(); // 回滚事务
             return array(
                 'status' => 500,

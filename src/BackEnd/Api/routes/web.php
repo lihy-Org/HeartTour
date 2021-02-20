@@ -1,14 +1,14 @@
 <?php
 
 use App\Http\Controllers\Admin\AccountController as AdminAccountController;
+use App\Http\Controllers\Admin\ComboController;
 use App\Http\Controllers\Admin\ConfigController;
 use App\Http\Controllers\Admin\StoreController;
 use App\Http\Controllers\Admin\UserController;
-use App\Http\Controllers\Admin\ComboController;
+use App\Http\Controllers\Admin\WechatUserController as AdminWechatUserController;
 use App\Http\Controllers\TestController;
 use App\Http\Controllers\WechatUser\PetController;
 use App\Http\Controllers\WechatUser\WechatUserController;
-use App\Http\Controllers\Admin\WechatUserController as AdminWechatUserController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/test', [TestController::class, 'Test']);
@@ -30,14 +30,14 @@ Route::post('api/admin/GetVerifCode', [AdminAccountController::class, 'GetVerifC
 
 Route::prefix('api/admin')->middleware(['auth:sanctum', 'adminapi'])->group(function () {
     //门店管理
-    Route::post('/store/list', [StoreController::class, 'list']);
+    Route::post('/store/list', [StoreController::class, 'GetList']);
     Route::post('/store/addOrUpdate', [StoreController::class, 'addOrUpdate']);
     Route::post('/store/switch', [StoreController::class, 'switch']);
 
     //配置
     Route::get('/config/{type}/{key?}', [ConfigController::class, 'getConfig']);
     Route::post('/config/addOrUpdate', [ConfigController::class, 'addOrUpdate']);
-    Route::post('/config/delete', [ConfigController::class, 'delete']);
+    Route::post('/config/remove', [ConfigController::class, 'Remove']);
 
     //人员管理
     Route::post('/user/addOrUpdate', [UserController::class, 'addOrUpdate']);
@@ -45,14 +45,17 @@ Route::prefix('api/admin')->middleware(['auth:sanctum', 'adminapi'])->group(func
     Route::post('/user/remove', [UserController::class, 'Remove']);
     Route::post('/user/setStore', [UserController::class, 'SetStore']);
     Route::post('/user/setStoreManage', [UserController::class, 'SetStoreManage']);
-    
+
     //用户
     Route::post('/wechat/list', [AdminWechatUserController::class, 'GetList']);
     Route::post('/wechat/remove', [AdminWechatUserController::class, 'Remove']);
     Route::post('/pet/list', [AdminWechatUserController::class, 'GetPetList']);
 
     //套餐管理
+    Route::post('/combo/list', [ComboController::class, 'GetList']);
     Route::post('/combo/addOrUpdate', [ComboController::class, 'addOrUpdate']);
+    Route::post('/combo/remove', [ComboController::class, 'Remove']);
+    Route::post('/combo/setStore', [ComboController::class, 'SetStore']);
 });
 
 // --------------------------------小程序---------------------------------------------
@@ -63,11 +66,17 @@ Route::prefix('api')->middleware(['web', 'wechatapi'])->group(function () {
     Route::post('/user/edit', [WechatUserController::class, 'Edit']);
     Route::post('/user/editPhone', [WechatUserController::class, 'EditPhone']);
     //  Route::get('/user', 'WechatUser\WechatUserController@GetUserInfo');
-  
+
     //宠物
     Route::post('/pet/addOrUpdate', [PetController::class, 'AddOrUpdate']);
     Route::get('/pet/list', [PetController::class, 'GetList']);
     Route::get('/pet/{id}', [PetController::class, 'GetOne']);
-    Route::post('/pet/delete', [PetController::class, 'Delete']);
+    Route::post('/pet/remove', [PetController::class, 'Remove']);
+
+    //获取门店信息
+    Route::post('/store/list', [StoreController::class, 'GetList']);
+   
+    //套餐管理
+    Route::post('/combo/list', [ComboController::class, 'GetList']);
 
 });

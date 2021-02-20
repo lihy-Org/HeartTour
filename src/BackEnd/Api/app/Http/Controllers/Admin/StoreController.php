@@ -74,8 +74,9 @@ class StoreController extends Controller
      *         )
      *     )
      * )
-     */
-    function list(Request $request) {
+     */   
+    public function GetList(Request $request)
+    {
         $rules = [
             'pageSize' => ['integer', 'gt:0'],
             'page' => ['integer', 'gt:0'],

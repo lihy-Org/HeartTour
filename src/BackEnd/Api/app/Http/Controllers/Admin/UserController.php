@@ -104,11 +104,11 @@ class UserController extends Controller
                 'data' => $validator->errors(),
             ));
         } else {
-            $data = $request->all();
+            $data = (object) $request->all();
             $takeNum = isset($data->pageSize) ? $data->pageSize : 10;
             $page = isset($data->page) ? $data->page : 1;
             $skipNum = ($page - 1) * $takeNum;
-            $users = $this->userRepository->GetList((object) $data);
+            $users = $this->userRepository->GetList($data);
             $total = $users->count();
             $list = $users->skip($skipNum)->take($takeNum)->get();
             $pageTotal = $total / $takeNum;
@@ -280,7 +280,6 @@ class UserController extends Controller
         return json_encode($this->userRepository->Remove($request->userId));
     }
 
-
     /**
      * @OA\Post(
      *     path="/api/admin/user/SetStore",
@@ -418,7 +417,7 @@ class UserController extends Controller
     {
         $rules = [
             'userId' => ['required', Rule::exists('users', 'id')->where(function ($query) {
-                $query->where('state', 0)->whereNotIn('type', [0, 1])->where('storeId','!=', '')->whereNotNull('storeId');
+                $query->where('state', 0)->whereNotIn('type', [0, 1])->where('storeId', '!=', '')->whereNotNull('storeId');
             })],
         ];
         $messages = [

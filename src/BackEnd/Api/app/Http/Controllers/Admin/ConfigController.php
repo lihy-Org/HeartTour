@@ -265,7 +265,7 @@ class ConfigController extends Controller
      *     )
      * )
      */
-    public function delete(Request $request)
+    public function Remove(Request $request)
     {
         $Config = Config::where('id', $request->configId)->first();
         if ($Config) {

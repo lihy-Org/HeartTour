@@ -16,7 +16,7 @@ class PetController extends Controller
     {
         $this->petRepository = $_petRepository;
     }
-    
+
     /**
      * @OA\Post(
      *     path="/api/pet/addOrUpdate",
@@ -37,7 +37,7 @@ class PetController extends Controller
      *           @OA\Property(description="肩高", property="shoulderHeight", type="string", default="dd"),
      *           @OA\Property(description="是否绝育，0：未绝育，1：已绝育", property="is_sterilization", type="int", default="dd"),
      *           @OA\Property(description="备注", property="remark", type="string", default="dd"),
-     *           required={"avatar","nickname","gender","varietyId"})        
+     *           required={"avatar","nickname","gender","varietyId"})
      *       )
      *     ),
      *     @OA\Response(
@@ -148,7 +148,9 @@ class PetController extends Controller
     public function GetList(Request $request)
     {
         // ->select('id as petId', 'avatar', 'nickname', 'breed', 'gender')->get()->toArray();
-        $pets = $this->petRepository->GetList((object) $request->all())->get();
+        $data = (object) $request->all();
+        $data->wcid = $request->user->id;
+        $pets = $this->petRepository->GetList()->get();
         return json_encode(
             array(
                 'status' => 200,
@@ -205,7 +207,7 @@ class PetController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/api/pet/delete",
+     *     path="/api/pet/remove",
      *     tags={"小程序-宠物"},
      *     summary="删除宠物信息",
      *     @OA\Parameter(name="token", in="header", @OA\Schema(type="string"), required=true, description="token"),
@@ -230,7 +232,7 @@ class PetController extends Controller
      *    )
      * )
      */
-    public function Delete(Request $request)
+    public function Remove(Request $request)
     {
         $pet = Pet::where('wcid', $request->user->id)->where('id', $request->petId)->first();
         if ($pet) {
