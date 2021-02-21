@@ -156,8 +156,10 @@ const Appointment: FC = () => {
           case 0:
             return '已预约';
           case 1:
-            return '已过期';
+            return '进行中';
           case 2:
+            return '待接取';
+          case 3:
             return '已完成';
         }
       },
@@ -244,8 +246,8 @@ const Appointment: FC = () => {
             {/* 限制只能选取当日之前的日期 */}
             <RangePicker />
           </Form.Item>
-          {/* 店铺 */}
-          <Form.Item label="店铺：" name="store">
+          {/* 门店 */}
+          <Form.Item label="门店：" name="store">
             <StoreSelect />
           </Form.Item>
           {/* 搜索 */}

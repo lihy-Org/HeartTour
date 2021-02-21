@@ -4,7 +4,10 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Utilities\SmsSeveice;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Validator;
 
 class AccountController extends Controller
@@ -14,7 +17,7 @@ class AccountController extends Controller
      *     version="1.0",
      *     title="心之旅"
      * )
-     */
+     */ 
 
     /**
      * @OA\Post(
@@ -82,6 +85,7 @@ class AccountController extends Controller
      */
     public function Login(Request $request)
     {
+
         $rules = [
             'phone' => ['required', 'regex:/^((13[0-9])|(14[5,7])|(15[0-3,5-9])|(17[0,3,5-8])|(18[0-9])|166|198|199)\d{8}$/'],
             'code' => ['required', 'string'],
@@ -101,34 +105,36 @@ class AccountController extends Controller
         } else {
             $code = $request['code'];
             $phone = $request['phone'];
-            if (Cache::has($phone . '_code')) {
-                $value = Cache::get($phone . '_code');
-                $values = explode(',', $value);
-                $date = Carbon::parse($values[1])->addMinutes(10);
-                if (Carbon::now()->gte($date)) {
-                    return array(
-                        'code' => 500,
-                        'msg' => '验证码超过10分钟已失效，请重新获取！',
-                        'data' => '',
-                    );
-                } else {
-                    if ($code != $values[0]) {
-                        return array(
-                            'code' => 500,
-                            'msg' => '验证码错误！',
-                            'data' => '',
-                        );
-                    }
-                }
-            } else {
-                return array(
-                    'code' => 500,
-                    'msg' => '验证码已失效!',
-                    'data' => '',
-                );
-            }
-            $user = User::where('phone', $phone)->first();
-            if (!$user || $user->status == 0) {
+            // if (Cache::has($phone . '_code')) {
+            //     $value = Cache::get($phone . '_code');
+            //     $values = explode(',', $value);
+            //     $date = Carbon::parse($values[1])->addMinutes(10);
+            //     if (Carbon::now()->gte($date)) {
+            //         return array(
+            //             'code' => 500,
+            //             'msg' => '验证码超过10分钟已失效，请重新获取！',
+            //             'data' => '',
+            //         );
+            //     } else {
+            //         if ($code != $values[0]) {
+            //             return array(
+            //                 'code' => 500,
+            //                 'msg' => '验证码错误！',
+            //                 'data' => '',
+            //             );
+            //         }
+            //     }
+            // } else {
+            //     return array(
+            //         'code' => 500,
+            //         'msg' => '验证码已失效!',
+            //         'data' => '',
+            //     );
+            // }
+            $user = User::where('phone', $phone)->where(function($query){
+                $query->where('type', 1)->orWhere('type', 0);
+            })->where('state', 0)->first();
+            if (!$user) {
                 return json_encode(
                     array(
                         'status' => 500,
@@ -140,7 +146,7 @@ class AccountController extends Controller
                 array(
                     'status' => 200,
                     'msg' => '登录成功!',
-                    'data' => $user->createToken($request->username)->plainTextToken)
+                    'data' => $user->createToken($user->id)->plainTextToken)
             );
 
         }

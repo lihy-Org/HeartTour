@@ -9,6 +9,7 @@
     "license": "MIT",
     "require": {
         "php": "^7.3|^8.0",
+        "alibabacloud/client": "^1.5",
         "darkaonline/l5-swagger": "^8.0",
         "fideloper/proxy": "^4.4",
         "fruitcake/laravel-cors": "^2.0",
@@ -16,7 +17,8 @@
         "laravel/framework": "^8.12",
         "laravel/sanctum": "^2.8",
         "laravel/tinker": "^2.5",
-        "overtrue/laravel-wechat": "^6.0"
+        "overtrue/laravel-wechat": "^6.0",
+        "webpatser/laravel-uuid": "^3.0"
     },
     "require-dev": {
         "facade/ignition": "^2.5",

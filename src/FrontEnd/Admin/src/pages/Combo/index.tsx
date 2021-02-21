@@ -1,7 +1,7 @@
 /*
  * @Author: Li-HONGYAO
  * @Date: 2021-01-18 11:15:25
- * @LastEditTime: 2021-01-31 13:29:35
+ * @LastEditTime: 2021-02-15 17:36:27
  * @LastEditors: Li-HONGYAO
  * @Description:
  * @FilePath: /Admin/src/pages/Combo/index.tsx
@@ -74,15 +74,12 @@ const layout = {
 };
 
 const stores = [
-  { id: 1, store: '九里晴川店' },
-  { id: 2, store: '名著司南店' },
-  { id: 3, store: '蒂凡尼店' },
-  { id: 4, store: '怡馨家园店' },
-  { id: 5, store: '大城际店' },
-  { id: 6, store: '未来方舟店' },
-  { id: 7, store: '中德英伦·联邦店' },
-  { id: 8, store: '孵化园店' },
-  { id: 9, store: '环球中心店' },
+  { id: 1, store: '李鸿耀' },
+  { id: 2, store: '郑云龙' },
+  { id: 3, store: '苟玉梅' },
+  { id: 4, store: '陈林浩' },
+  { id: 5, store: '王剑锋' },
+  { id: 6, store: '余惠勤' }
 ];
 
 const { Option } = Select;
@@ -223,7 +220,7 @@ const Combo: FC = () => {
               style={{width: 80}}
               disabled={record.status !== 1}
             >
-              分配门店
+              分配技师
             </Button>
           </Space>
           <Space size="small">

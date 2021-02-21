@@ -11,8 +11,11 @@ class TestController extends Controller
 
     public function Test(Request $request)
     {
-        Store::create(['title'=>'xxx']);
-        return json_encode(Store::all());
+        $data=$request->all();
+        echo json_encode($data);
+        $obj=(object)$data;
+        echo $obj->id;
+        //return json_encode(Store::all());
 
     }
 

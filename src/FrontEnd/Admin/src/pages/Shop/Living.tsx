@@ -1,7 +1,7 @@
 /*
  * @Author: Li-HONGYAO
  * @Date: 2021-01-30 22:07:01
- * @LastEditTime: 2021-02-01 19:58:14
+ * @LastEditTime: 2021-02-02 10:36:13
  * @LastEditors: Li-HONGYAO
  * @Description:
  * @FilePath: /Admin/src/pages/Shop/Living.tsx
@@ -182,39 +182,35 @@ const Living: FC = () => {
       render: (record) => `${record}cm`,
     },
     {
-      width: 270,
+      width: 210  ,
       title: '操作',
       key: 'action',
       render: (record: ColumnsType) => (
-        <>
-          <Space size="small" style={{ marginBottom: 8 }}>
-            <Button
-              disabled={record.status === 2}
-              type="primary"
-              size="small"
-              onClick={() => setModalVisible(true)}
-            >
-              详情/编辑
-            </Button>
-            <Button
-              disabled={record.status !== 0}
-              type="primary"
-              size="small"
-              style={{ width: 80 }}
-            >
-              上架
-            </Button>
-            <Button
-              disabled={record.status !== 1}
-              type="primary"
-              size="small"
-              style={{ width: 80 }}
-              danger
-            >
-              下架
-            </Button>
-          </Space>
-        </>
+        <Space size="small" >
+          <Button
+            disabled={record.status === 2}
+            type="primary"
+            size="small"
+            onClick={() => setModalVisible(true)}
+          >
+            详情/编辑
+          </Button>
+          <Button
+            disabled={record.status !== 0}
+            type="primary"
+            size="small"
+          >
+            上架
+          </Button>
+          <Button
+            disabled={record.status !== 1}
+            type="primary"
+            size="small"
+            danger
+          >
+            下架
+          </Button>
+        </Space>
       ),
     },
   ];

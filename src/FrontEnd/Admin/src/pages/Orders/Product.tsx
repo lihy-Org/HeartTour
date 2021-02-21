@@ -1,7 +1,7 @@
 /*
  * @Author: Li-HONGYAO
  * @Date: 2021-01-30 22:07:01
- * @LastEditTime: 2021-02-01 20:50:36
+ * @LastEditTime: 2021-02-01 21:35:05
  * @LastEditors: Li-HONGYAO
  * @Description:
  * @FilePath: /Admin/src/pages/Orders/Product.tsx
@@ -173,14 +173,7 @@ const Product: FC = () => {
             }))
           }
         >
-          <Form.Item label="订单类型：" name="shopType">
-            <Select style={{ width: 70 }}>
-              <Option value={0}>产品</Option>
-              <Option value={1}>周边</Option>
-              <Option value={2}>活体</Option>
-            </Select>
-          </Form.Item>
-          <Form.Item label="状态：" name="status">
+          <Form.Item label="订单状态：" name="status">
             <Select style={{ width: 85 }}>
               <Option value={0}>待支付</Option>
               <Option value={1}>待配送</Option>

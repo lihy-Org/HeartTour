@@ -1,7 +1,7 @@
 /*
  * @Author: Li-HONGYAO
  * @Date: 2021-01-30 22:07:01
- * @LastEditTime: 2021-02-01 20:08:25
+ * @LastEditTime: 2021-02-01 21:36:46
  * @LastEditors: Li-HONGYAO
  * @Description:
  * @FilePath: /Admin/src/pages/Orders/Living.tsx
@@ -27,7 +27,7 @@ const { Option } = Select;
 const { RangePicker } = DatePicker;
 
 type FilterParamsType = {
-  status: number /** 订单状态 0-待支付 1-待配送 2-配送中 3-待领取 4-已完成 5-已退款  */;
+  status: number /** 订单状态 0-待支付 3-待领取 4-已完成 5-已退款  */;
   time?: any[] /** 预约时间 */;
   searchKey?: string /** 搜索关键字 */;
   shippingMethod?: number /** 配送方式 0-快递 1-自提 */;
@@ -36,15 +36,15 @@ type FilterParamsType = {
 // 列表数据类型
 type ColumnsType = {
   id: string /** 订单id */;
-  status: number /** 订单状态 0-待支付 1-待配送 2-配送中 3-待领取 4-已完成 5-已退款  */;
+  number: string; /** 活体编号 */
+  type: number; /** 活体类型 0-猫猫 1-狗狗*/
+  status: number /** 订单状态 0-待支付 3-待领取 4-已完成 5-已退款  */;
   time: string /** 下单时间 */;
   userName: string /** 用户名 */;
   phone: string /** 手机号 */;
-  goodsName: string /** 商品名称 */;
-  goodsSpecifications: string /** 商品规格 */;
+  varieties: string /** 活体品种 */;
   nums: number /** 购买数量 */;
   orderAmount: number /** 订单金额 */;
-  shippingMethod: number /** 配送方式 0-快递 1-自提 */;
 };
 
 const Living: FC = () => {
@@ -70,16 +70,16 @@ const Living: FC = () => {
     const tempArr: ColumnsType[] = [];
     for (let i = 0; i < 88; i++) {
       tempArr.push({
-        id: i + '',
+        id: 'NO.MJS123832' + i,
+        number: 'NO.123' + i,
         status: page.filters.status,
         time: '2021/01/23 15:30',
         userName: '郑云龙',
         phone: '17398888669',
-        goodsName: '狗粮',
-        goodsSpecifications: '1.5kg/袋',
+        varieties: '雪纳瑞',
         orderAmount: 580,
         nums: 2,
-        shippingMethod: i % 5 === 0 ? 0 : 1,
+        type: 1
       });
     }
     setTimeout(() => {
@@ -95,6 +95,7 @@ const Living: FC = () => {
   // render
   const columns: ColumnProps<ColumnsType>[] = [
     { title: '订单ID', dataIndex: 'id' },
+    { title: '下单用户', key: 'user', render: (record: ColumnsType) => `${record.userName} ${record.phone}`  },
     {
       title: '订单状态',
       dataIndex: 'status',
@@ -102,10 +103,6 @@ const Living: FC = () => {
         switch (status) {
           case 0:
             return '待支付';
-          case 1:
-            return '待配送';
-          case 2:
-            return '配送中';
           case 3:
             return '待领取';
           case 4:
@@ -116,22 +113,14 @@ const Living: FC = () => {
       },
     },
     { title: '下单时间', dataIndex: 'time' },
-    { title: '用户名称', dataIndex: 'userName' },
-    { title: '用户手机号', dataIndex: 'phone' },
-    { title: '商品名称', dataIndex: 'goodsName' },
+    { title: '活体编号', dataIndex: 'number' },
+    { title: '活体类型', dataIndex: 'type', render: (record: number) => record === 1 ? '猫猫' : '狗狗' },
+    
+    { title: '活体品种', dataIndex: 'varieties' },
     {
-      title: '商品规格',
-      dataIndex: 'goodsSpecifications'
-    },
-    {
-      title: '订单总额',
+      title: '订单金额',
       dataIndex: 'orderAmount',
       render: (record: number) => record.toFixed(2),
-    },
-    {
-      title: '配送方式',
-      dataIndex: 'shippingMethod',
-      render: (record: number) => (record === 0 ? '快递' : '自提'),
     },
     {
       width: 145,
@@ -173,30 +162,15 @@ const Living: FC = () => {
             }))
           }
         >
-          <Form.Item label="订单类型：" name="shopType">
-            <Select style={{ width: 70 }}>
-              <Option value={0}>产品</Option>
-              <Option value={1}>周边</Option>
-              <Option value={2}>活体</Option>
-            </Select>
-          </Form.Item>
-          <Form.Item label="状态：" name="status">
+          <Form.Item label="订单状态：" name="status">
             <Select style={{ width: 85 }}>
               <Option value={0}>待支付</Option>
-              <Option value={1}>待配送</Option>
-              <Option value={2}>配送中</Option>
               <Option value={3}>待领取</Option>
               <Option value={4}>已完成</Option>
               <Option value={5}>已退款</Option>
             </Select>
           </Form.Item>
-          <Form.Item label="配送方式：" name="shippingMethod">
-            <Select style={{ width: 70 }} placeholder="全部" allowClear>
-              <Option value={0}>快递</Option>
-              <Option value={1}>自提</Option>
-            </Select>
-          </Form.Item>
-          <Form.Item label="时间：" name="date">
+          <Form.Item label="下单时间：" name="date">
             {/* 限制只能选取当日之前的日期 */}
             <RangePicker
               disabledDate={(current) =>

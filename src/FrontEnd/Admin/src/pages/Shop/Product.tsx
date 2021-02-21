@@ -1,7 +1,7 @@
 /*
  * @Author: Li-HONGYAO
  * @Date: 2021-01-30 22:07:01
- * @LastEditTime: 2021-02-01 20:03:43
+ * @LastEditTime: 2021-02-02 10:45:41
  * @LastEditors: Li-HONGYAO
  * @Description:
  * @FilePath: /Admin/src/pages/Shop/Product.tsx
@@ -143,51 +143,52 @@ const Product: FC = () => {
       },
     },
     { title: '商品名称', dataIndex: 'goodsName' },
-    { title: '商品类型', dataIndex: 'category' },
+    { title: '商品描述', dataIndex: 'desc' },
+    { title: '所属分类', dataIndex: 'category' },
+    {
+      title: '原价',
+      dataIndex: 'originPrice',
+      render: (record: number) => record.toFixed(2),
+    },
     {
       title: '售价',
       dataIndex: 'salePrice',
       render: (record: number) => record.toFixed(2),
     },
-    { title: '销量', dataIndex: 'sales' },
+    {
+      title: '运费',
+      dataIndex: 'freight',
+      render: (record: number) => record.toFixed(2),
+    },
     { title: '库存', dataIndex: 'stock' },
     { title: '规格', dataIndex: 'specifications' },
+    { title: '销量', dataIndex: 'sales' },
     {
-      width: 185,
+      width: 210,
       title: '操作',
       key: 'action',
       render: (record: ColumnsType) => (
-        <>
-          <Space size="small" style={{ marginBottom: 8 }}>
-            <Button
-              disabled={record.status === 2}
-              type="primary"
-              size="small"
-              onClick={() => setModalVisible(true)}
-            >
-              详情/编辑
-            </Button>
-          </Space>
-          <Space size="small" style={{ marginBottom: 8 }}>
-            <Button
-              disabled={record.status !== 0}
-              type="primary"
-              size="small"
-              style={{ width: 80 }}
-            >
-              上架
-            </Button>
-            <Button
-              disabled={record.status !== 1}
-              type="primary"
-              size="small"
-              style={{ width: 80 }}
-              danger
-            >
-              下架
-            </Button>
-          </Space>
-        </>
+        <Space size="small">
+          <Button
+            disabled={record.status === 2}
+            type="primary"
+            size="small"
+            onClick={() => setModalVisible(true)}
+          >
+            详情/编辑
+          </Button>
+          <Button disabled={record.status !== 0} type="primary" size="small">
+            上架
+          </Button>
+          <Button
+            disabled={record.status !== 1}
+            type="primary"
+            size="small"
+            danger
+          >
+            下架
+          </Button>
+        </Space>
       ),
     },
   ];
@@ -221,6 +222,12 @@ const Product: FC = () => {
             }))
           }
         >
+          <Form.Item label="分类：" name="category">
+            <Select placeholder="全部" style={{ width: 85 }} allowClear>
+              <Option value={0}>狗粮</Option>
+              <Option value={1}>零食</Option>
+            </Select>
+          </Form.Item>
           <Form.Item label="上架状态：" name="status">
             <Select style={{ width: 85 }}>
               <Option value={0}>待上架</Option>
@@ -228,16 +235,11 @@ const Product: FC = () => {
               <Option value={2}>已下架</Option>
             </Select>
           </Form.Item>
-          <Form.Item label="商品类型：" name="category">
-            <Select placeholder="全部" style={{ width: 85 }} allowClear>
-              <Option value={0}>狗粮</Option>
-              <Option value={1}>零食</Option>
-            </Select>
-          </Form.Item>
+          
           {/* 搜索 */}
           <Form.Item name="searchKey">
             <Input
-              placeholder="下单用户名/手机号"
+              placeholder="商品名称"
               style={{ width: 180 }}
               allowClear
               size="middle"

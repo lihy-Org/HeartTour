@@ -1,3 +1,7 @@
 {
-  "usingComponents": {}
+  "navigationStyle": "custom",
+  "usingComponents": {
+    "van-cell":"../../miniprogram_npm/@vant/weapp/cell/",
+    "lg-app-header": "../../components/@lgs/app-header/index"
+  }
 }
