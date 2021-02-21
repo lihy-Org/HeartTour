@@ -1,7 +1,7 @@
 /*
  * @Author: Li-HONGYAO
  * @Date: 2021-01-19 17:48:53
- * @LastEditTime: 2021-01-25 22:34:16
+ * @LastEditTime: 2021-01-29 10:32:56
  * @LastEditors: Li-HONGYAO
  * @Description:
  * @FilePath: /Admin/src/components/StoreSelect/index.tsx
@@ -38,11 +38,10 @@ const StoreSelect: FC<IProps> = (props) => {
     <Select
       allowClear
       style={{width: 120}}
-      placeholder="请选择"
+      placeholder="全部"
       defaultValue={props.value}
       onChange={props.onChange}
     >
-      <Option value="-1">全部</Option>
       {stores.map((store, i) => (
         <Option value={store.id} key={`bdm__${i}`}>
           {store.name}

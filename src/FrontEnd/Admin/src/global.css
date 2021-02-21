@@ -483,43 +483,6 @@ html, body, #root {
 .scroll-y { overflow-y: scroll; -webkit-overflow-scrolling: touch; } 
 
 
-/*
-//////////////////////////////
-/// 「 边框 」           
-//////////////////////////////
-*/
-.border { border: 1px solid #F5F5F5;}
-.border-top { border-top: 1px solid #F5F5F5;}
-.border-right { border-right: 1px solid #F5F5F5;}
-.border-bottom { border-bottom: 1px solid #F5F5F5;}
-.border-left { border-left: 1px solid #F5F5F5;}
-
-.border-0 { border: none;}
-.border-2 { border-width: 2px; }
-
-.border-top-0 { border-top: none;}
-.border-right-0 { border-right: none;}
-.border-bottom-0 { border-bottom: none;}
-.border-left-0 { border-left: none;}
-
-.border-dashed { border-style: dashed; }
-
-.border-transparent { border-color: transparent; }
-.border-light { border-color: #FFFFFF; }
-.border-dark  { border-color: #000000; }
-
-.border-FF7E26 { border-color: #FF7E26; }
-.border-F1F1F1 { border-color: #F1F1F1; }
-.border-DBDBDB { border-color: #DBDBDB; } 
-.border-E5E5E5 { border-color: #E5E5E5; }
-.border-B9B9B9 { border-color: #B9B9B9; }
-.border-F1D39A { border-color: #F1D39A; }
-.border-BD6E3C { border-color: #BD6E3C; }
-
-
-
-
-
 
 /*
 //////////////////////////////
@@ -532,108 +495,15 @@ html, body, #root {
 .text-break    { word-break: break-all; }
 .text-indent   { text-indent: 2em; }
 
-
-/*
-//////////////////////////////
-/// 「 文本显示行数 」           
-//////////////////////////////
-*/
-.line-clamp-1 {
-	overflow: hidden; 
-	white-space: nowrap; 
-	text-overflow: ellipsis; 
-}
-
-.line-clamp-2 {
-	text-overflow: ellipsis;
-	display: -webkit-box;
-	-webkit-box-orient: vertical;
-	-webkit-line-clamp: 2;
-	overflow: hidden;
-}
-.line-clamp-3 {
-	text-overflow: ellipsis;
-	display: -webkit-box;
-	-webkit-box-orient: vertical;
-	-webkit-line-clamp: 3;
-	overflow: hidden;
-}
-.line-clamp-4 {
-	text-overflow: ellipsis;
-	display: -webkit-box;
-	-webkit-box-orient: vertical;
-	-webkit-line-clamp: 4;
-	overflow: hidden;
-}
-.line-clamp-5 {
-	text-overflow: ellipsis;
-	display: -webkit-box;
-	-webkit-box-orient: vertical;
-	-webkit-line-clamp: 5;
-	overflow: hidden;
-}
-
 /*
 //////////////////////////////
 /// 「 装饰线 」           
 //////////////////////////////
 */
-
 .under-line { text-decoration: underline; }
 .line-through { text-decoration: line-through; }
-
-
-
-/*
-//////////////////////////////
-/// 「 其他特效 」           
-//////////////////////////////
-*/
-/* 气泡框 */
-.bubble {
-	display: inline-block;
-	height: 14px;
-	background-color: #FF7E26;
-	border-radius: 2px;
-	padding: 0 4px;
-	color: #FFFFFF;
-	
-	white-space: nowrap;
-	font-size: 9px;
-	text-align: center;
-	line-height: 14px;
-	position: relative;
-}
-.bubble::after {
-	content: '';
-	display: block;
-	width: 0;
-	height: 0;
-	border-style: solid;
-	border-color: #FF7E26 transparent transparent transparent;
-	border-width: 5px 3px 0 3px;
-	position: absolute;
-	top: 100%;
-	left: 50%;
-	transform: translateX(-50%);
-}
-
-
-
-.shrink {
-	flex-shrink: 0;
-}
-
 
 /* 光标 */
 .cursor-pointer { cursor: pointer;}
 
-/* 加载动画 */
-.lazy-loading {
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	color: #FFB80D;
-	font-size: 14px;
-}
 

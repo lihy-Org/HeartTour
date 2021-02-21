@@ -1,7 +1,7 @@
 /*
  * @Author: Li-HONGYAO
  * @Date: 2020-11-23 10:38:41
- * @LastEditTime: 2021-01-26 18:32:54
+ * @LastEditTime: 2021-01-30 12:51:18
  * @LastEditors: Li-HONGYAO
  * @Description: 
  * @FilePath: /Admin/src/constants/interface.d.ts
@@ -42,6 +42,4 @@ declare namespace DP {
     pageSize: number,
     filters: T
   }
-
- 
 }
