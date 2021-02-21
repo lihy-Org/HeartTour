@@ -1,12 +1,12 @@
 <?php
 namespace App\Repositories;
 
+use App\Models\User;
 use App\Models\Combo;
-use App\Models\ComboStore;
+use App\Models\ComboBeautician;
 use App\Models\ComboVariety;
 use App\Models\GoodsBanner;
 use App\Models\GoodsDetail;
-use App\Models\Store;
 use App\Repositories\ConfigRepository;
 use Illuminate\Support\Facades\DB;
 
@@ -140,8 +140,12 @@ class ComboRepository
         if (isset($data->storeId)) {
             $combo = $combo->whereIn('id', function ($query) use ($data) {
                 $query->select('cid')
-                    ->from('comboStores')
-                    ->where('storeId', $data->storeId);
+                    ->from('comboBeauticians')
+                    ->whereIn('userId', function ($query) use ($data) {
+                        $query->select('id')
+                            ->from('users')
+                            ->where('storeId', $data->storeId);
+                    });
             });
         }
         if (isset($data->varietyId)) {
@@ -172,24 +176,16 @@ class ComboRepository
 
     }
 
-    public function SetStore($data)
+    public function SetBeautician($data)
     {
-
         try {
             $combo = Combo::find($data->comboId);
             DB::beginTransaction(); // 开启事务
-            ComboStore::where('cid', $data->comboId)->delete();
-            if (isset($data->storeIds)) {
-                foreach (array_unique($data->storeIds) as $v) {
-                    $store = Store::find($v);
-                    if (!$store) {
-                        Db::rollback(); // 回滚事务
-                        return array(
-                            'status' => 500,
-                            'msg' => '无ID:' . $v . '的门店信息!',
-                            'data' => '');
-                    }
-                    ComboStore::create(['cid' => $combo->id, 'cname' => $combo->name, 'storeId' => $store->id, 'storeName' => $store->name]);
+            ComboBeautician::where('cid', $data->comboId)->delete();
+            if (isset($data->userIds)) {
+                foreach (array_unique($data->userIds) as $v) {
+                    $user = User::find($v);
+                    ComboBeautician::create(['cid' => $combo->id, 'cname' => $combo->name, 'userId' => $user->id, 'userName' => $user->name]);
                 }
             }
             Db::commit(); // 提交事务

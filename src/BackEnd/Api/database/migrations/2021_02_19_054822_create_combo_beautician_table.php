@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateComboStoreTable extends Migration
+class CreateComboBeauticianTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,12 @@ class CreateComboStoreTable extends Migration
      */
     public function up()
     {
-        Schema::create('comboStores', function (Blueprint $table) {
+        Schema::create('comboBeauticians', function (Blueprint $table) {
             $table->uuid('id')->primary;
             $table->string('cid')->comment('套餐编号');
-            $table->string('cname')->comment('套餐简介');
-            $table->string('storeId')->comment('门店编号');
-            $table->string('storeName')->comment('门店名称');
+            $table->string('cname')->comment('套餐简介');          
+            $table->string('userId')->comment('美容师编号');
+            $table->string('userName')->comment('美容师名称');
             $table->timestamps();
             $table->softDeletes();
         });
@@ -31,6 +31,6 @@ class CreateComboStoreTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('comboStores');
+        Schema::dropIfExists('comboBeauticians');
     }
 }

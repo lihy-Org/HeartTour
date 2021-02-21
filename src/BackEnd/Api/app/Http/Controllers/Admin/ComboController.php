@@ -166,7 +166,7 @@ class ComboController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/api/admin/combo/SetStore",
+     *     path="/api/admin/combo/SetBeautician",
      *     tags={"总台管理系统-套餐管理"},
      *     summary="分配门店",
      *     @OA\Parameter(name="token", in="header", @OA\Schema(type="string"), required=true, description="token"),
@@ -175,8 +175,8 @@ class ComboController extends Controller
      *       mediaType="multipart/form-data",
      *         @OA\Schema(
      *           @OA\Property(description="套餐ID", property="comboId", type="number", default="10"),
-     *           @OA\Property(description="门店ID", property="storeId", type="number", default="10"),
-     *           required={"storeId","comboId"}
+     *           @OA\Property(description="门店ID", property="userIds", type="number", default="10"),
+     *           required={"userIds","comboId"}
      *           )
      *       )
      *     ),
@@ -218,12 +218,14 @@ class ComboController extends Controller
      *       ),
      * )
      */
-    public function SetStore(Request $request)
+    public function SetBeautician(Request $request)
     {
         $rules = [
-            'storeIds' => ['required', 'array', 'exists:stores,id'],
+            'userIds' => ['required', 'array', Rule::exists('users', 'id')->where(function ($query) {
+                $query->where('state', 0)->whereNotIn('type', [0, 1]);
+            })],
             'comboId' => ['required', Rule::exists('combos', 'id')->where(function ($query) {
-                $query->where('state', 0);
+                $query->where('state', 0)->where('comboType', 0);
             })],
         ];
         $messages = [];
@@ -235,7 +237,7 @@ class ComboController extends Controller
                 'data' => $validator->errors(),
             ));
         }
-        return json_encode($this->comboRepository->SetStore((object) $request->all()));
+        return json_encode($this->comboRepository->SetBeautician((object) $request->all()));
     }
 
     /**
@@ -306,7 +308,7 @@ class ComboController extends Controller
      *         )
      *     )
      * )
-     */     
+     */
     public function GetList(Request $request)
     {
         $rules = [
