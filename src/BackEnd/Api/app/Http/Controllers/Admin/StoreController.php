@@ -74,8 +74,9 @@ class StoreController extends Controller
      *         )
      *     )
      * )
-     */
-    function list(Request $request) {
+     */   
+    public function GetList(Request $request)
+    {
         $rules = [
             'pageSize' => ['integer', 'gt:0'],
             'page' => ['integer', 'gt:0'],
@@ -195,6 +196,7 @@ class StoreController extends Controller
         ];
         $messages = [
             'name.required' => '请输入门店名称!',
+            'phone.required' => '请输入电话号码!',
             'lng.required' => '请输入经度!',
             'lat.required' => '请输入纬度!',
             'address.required' => '请输入地址!',

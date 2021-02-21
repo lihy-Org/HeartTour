@@ -5,6 +5,11 @@
 @import './sidebar.scss';
 @import './btn.scss';
 
+body, html, #app {
+  min-width: 1400px;
+  overflow-y: hidden;
+}
+
 body {
   height: 100%;
   -moz-osx-font-smoothing: grayscale;

@@ -14,7 +14,7 @@ class CreatePetTable extends Migration
     public function up()
     {
         Schema::create('pets', function (Blueprint $table) {
-            $table->uuid('id');
+            $table->uuid('id')->primary;
             $table->timestamps();
             $table->softDeletes();   
             $table->string('wcid')->comment('小程序用户id');
@@ -25,7 +25,7 @@ class CreatePetTable extends Migration
             $table->string('variety')->comment('宠物品种名称');
             $table->string('birthday')->nullable()->default('')->comment('宠物生日');
             $table->string('color')->nullable()->default('')->comment('毛色');
-            $table->integer('shoulderHeight')->comment('肩高');            
+            $table->integer('shoulderHeight')->nullable()->default(0)->comment('肩高');            
             $table->unsignedTinyInteger('is_sterilization')->default(1)->comment('是否绝育，0：未绝育，1：已绝育');
             $table->string('remark')->nullable()->default('')->comment('备注');
         });

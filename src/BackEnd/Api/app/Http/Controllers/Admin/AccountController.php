@@ -22,7 +22,7 @@ class AccountController extends Controller
     /**
      * @OA\Post(
      *     path="/api/admin/login",
-     *     tags={"总台管理系统-用户管理"},
+     *     tags={"总台管理系统-授权"},
      *     summary="登录",
      *     @OA\Parameter(name="token", in="header", @OA\Schema(type="string"), required=true, description="token"),
      *     @OA\RequestBody(
@@ -155,7 +155,7 @@ class AccountController extends Controller
     /**
      * @OA\Post(
      *     path="/api/admin/verifCode",
-     *     tags={"总台管理系统-用户管理"},
+     *     tags={"总台管理系统-授权"},
      *     summary="获取登录验证码",
      *     @OA\RequestBody(
      *     @OA\MediaType(

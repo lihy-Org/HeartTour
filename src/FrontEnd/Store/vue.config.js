@@ -36,11 +36,25 @@ module.exports = {
       warnings: false,
       errors: true
     },
+    proxy: {
+      [process.env.VUE_APP_BASE_API]: {
+        target: 'https://www.fastmock.site',
+        changeOrigin: true,
+        pathRewrite: {
+          ['^' + process.env.VUE_APP_BASE_API]: ''
+        }
+      }
+    },
     before: require('./mock/mock-server.js')
   },
+  // 函数式引入插件
   configureWebpack: {
     // provide the app's title in webpack's name field, so that
     // it can be accessed in index.html to inject the correct title.
+    externals: {
+      // 不从 bundle 中引用依赖的方式。简单理解就是不通过npm下载的类库
+      AMap: "window.AMap"
+    },
     name: name,
     resolve: {
       alias: {

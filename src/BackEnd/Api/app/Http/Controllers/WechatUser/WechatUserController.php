@@ -7,15 +7,22 @@ use App\Models\WechatUser;
 use App\Repositories\CouponRepository;
 use App\Utilities\WXBizDataCrypt;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
+use App\Repositories\WechatUserRepository;
 use Illuminate\Support\Facades\Validator;
 
 class WechatUserController extends Controller
 {
+    protected $wechatUserRepository;
 
+    public function __construct(WechatUserRepository $_wechatUserRepository)
+    {
+        $this->wechatUserRepository = $_wechatUserRepository;
+    }
     /**
      * @OA\Post(
      *     path="/api/user/login",
-     *     tags={"小程序-用户管理"},
+     *     tags={"小程序-授权"},
      *     summary="登录",
      *      @OA\RequestBody(
      *     @OA\MediaType(
@@ -81,14 +88,15 @@ class WechatUserController extends Controller
             $user = WechatUser::create([
                 'code' => $code,
                 'openid' => $weappOpenid,
-                'sessionkey' => $weixinSessionKey,
-                'password' => $weixinSessionKey,
+                'sessionkey' => $weixinSessionKey,               
                 'token' => $token,
+                'lastlogin'=>Carbon::now(),
             ]);
         };
         //如果注册过的，就更新下下面的信息
         $user->sessionkey = $weixinSessionKey;
         $user->token = $token;
+        $user->lastlogin = Carbon::now();
         // 更新用户数据
         $user->save();
         return json_encode(array(
@@ -180,7 +188,7 @@ class WechatUserController extends Controller
         if ($validator->fails()) {
             return json_encode(array(
                 'status' => 500,
-                'msg' => '修改用户信息失败！',
+                'msg' => '验证失败！',
                 'data' => $validator->errors(),
             ));
         } else {
@@ -218,7 +226,7 @@ class WechatUserController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/api/user/editphone",
+     *     path="/api/user/editPhone",
      *     tags={"小程序-用户管理"},
      *     summary="修改手机",
      *     @OA\Parameter(name="token", in="header", @OA\Schema(type="string"), required=true, description="token"),
@@ -287,7 +295,7 @@ class WechatUserController extends Controller
         if ($validator->fails()) {
             return json_encode(array(
                 'status' => 500,
-                'msg' => 'error field',
+                'msg' => '验证失败',
                 'data' => $validator->errors(),
             ));
         } else {
@@ -313,14 +321,28 @@ class WechatUserController extends Controller
                 ));
             }
         }
-    }
-
+    }   
     /**
-     * @OA\Get(
-     *     path="/api/user",
-     *     tags={"小程序-用户管理"},
-     *     summary="获取用户信息",
+     * @OA\Post(
+     *     path="/api/combo/list",
+     *     tags={"小程序-套餐列表"},
+     *     operationId="getProjectsList",
+     *     summary="套餐列表",
      *     @OA\Parameter(name="token", in="header", @OA\Schema(type="string"), required=true, description="token"),
+     *     @OA\RequestBody(
+     *     @OA\MediaType(
+     *       mediaType="multipart/form-data",
+     *         @OA\Schema(
+     *           @OA\Property(description="门店编号", property="storeId", type="string", default=""),
+     *           @OA\Property(description="宠物品种编号", property="varietyId", type="string", default=""),
+     *           @OA\Property(description="关键字", property="searchKey", type="string", default=""),
+     *           @OA\Property(description="套餐类型：0-主套餐  1-增项套餐", property="comboType", type="string", default=""),
+     *           @OA\Property(description="上架状态 0-待上架 1-已上架 2-已下架", property="state", type="string", default=""),
+     *           @OA\Property(description="条数", property="pageSize", type="number", default="10"),
+     *           @OA\Property(description="页数", property="page", type="number", default="1"),     *
+     *           required={})
+     *       )
+     *     ),
      *     @OA\Response(
      *         response=200,
      *         description="成功",
@@ -333,53 +355,106 @@ class WechatUserController extends Controller
      *                   type="number",
      *               ),
      *            @OA\Property(
-     *                  type="string",
-     *                  property="msg",
-     *                  example="获取用户信息成功",
+     *                   example="获取列表成功!",
+     *                   property="msg",
+     *                   description="提示信息",
+     *                   type="string",
      *              ),
-     *            @OA\Property(
+     *             @OA\Property(
      *                  type="object",
      *                  property="data",
-     *               @OA\Property(
-     *                  type="string",
-     *                  property="avatar",
-     *                  example="https:\/\/wx.qlogo.cn\/mmopen\/vi_32\/DYAIOgq83epgjuGZNgB6sb8XuGO4qEQFgM1T2oNPUD0cLPicfawiabOOx1kyXMQq6GQwyH92gmNhjHmxCzS4lqvA\/0",
-     *                ),
-     *               @OA\Property(
-     *                  type="string",
-     *                  property="nickname",
-     *                  example="dadwa",
-     *                ),
-     *               @OA\Property(
-     *                  type="string",
-     *                  property="phone",
-     *                  example="1388888888",
-     *                ),
-     *                @OA\Property(
-     *                  type="int",
-     *                  property="coupon",
-     *                  example=0,
-     *                )
+     *                  example="",
      *              )
-     *         ))
+     *         )),
+     *       @OA\Response(
+     *         response=500,
+     *         description="失败",
+     *         @OA\JsonContent(
+     *            type="object",
+     *            @OA\Property(
+     *                   example="500",
+     *                   property="status",
+     *                   description="状态码",
+     *                   type="number",
+     *               )   ,
+     *          @OA\Property(
+     *                  type="string",
+     *                  property="msg",
+     *                  description="提示信息",
+     *                  example="获取列表失败!",
+     *              ),
+     *          @OA\Property(
+     *                  type="object",
+     *                  property="data",
+     *                  example="{'page':['\u8bf7\u8f93\u5165\u5355\u4f4d\u540d\u79f0\uff01']}",
+     *              )
+     *         )
      *     )
      * )
      */
-    public function GetUserInfo(Request $request)
-    {
-        $CouponService = new CouponRepository();
-        $useful = $CouponService->GetUsefulCoupon($request->user->id)->count();
-        return json_encode(
-            array(
-                'status' => 200,
-                'msg' => '获取用户信息成功!',
-                'data' => array(
-                    'avatar' => $request->user->avatar,
-                    'nickname' => $request->user->nickname,
-                    'phone' => $request->user->phone,
-                    'coupon' => $useful,
-                ),
-            )
-        );
-    }
+     /**
+     * @OA\Post(
+     *     path="/api/store/list",
+     *     tags={"小程序-获取门店列表"},
+     *     summary="门店列表",
+     *     @OA\Parameter(name="token", in="header", @OA\Schema(type="string"), required=true, description="token"),
+     *     @OA\RequestBody(
+     *     @OA\MediaType(
+     *       mediaType="multipart/form-data",
+     *         @OA\Schema(
+     *           @OA\Property(description="条数", property="pageSize", type="number", default="10"),
+     *           @OA\Property(description="页数", property="page", type="number", default="1"),
+     *           @OA\Property(description="关键字", property="searchKey", type="string", default=""),
+     *           )
+     *       )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="成功",
+     *         @OA\JsonContent(
+     *            type="object",
+     *            @OA\Property(
+     *                   example="200",
+     *                   property="status",
+     *                   description="状态码",
+     *                   type="number",
+     *               ),
+     *            @OA\Property(
+     *                   example="获取列表成功!",
+     *                   property="msg",
+     *                   description="提示信息",
+     *                   type="string",
+     *              ),
+     *             @OA\Property(
+     *                  type="object",
+     *                  property="data",
+     *                  example="{'status':200,'msg':'\u83b7\u53d6\u5217\u8868\u6210\u529f!','data':{'pages':{'total':1,'pageNo':'1'},'data':[{'id':'1','name':'\u6328\u6253\u4e86','phone':'1','lng':'111','lat':'1','address':'1','businessHoursStart':'1','businessHoursEnd':'1','type':1,'state':0,'deleted_at':null,'created_at':null,'updated_at':null},{'id':'xxx','name':'\u597d\u5389\u5bb3\u54e6','phone':'1','lng':'2','lat':'2','address':'2','businessHoursStart':'2','businessHoursEnd':'2','type':1,'state':0,'deleted_at':null,'created_at':null,'updated_at':null},{'id':'\u5fb7\u74e6\u8fbe','name':'ddx\u738b\u60f3\u6328\u6253\u00b7','phone':'1','lng':'2','lat':'1','address':'11','businessHoursStart':'1','businessHoursEnd':'11','type':1,'state':0,'deleted_at':null,'created_at':null,'updated_at':null}]}}",
+     *              )
+     *         )),
+     *       @OA\Response(
+     *         response=500,
+     *         description="失败",
+     *         @OA\JsonContent(
+     *            type="object",
+     *            @OA\Property(
+     *                   example="500",
+     *                   property="status",
+     *                   description="状态码",
+     *                   type="number",
+     *               )   ,
+     *          @OA\Property(
+     *                  type="string",
+     *                  property="msg",
+     *                  description="提示信息",
+     *                  example="获取列表失败!",
+     *              ),
+     *          @OA\Property(
+     *                  type="object",
+     *                  property="data",
+     *                  example="{'page':['\u8bf7\u8f93\u5165\u5355\u4f4d\u540d\u79f0\uff01']}",
+     *              )
+     *         )
+     *     )
+     * )
+     */
 }

@@ -15,7 +15,7 @@
           <li>或者你可以去:</li>
           <li class="link-type">
             <router-link to="/dashboard">
-              回首页
+              返回数据统计
             </router-link>
           </li>
           <!-- <li class="link-type">
