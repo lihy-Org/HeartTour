@@ -9,6 +9,8 @@ use App\Http\Controllers\Admin\WechatUserController as AdminWechatUserController
 use App\Http\Controllers\StoreSystem\AccountController as StoreSysAccountController;
 use App\Http\Controllers\StoreSystem\UserController as StoreSysUserController;
 use App\Http\Controllers\TestController;
+use App\Http\Controllers\WechatUser\AddressController;
+use App\Http\Controllers\WechatUser\AppointmentController;
 use App\Http\Controllers\WechatUser\PetController;
 use App\Http\Controllers\WechatUser\WechatUserController;
 use Illuminate\Support\Facades\Route;
@@ -72,7 +74,6 @@ Route::prefix('api/storesys')->middleware(['auth:sanctum', 'storeapi'])->group(f
     Route::post('/user/list', [StoreSysUserController::class, 'GetList']);
     Route::post('/user/setStoreManage', [StoreSysUserController::class, 'SetStoreManage']);
     Route::post('/user/setWorktime', [StoreSysUserController::class, 'SetWorktime']);
-    
 
 });
 // --------------------------------小程序---------------------------------------------
@@ -96,4 +97,11 @@ Route::prefix('api')->middleware(['web', 'wechatapi'])->group(function () {
     //套餐管理
     Route::post('/combo/list', [ComboController::class, 'GetList']);
 
+    //收货地址
+    Route::post('/address/update', [AddressController::class, 'AddOrUpdate']);
+    Route::get('/address/list', [AddressController::class, 'GetList']);
+    Route::post('/address/delete', [AddressController::class, 'Delete']);
+
+    //预约
+    Route::post('/combo/appt', [AppointmentController::class, 'Appointment']);
 });
