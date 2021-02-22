@@ -126,88 +126,13 @@ class UserController extends Controller
 
         }
     }
-
-    /**
-     * @OA\Post(
-     *     path="/api/storesys/user/SetManage",
-     *     tags={"门店管理系统-人员管理"},
-     *     summary="设置店长",
-     *     @OA\Parameter(name="token", in="header", @OA\Schema(type="string"), required=true, description="token"),
-     *     @OA\RequestBody(
-     *     @OA\MediaType(
-     *       mediaType="multipart/form-data",
-     *         @OA\Schema(
-     *           @OA\Property(description="用户ID", property="userId", type="number", default="10"),
-     *           required={"userId"}
-     *           )
-     *       )
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="成功",
-     *         @OA\JsonContent(
-     *            type="object",
-     *            @OA\Property(
-     *                   example="200",
-     *                   property="status",
-     *                   description="状态码",
-     *                   type="number",
-     *               ),
-     *            @OA\Property(
-     *                  type="string",
-     *                  property="msg",
-     *                  example="成功!",
-     *              )
-     *         ),
-     *     ),
-     *      @OA\Response(
-     *         response=500,
-     *         description="失败",
-     *         @OA\JsonContent(
-     *            type="object",
-     *            @OA\Property(
-     *                   example="500",
-     *                   property="status",
-     *                   description="状态码",
-     *                   type="number",
-     *               ),
-     *           @OA\Property(
-     *                  type="string",
-     *                  property="msg",
-     *                  example="失败!",
-     *               )
-     *           )
-     *       ),
-     * )
-     */
-    public function SetManage(Request $request)
-    {
-        $rules = [
-            'userId' => ['required', Rule::exists('users', 'id')->where(function ($query)use($request) {
-                $query->where('state', 0)->whereNotIn('type', [0, 1])->where('storeId', $request->user->storeId);
-            })],
-        ];
-        $messages = [
-            'userId.required' => '请输入人员编号!',
-            'userId.exists' => '错误的人员编号或该用户不是该门店!',
-        ];
-        $validator = Validator::make($request->all(), $rules, $messages);
-        if ($validator->fails()) {
-            return json_encode(array(
-                'status' => 500,
-                'msg' => '验证失败!',
-                'data' => $validator->errors(),
-            ));
-        }
-        return json_encode($this->userRepository->SetStoreManage((object) $request->all()));
-    }
+   
 
     /**
      * @OA\Post(
      *     path="/api/storesys/user/SetWorktime",
      *     tags={"门店管理系统-人员管理"},
-     *     summary="人员排期",  
-     *     desc='人员排序，startTime，endTime不传则用门店开始结束时间'
+     *     summary="人员排期",       *     
      *     @OA\Parameter(name="token", in="header", @OA\Schema(type="string"), required=true, description="token"),
      *     @OA\RequestBody(
      *     @OA\MediaType(

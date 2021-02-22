@@ -2179,7 +2179,7 @@
                     "门店管理系统-人员管理"
                 ],
                 "summary": "人员列表",
-                "operationId": "App\\Http\\Controllers\\Admin\\UserController::GetList",
+                "operationId": "App\\Http\\Controllers\\StoreSystem\\UserController::GetList",
                 "parameters": [
                     {
                         "name": "token",
@@ -2292,13 +2292,13 @@
                 }
             }
         },
-        "/api/storesys/user/SetManage": {
+        "/api/storesys/user/SetWorktime": {
             "post": {
                 "tags": [
                     "门店管理系统-人员管理"
                 ],
-                "summary": "设置店长",
-                "operationId": "App\\Http\\Controllers\\Admin\\UserController::SetManage",
+                "summary": "人员排期",
+                "operationId": "App\\Http\\Controllers\\StoreSystem\\UserController::SetWorktime",
                 "parameters": [
                     {
                         "name": "token",
@@ -2320,7 +2320,22 @@
                                 "properties": {
                                     "userId": {
                                         "description": "用户ID",
-                                        "type": "number",
+                                        "type": "string",
+                                        "default": "10"
+                                    },
+                                    "days": {
+                                        "description": "排期日期",
+                                        "type": "string",
+                                        "default": "10"
+                                    },
+                                    "startTime": {
+                                        "description": "排期当天开始时间 09:00",
+                                        "type": "string",
+                                        "default": "10"
+                                    },
+                                    "endTime": {
+                                        "description": "排期当天结束时间 21:00",
+                                        "type": "string",
                                         "default": "10"
                                     }
                                 },
@@ -2365,6 +2380,219 @@
                                         "msg": {
                                             "type": "string",
                                             "example": "失败!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/address/update": {
+            "post": {
+                "tags": [
+                    "小程序-收货地址"
+                ],
+                "summary": "新增或修改收货地址",
+                "operationId": "App\\Http\\Controllers\\WechatUser\\AddressController::AddOrUpdate",
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "header",
+                        "description": "token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "phone",
+                                    "address"
+                                ],
+                                "properties": {
+                                    "addrId": {
+                                        "description": "收货地址id",
+                                        "type": "string",
+                                        "default": "dd"
+                                    },
+                                    "name": {
+                                        "description": "收件人姓名",
+                                        "type": "string",
+                                        "default": "dd"
+                                    },
+                                    "phone": {
+                                        "description": "手机号码",
+                                        "type": "string",
+                                        "default": "dd"
+                                    },
+                                    "address": {
+                                        "description": "地址",
+                                        "type": "string",
+                                        "default": "dd"
+                                    },
+                                    "doorplate": {
+                                        "description": "门牌号",
+                                        "type": "string",
+                                        "default": "dd"
+                                    },
+                                    "default": {
+                                        "description": "是否默认：0非默认 1默认",
+                                        "type": "string",
+                                        "default": "dd"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "状态码",
+                                            "type": "number",
+                                            "example": "200"
+                                        },
+                                        "msg": {
+                                            "type": "string",
+                                            "example": "新增/修改收货地址信息成功!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "失败",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "状态码",
+                                            "type": "number",
+                                            "example": "500"
+                                        },
+                                        "msg": {
+                                            "type": "string",
+                                            "example": "修改收货地址信息失败!"
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "example": "错误信息"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/address/list": {
+            "get": {
+                "tags": [
+                    "小程序-收货地址"
+                ],
+                "summary": "获取收货地址列表",
+                "operationId": "App\\Http\\Controllers\\WechatUser\\AddressController::GetList",
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "header",
+                        "description": "token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "状态码",
+                                            "type": "number",
+                                            "example": "200"
+                                        },
+                                        "msg": {
+                                            "type": "string",
+                                            "example": "获取收货地址列表成功!"
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "example": "[{'addrId':2,'name':'xxx','phone':'13828242712','address':'\\u8fbe\\u5a03\\u5927','default':0},{'addrId':3,'name':'xxx1111','phone':'13828242712','address':'\\u8fbe\\u5a03\\u59271111','default':0},{'addrId':4,'name':'xxx1111','phone':'13828242712','address':'\\u8fbe\\u5a03\\u59271111','default':0},{'addrId':6,'name':'xxx1111','phone':'13828242712','address':'\\u8fbe\\u5a03\\u59273333','default':1}]"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/address/delete": {
+            "post": {
+                "tags": [
+                    "小程序-收货地址"
+                ],
+                "summary": "删除收货地址信息",
+                "operationId": "App\\Http\\Controllers\\WechatUser\\AddressController::Delete",
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "header",
+                        "description": "token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "addrId",
+                        "in": "query",
+                        "description": "addrId",
+                        "required": true,
+                        "schema": {
+                            "type": "int"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "状态码",
+                                            "type": "number",
+                                            "example": "200"
+                                        },
+                                        "msg": {
+                                            "type": "string",
+                                            "example": "删除收货地址成功!"
                                         }
                                     },
                                     "type": "object"

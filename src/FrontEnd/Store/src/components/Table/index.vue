@@ -15,8 +15,8 @@
         :cell-style="getCellClass"
         @selection-change="selectedChange"
       >
-        <el-table-column v-if="hasSelect" type="selection" width="45px" align="left" />
-        <el-table-column v-if="hasIndex" label="序号" type="index" width="50px" align="left" />
+        <el-table-column v-if="hasSelect" type="selection" width="45px" align="left" :fixed="selectFixed" />
+        <el-table-column v-if="hasIndex" label="序号" type="index" width="50px" align="left" :fixed="indexFixed" />
         <template v-for="(item, key) in columns">
           <template v-if="item.type !='tag'">
             <el-table-column
@@ -28,6 +28,7 @@
               :width="item.width"
               :formatter="item.formatter"
               show-overflow-tooltip
+              :fixed="item.fixed"
             />
             <el-table-column
               v-else-if="item.contentType==='img'"
@@ -37,6 +38,7 @@
               :type="item.type"
               :width="item.width"
               :formatter="item.formatter"
+              :fixed="item.fixed"
             >
               <template v-slot="{row}">
                 <img :src="row[item.prop]" width="85" height="96">
@@ -48,6 +50,7 @@
               :key="item.prop"
               v-bind="item"
               :label="item.label"
+              :fixed="item.fixed"
             >
               <template #default="{row}">
                 <el-button
@@ -124,6 +127,12 @@ export default {
       type: Boolean
     },
     hasIndex: {
+      type: Boolean
+    },
+    selectFixed: {
+      type: Boolean
+    },
+    indexFixed: {
       type: Boolean
     },
     refreshCurrentPage: {

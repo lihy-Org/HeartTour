@@ -1,5 +1,5 @@
 <template>
-  <div class="header-weather">
+  <div v-if="showHeaderWeather" class="header-weather">
     <!-- 地理位置 -->
     <span class="localtion">{{ localtionInfo }}</span>
 
@@ -31,10 +31,12 @@ export default {
     return {
       /**
        * 高德地图查询信息
+       * @param showHeaderWeather 获取失败或者成功后，是否展示天气、地理位置等
        * @param localtionInfo 位置信息
        * @param weatherInfo 天气信息
        * @param weatherIcon 天气图标
        */
+      showHeaderWeather: false,
       localtionInfo: '',
       weatherIcon: null,
       weatherInfo: {}
@@ -46,6 +48,7 @@ export default {
   methods: {
     // 获取定位，因为天气是基于用户定位的
     getGeolocation() {
+      const that = this
       return new Promise(function(resolve, reject) {
         const mapObj = new AMap.Map('iCenter')
         mapObj.plugin('AMap.Geolocation', function() {
@@ -65,10 +68,11 @@ export default {
           mapObj.addControl(geolocation)
           geolocation.getCurrentPosition()
           AMap.event.addListener(geolocation, 'complete', (data) => {
+            console.log(data)
             resolve(data)
           }) // 返回定位信息
           AMap.event.addListener(geolocation, 'error', (err) => {
-            this.$Message.error(err)
+            that.$message.error(err)
             reject(err)
           }) // 返回定位出错信息
         })
@@ -80,8 +84,15 @@ export default {
 
       // 获取定位的城市
       const countyInfo = await $self.getGeolocation()
+      console.log(countyInfo)
 
       // 位置信息
+      if (!countyInfo.addressComponent || !countyInfo.addressComponent.city) {
+        this.showHeaderWeather = false
+        return
+      } else {
+        this.showHeaderWeather = true
+      }
       this.localtionInfo = countyInfo.addressComponent.city + countyInfo.addressComponent.district
 
       // 和风天气，可以显示天气icon
@@ -118,7 +129,7 @@ export default {
       //       $self.weatherInfo.windDirection = data.windDirection
       //       $self.weatherInfo.windPower = data.windPower
       //     } else {
-      //       this.$Message.error('未查询到相关天气信息')
+      //       this.$message.error('未查询到相关天气信息')
       //     }
       //   })
       //   // 查询实时天气预报

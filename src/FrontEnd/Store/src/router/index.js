@@ -11,7 +11,7 @@ import goodsRouter from './modules/goods'
 import staffRouter from './modules/staff'
 // import componentsRouter from './modules/components'
 // import chartsRouter from './modules/charts'
-import tableRouter from './modules/table'
+// import tableRouter from './modules/table'
 // import nestedRouter from './modules/nested'
 
 /**
@@ -125,20 +125,20 @@ export const constantRoutes = [
   },
 
   // 个人中心
-  {
-    path: '/profile',
-    component: Layout,
-    redirect: '/profile/index',
-    hidden: true,
-    children: [
-      {
-        path: 'index',
-        component: () => import('@/views/profile/index'),
-        name: 'Profile',
-        meta: { title: 'profile', icon: 'user', noCache: true, keepAlive: false, keepComponentPages: [] }
-      }
-    ]
-  },
+  // {
+  //   path: '/profile',
+  //   component: Layout,
+  //   redirect: '/profile/index',
+  //   hidden: true,
+  //   children: [
+  //     {
+  //       path: 'index',
+  //       component: () => import('@/views/profile/index'),
+  //       name: 'Profile',
+  //       meta: { title: 'profile', icon: 'user', noCache: true, keepAlive: false, keepComponentPages: [] }
+  //     }
+  //   ]
+  // },
 
   // 文档
   // {
@@ -219,24 +219,24 @@ export const asyncRoutes = [
   //   ]
   // },
 
-  {
-    path: '/icon',
-    component: Layout,
-    children: [
-      {
-        path: 'index',
-        component: () => import('@/views/icons/index'),
-        name: 'Icons',
-        meta: { title: 'icons', icon: 'icon', noCache: true }
-      }
-    ]
-  },
+  // {
+  //   path: '/icon',
+  //   component: Layout,
+  //   children: [
+  //     {
+  //       path: 'index',
+  //       component: () => import('@/views/icons/index'),
+  //       name: 'Icons',
+  //       meta: { title: 'icons', icon: 'icon', noCache: true }
+  //     }
+  //   ]
+  // },
 
   // /** when your routing map is too long, you can split it into small modules **/
   // componentsRouter,
   // chartsRouter,
   // nestedRouter,
-  tableRouter
+  // tableRouter
 
   // {
   //   path: '/example',

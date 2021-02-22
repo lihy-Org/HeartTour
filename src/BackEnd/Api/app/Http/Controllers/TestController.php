@@ -11,7 +11,8 @@ class TestController extends Controller
 
     public function Test(Request $request)
     {
-        dd(Carbon::Now()->format('Y-m-d H:i'));
+       
+        dd();
 
         $data=$request->all();
         echo json_encode($data);

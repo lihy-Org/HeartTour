@@ -94,12 +94,20 @@
     </el-radio-group>
     <!-- 日期选择框 -->
     <el-date-picker
-      v-if="[ 'datetime', 'date', 'month', 'week', 'year' ].includes(item.type)"
+      v-if="[ 'daterange', 'datetime', 'date', 'month', 'week', 'year' ].includes(item.type)"
       v-model="form[item.value]"
       :style="item.style"
       v-bind="item"
       :placeholder="item.placeholder"
       :value-format="item.valueFormat || 'timestamp'"
+      :range-separator="item.separator"
+      :start-placeholder="item.startPlaceholder"
+      :end-placeholder="item.endPlaceholder"
+      :picker-options="item.pickerOptions"
+      :default-time="item.defaultTime||['00:00:00', '23:59:59']"
+      @change="
+        typeof item.change === 'function' ? item.change($event) : () => {}
+      "
     />
     <!-- 日期时间范围选择框 -->
     <el-date-picker
@@ -179,7 +187,8 @@ export default {
       type: Object,
       required: true
     }
-  }
+  },
+  created() {}
 }
 </script>
 
