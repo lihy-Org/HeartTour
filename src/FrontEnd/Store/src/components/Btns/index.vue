@@ -30,7 +30,7 @@ export default {
   data() {
     return {}
   },
-  created() { console.log(this.buttons) },
+  created() {},
   methods: {}
 }
 </script>
