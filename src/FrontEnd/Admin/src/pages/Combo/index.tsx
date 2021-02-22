@@ -1,7 +1,7 @@
 /*
  * @Author: Li-HONGYAO
  * @Date: 2021-01-18 11:15:25
- * @LastEditTime: 2021-02-15 17:36:27
+ * @LastEditTime: 2021-02-21 22:13:37
  * @LastEditors: Li-HONGYAO
  * @Description:
  * @FilePath: /Admin/src/pages/Combo/index.tsx
@@ -141,7 +141,7 @@ const Combo: FC = () => {
   };
   const onDistributeStore = () => {
     if (checkedStores.length <= 0) {
-      message.info('请选择分配门店');
+      message.info('请选择您要分配的技师');
       return;
     }
     message.success('已分配');
@@ -371,10 +371,10 @@ const Combo: FC = () => {
           </Form.Item>
         </Form>
       </Modal>
-      {/* 分配门店 */}
+      {/* 分配技师 */}
       <Modal
         width={1000}
-        title="分配门店"
+        title="分配技师"
         onCancel={() => {
           setStoreModalVisible(false);
           setCheckedStores([]);
