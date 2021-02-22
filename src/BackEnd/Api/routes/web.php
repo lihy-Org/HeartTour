@@ -1,12 +1,14 @@
 <?php
 
 use App\Http\Controllers\Admin\AccountController as AdminAccountController;
-use App\Http\Controllers\Admin\ComboController;
-use App\Http\Controllers\Admin\ConfigController;
-use App\Http\Controllers\Admin\StoreController;
-use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\AppointmentController as AdminAppointmentController;
+use App\Http\Controllers\Admin\ComboController as AdminComboController;
+use App\Http\Controllers\Admin\ConfigController as AdminConfigController;
+use App\Http\Controllers\Admin\StoreController as AdminStoreController;
+use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Admin\WechatUserController as AdminWechatUserController;
 use App\Http\Controllers\StoreSystem\AccountController as StoreSysAccountController;
+use App\Http\Controllers\StoreSystem\AppointmentController as StoreSysAppointmentController;
 use App\Http\Controllers\StoreSystem\UserController as StoreSysUserController;
 use App\Http\Controllers\TestController;
 use App\Http\Controllers\WechatUser\AddressController;
@@ -31,21 +33,22 @@ Route::post('api/admin/GetVerifCode', [AdminAccountController::class, 'GetVerifC
 
 Route::prefix('api/admin')->middleware(['auth:sanctum', 'adminapi'])->group(function () {
     //门店管理
-    Route::post('/store/list', [StoreController::class, 'GetList']);
-    Route::post('/store/addOrUpdate', [StoreController::class, 'addOrUpdate']);
-    Route::post('/store/switch', [StoreController::class, 'switch']);
+    Route::post('/store/list', [AdminStoreController::class, 'GetList']);
+    Route::get('/store/selectlist', [AdminStoreController::class, 'GetSelectList']);
+    Route::post('/store/addOrUpdate', [AdminStoreController::class, 'AddOrUpdate']);
+    Route::post('/store/switch', [AdminStoreController::class, 'Remove']);
 
     //配置
-    Route::get('/config/{type}/{key?}', [ConfigController::class, 'getConfig']);
-    Route::post('/config/addOrUpdate', [ConfigController::class, 'addOrUpdate']);
-    Route::post('/config/remove', [ConfigController::class, 'Remove']);
+    Route::get('/config/{type}/{key?}', [AdminConfigController::class, 'GetConfig']);
+    Route::post('/config/addOrUpdate', [AdminConfigController::class, 'AddOrUpdate']);
+    Route::post('/config/remove', [AdminConfigController::class, 'Remove']);
 
     //人员管理
-    Route::post('/user/addOrUpdate', [UserController::class, 'addOrUpdate']);
-    Route::post('/user/list', [UserController::class, 'GetList']);
-    Route::post('/user/remove', [UserController::class, 'Remove']);
-    Route::post('/user/setStore', [UserController::class, 'SetStore']);
-    Route::post('/user/setStoreManage', [UserController::class, 'SetStoreManage']);
+    Route::post('/user/addOrUpdate', [AdminUserController::class, 'AddOrUpdate']);
+    Route::post('/user/list', [AdminUserController::class, 'GetList']);
+    Route::post('/user/remove', [AdminUserController::class, 'Remove']);
+    Route::post('/user/setStore', [AdminUserController::class, 'SetStore']);
+    Route::post('/user/setStoreManage', [AdminUserController::class, 'SetStoreManage']);
 
     //用户
     Route::post('/wechat/list', [AdminWechatUserController::class, 'GetList']);
@@ -53,10 +56,13 @@ Route::prefix('api/admin')->middleware(['auth:sanctum', 'adminapi'])->group(func
     Route::post('/pet/list', [AdminWechatUserController::class, 'GetPetList']);
 
     //套餐管理
-    Route::post('/combo/list', [ComboController::class, 'GetList']);
-    Route::post('/combo/addOrUpdate', [ComboController::class, 'addOrUpdate']);
-    Route::post('/combo/remove', [ComboController::class, 'Remove']);
-    Route::post('/combo/setBeautician', [ComboController::class, 'SetBeautician']);
+    Route::post('/combo/list', [AdminComboController::class, 'GetList']);
+    Route::post('/combo/addOrUpdate', [AdminComboController::class, 'addOrUpdate']);
+    Route::post('/combo/remove', [AdminComboController::class, 'Remove']);
+    Route::post('/combo/setBeautician', [AdminComboController::class, 'SetBeautician']);
+
+    //预约管理
+    Route::post('/appt/list', [AdminAppointmentController::class, 'GetList']);
 });
 
 // ---------------------------------门店---------------------------------------------
@@ -74,6 +80,9 @@ Route::prefix('api/storesys')->middleware(['auth:sanctum', 'storeapi'])->group(f
     Route::post('/user/list', [StoreSysUserController::class, 'GetList']);
     Route::post('/user/setStoreManage', [StoreSysUserController::class, 'SetStoreManage']);
     Route::post('/user/setWorktime', [StoreSysUserController::class, 'SetWorktime']);
+
+    //预约管理
+    Route::post('/appt/list', [StoreSysAppointmentController::class, 'GetList']);
 
 });
 // --------------------------------小程序---------------------------------------------
@@ -103,5 +112,6 @@ Route::prefix('api')->middleware(['web', 'wechatapi'])->group(function () {
     Route::post('/address/delete', [AddressController::class, 'Delete']);
 
     //预约
-    Route::post('/combo/appt', [AppointmentController::class, 'Appointment']);
+    Route::post('/appt/add', [AppointmentController::class, 'Appointment']);
+    Route::post('/appt/getWorktime', [AppointmentController::class, 'GetWorktime']);
 });

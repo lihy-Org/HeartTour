@@ -190,7 +190,7 @@ class UserController extends Controller
      *     )
      * )
      */
-    public function addOrUpdate(Request $request)
+    public function AddOrUpdate(Request $request)
     {
         $rules = [
             'name' => ['required', 'string'],

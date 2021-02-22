@@ -5,6 +5,7 @@ namespace App\Http\Controllers\StoreSystem;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Repositories\UserRepository;
+use App\Repositories\AppointmentRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
@@ -12,10 +13,12 @@ use Illuminate\Validation\Rule;
 class UserController extends Controller
 {
     protected $userRepository;
-
-    public function __construct(UserRepository $_userRepository)
+    protected $appointmentRepository;
+   
+    public function __construct(UserRepository $_userRepository,AppointmentRepository $_appointmentRepository)
     {
         $this->userRepository = $_userRepository;
+        $this->appointmentRepository = $_appointmentRepository;
     }
     /**
      * @OA\Post(
@@ -207,6 +210,6 @@ class UserController extends Controller
                 'data' => $validator->errors(),
             ));
         }
-        return json_encode($this->userRepository->SetWorktime((object) $request->all()));
+        return json_encode($this->appointmentRepository->SetWorktime((object) $request->all()));
     }
 }

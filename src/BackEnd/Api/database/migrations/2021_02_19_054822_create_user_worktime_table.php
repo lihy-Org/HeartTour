@@ -17,8 +17,9 @@ class CreateUserWorktimeTable extends Migration
             $table->uuid('id')->primary;
             $table->string('workDay')->comment('工作日');
             $table->string('workTime')->comment('工作时间');
-            $table->string('uid')->comment('人员编号');
-            $table->string('uname')->comment('人员编码');
+            $table->string('uid')->comment('人员编号');           
+            $table->string('uname')->comment('人员名称');
+            $table->string('storeId')->comment('门店编号');
             $table->string('orderId')->nullable()->comment('订单编号');
             $table->string('orderPrice')->nullable()->comment('订单价格');
             $table->timestamps();

@@ -4,11 +4,18 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Store;
+use App\Repositories\StoreRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
 class StoreController extends Controller
 {
+    protected $storeRepository;
+
+    public function __construct(StoreRepository $_storeRepository)
+    {
+        $this->storeRepository = $_storeRepository;
+    }
 
     /**
      * @OA\Post(
@@ -74,7 +81,7 @@ class StoreController extends Controller
      *         )
      *     )
      * )
-     */   
+     */
     public function GetList(Request $request)
     {
         $rules = [
@@ -96,14 +103,11 @@ class StoreController extends Controller
                 'data' => $validator->errors(),
             ));
         } else {
-            $data = $request->all();
-            $takeNum = isset($data['pageSize']) ? $data['pageSize'] : 10;
-            $page = isset($data['page']) ? $data['page'] : 1;
+            $data = (object) $request->all();
+            $takeNum = isset($data->pageSize) ? $data->pageSize : 10;
+            $page = isset($data->page) ? $data->page : 1;
             $skipNum = ($page - 1) * $takeNum;
-            $store = Store::orderBy('created_at');
-            if (isset($data['searchKey'])) {
-                $store = $store->where('name', 'like', '%' . $data['searchKey'] . '%');
-            }
+            $store = $this->storeRepository->GetList($data);
             $total = $store->count();
             $list = $store->skip($skipNum)->take($takeNum)->get();
             $pageTotal = $total / $takeNum;
@@ -183,7 +187,7 @@ class StoreController extends Controller
      *     )
      * )
      */
-    public function addOrUpdate(Request $request)
+    public function AddOrUpdate(Request $request)
     {
         $rules = [
             'name' => ['required', 'string'],
@@ -211,55 +215,11 @@ class StoreController extends Controller
                 'data' => $validator->errors(),
             ));
         }
-        $store = Store::find($request->storeId);
-        if (!$store) {
-            if (Store::where('name', $request->name)->first()) {
-                return json_encode(
-                    array(
-                        'status' => 500,
-                        'msg' => '重复店名!',
-                        'data' => '',
-                    )
-                );
-            }
-            $store = Store::create([
-                'name' => $request->name,
-                'phone' => $request->phone,
-                'lng' => $request->lng,
-                'lat' => $request->lat,
-                'address' => $request->address,
-                'businessHourStart' => $request->businessHourStart,
-                'businessHourEnd' => $request->businessHourEnd,
-                'type' => 1,
-            ]);
-            return json_encode(
-                array(
-                    'status' => 200,
-                    'msg' => '添加信息成功!',
-                    'data' => '',
-                )
-            );
-        } else {
-            $store->name = $request->name;
-            $store->phone = $request->phone;
-            $store->lng = $request->lng;
-            $store->lat = $request->lat;
-            $store->address = $request->address;
-            $store->businessHourStart = $request->businessHourStart;
-            $store->businessHourEnd = $request->businessHourEnd;
-            $store->type = $request->type;
-            $store->save();
-            return json_encode(
-                array(
-                    'status' => 200,
-                    'msg' => '修改信息成功!',
-                    'data' => '')
-            );
-        }
+        return json_encode($this->storeRepository->AddOrUpdate((object) $request->all()));
     }
     /**
      * @OA\Post(
-     *     path="/api/admin/store/switch",
+     *     path="/api/admin/store/remove",
      *     tags={"总台管理系统-门店管理"},
      *     summary="禁用启用门店",
      *     @OA\Parameter(name="token", in="header", @OA\Schema(type="string"), required=true, description="token"),
@@ -310,24 +270,82 @@ class StoreController extends Controller
      *       ),
      * )
      */
-    function switch (Request $request) {
-            $store = Store::where('id', $request->storeId)->first();
-            if ($store) {
-                $store->state = $store->state == 0 ? 1 : 0;
-                $store->save();
-                return json_encode(
-                    array(
-                        'status' => 200,
-                        'msg' => '禁用/启用成功!',
-                        'data' => '')
-                );
-            }
+    public function Remove(Request $request)
+    {
+        $store = Store::where('id', $request->storeId)->first();
+        if ($store) {
+            $store->state = $store->state == 0 ? 1 : 0;
+            $store->save();
             return json_encode(
                 array(
-                    'status' => 500,
-                    'msg' => '禁用/启用失败,找不到该门店!',
+                    'status' => 200,
+                    'msg' => '禁用/启用成功!',
                     'data' => '')
             );
+        }
+        return json_encode(
+            array(
+                'status' => 500,
+                'msg' => '禁用/启用失败,找不到该门店!',
+                'data' => '')
+        );
     }
 
+    /**
+     * @OA\Get(
+     *     path="/api/admin/store/GetSelectList",
+     *     tags={"总台管理系统-门店管理"},
+     *     summary="门店选择列表",
+     *     @OA\Parameter(name="token", in="header", @OA\Schema(type="string"), required=true, description="token"),
+     *     @OA\Response(
+     *         response=200,
+     *         description="成功",
+     *         @OA\JsonContent(
+     *            type="object",
+     *            @OA\Property(
+     *                   example="200",
+     *                   property="status",
+     *                   description="状态码",
+     *                   type="number",
+     *               ),
+     *            @OA\Property(
+     *                  type="string",
+     *                  property="msg",
+     *                  example="获取成功!",
+     *              ),
+     *           @OA\Property(
+     *                 type="object",
+     *                 property="data",
+     *                 example="{'status':200,'msg':'\u83b7\u53d6\u6210\u529f!','data':[{'id':'855a4b22-ae76-404b-915b-9b3dcbdc9908','type':'15828242712','key':'1','value':'1','sort':1,'children':[{'id':'9638c2f2-4042-4748-8bbf-42ebdd835b9d','type':'15828242712','key':'44','value':'33','sort':1,'parentId':'855a4b22-ae76-404b-915b-9b3dcbdc9908','children':[]}]},{'id':'a58d75e9-e95f-4eb2-afa5-0f765d8f2a21','type':'15828242712','key':'2','value':'2','sort':1,'children':[]},{'id':'ae9b506b-51d0-4d6a-8ba7-861bf0e06e11','type':'15828242712','key':'11','value':'11','sort':1,'children':[]},{'id':'80270597-e8e9-4f03-9f49-f256063fb5fc','type':'15828242712','key':'22','value':'22','sort':1,'children':[]},{'id':'43287466-0b1b-46de-803d-efa3219814e7','type':'15828242712','key':'33','value':'22','sort':1,'children':[]}]}",
+     *              )
+     *         )),
+     *      @OA\Response(
+     *         response=500,
+     *         description="失败",
+     *         @OA\JsonContent(
+     *            type="object",
+     *            @OA\Property(
+     *                   example="500",
+     *                   property="status",
+     *                   description="状态码",
+     *                   type="number",
+     *               ),
+     *           @OA\Property(
+     *                  type="string",
+     *                  property="msg",
+     *                  example="获取失败!",
+     *               ),
+     *          @OA\Property(
+     *                 type="object",
+     *                 property="data",
+     *                 example="错误信息",
+     *              )
+     *         )
+     *     )
+     * )
+     */
+    public function GetSelectList(Request $request)
+    {
+        return json_encode($this->storeRepository->GetSelectList()->get());
+    }
 }

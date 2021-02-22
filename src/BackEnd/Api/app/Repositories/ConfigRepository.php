@@ -61,4 +61,14 @@ class ConfigRepository
             $query->select('id', 'type', 'key', 'value', 'sort', 'parentId');
         }))->where('type', $type)->orderBy('sort');
     }
+
+    public function GetTopConfig($configId)
+    {
+        $config = $this->GetOne($type, $key);
+        if ($config->parentId == '' || $config->parentId == null) {
+            return $config;
+        } else {
+            return $this->GetTopConfig($config->parentId);
+        }
+    }
 }

@@ -13,5 +13,5 @@ class Pet extends Model
     use \App\Http\Traits\UseUuid;
     protected $table = 'pets';
     protected $primaryKey = 'id';
-    protected $fillable = ['wcid','avatar','nickname','gender','varietyId','variety','birthday','color','shoulderHeight','is_sterilization','remark'];
+    protected $fillable = ['wcid','avatar','nickname','typeId','type','gender','varietyId','variety','birthday','color','shoulderHeight','is_sterilization','remark'];
 }

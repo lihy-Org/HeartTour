@@ -72,7 +72,7 @@ class ConfigController extends Controller
      *     )
      * )
      */
-    public function getConfig($type, $key = '')
+    public function GetConfig($type, $key = '')
     {
         $rules = [
             'type' => ['required', 'string'],
@@ -178,7 +178,7 @@ class ConfigController extends Controller
      *     )
      * )
      */
-    public function addOrUpdate(Request $request)
+    public function AddOrUpdate(Request $request)
     {
         $rules = [
             'type' => ['required', 'string'],

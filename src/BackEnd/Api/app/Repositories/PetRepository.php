@@ -23,11 +23,14 @@ class PetRepository
                         'msg' => '无该品种信息!',
                         'data' => '');
                 }
+                $topvariety = $ConfigRepository->GetTopConfig($variety->id);
                 $pet = Pet::create([
                     'wcid' => $data->wcid,
                     'avatar' => $data->avatar,
                     'nickname' => $data->nickname,
                     'gender' => $data->gender,
+                    'type' => $topvariety->id,
+                    'type' => $topvariety->value,
                     'varietyId' => $data->varietyId,
                     'variety' => $variety->value,
                     'birthday' => isset($data->birthday) ? $data->birthday : "",
@@ -65,13 +68,13 @@ class PetRepository
                 $pet->birthday = isset($data->birthday) ? $data->birthday : "";
                 $pet->color = isset($data->color) ? $data->color : "";
                 $pet->shoulderHeight = isset($data->shoulderHeight) ? $data->shoulderHeight : 0;
-                $pet->remark =isset($data->remark) ? $data->remark : "";
+                $pet->remark = isset($data->remark) ? $data->remark : "";
                 $pet->save();
                 return array(
                     'status' => 200,
                     'msg' => '添加信息成功!',
                     'data' => '');
-            } catch (\Throwable $exception) {  
+            } catch (\Throwable $exception) {
                 // dd($exception);
                 return array(
                     'status' => 500,
@@ -101,5 +104,5 @@ class PetRepository
         }
         return $pets;
     }
-   
+
 }
