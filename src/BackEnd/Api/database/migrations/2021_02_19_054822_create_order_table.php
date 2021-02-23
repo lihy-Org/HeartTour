@@ -44,8 +44,8 @@ class CreateOrderTable extends Migration
             $table->timestamp('shippingTime')->nullable()->comment('发货时间');
             $table->timestamp('finishTime')->nullable()->comment('完成时间');
             $table->timestamp('cancelTime')->nullable()->comment('取消时间');
-            $table->unsignedInteger('state')->default(100)->comment('订单状态:正常状态100、支付失败202、待发货/已预约300、进行中（技师点击开始服务）350 已发货/待接取400、已收货/已完成500、
-            申请退款\售后 600 退货售后中601 拒绝退款501 完成退款502');
+            $table->unsignedInteger('state')->default(100)->comment('订单状态:正常状态100、支付失败202、待发货/已预约300、进行中（技师点击开始服务）350 
+            已发货/待接取400、已收货/已完成500、申请退款\售后 600 退货售后中601 拒绝退款501 完成退款502');
             $table->timestamps();
             $table->softDeletes();
             $table->primary('id');
