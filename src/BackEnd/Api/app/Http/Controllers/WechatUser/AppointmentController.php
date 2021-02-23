@@ -188,7 +188,6 @@ class AppointmentController extends Controller
             ));
         }
         $data = (object) $request->all();
-        $data->wcId = $request->user->id;
         return json_encode($this->appointmentRepository->GetWorktime($data)->get());
     }
 }

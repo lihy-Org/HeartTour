@@ -112,14 +112,17 @@ class UserController extends Controller
             $total = $users->count();
             $list = $users->skip($skipNum)->take($takeNum)->get();
             $pageTotal = $total / $takeNum;
-            $result['pages']['total'] = is_int($pageTotal) ? ($pageTotal) : (floor($pageTotal) + 1);
-            $result['pages']['pageNo'] = $page;
-            $result['data'] = $list;
+            $pageRes=(object)[];
+            $pageRes->total = $total;
+            $pageRes->pageNo = $page;
+            $pageRes->pageSize = $takeNum;
+            $pageRes->pages = is_int($pageTotal) ? ($pageTotal) : (floor($pageTotal) + 1);
             return json_encode(
                 array(
                     'status' => 200,
                     'msg' => '获取列表成功!',
-                    'data' => $result,
+                    'data' => $list,
+                    'page' => $pageRes,
                 )
             );
 
@@ -194,7 +197,7 @@ class UserController extends Controller
     {
         $rules = [
             'name' => ['required', 'string'],
-            'phone' => ['required', 'string', Rule::unique('users')->ignore($request->userId, 'id')],
+            'phone' => ['required','regex:/^((13[0-9])|(14[5,7])|(15[0-3,5-9])|(17[0,3,5-8])|(18[0-9])|166|198|199)\d{8}$/', 'string', Rule::unique('users')->ignore($request->userId, 'id')],
             'avatar' => ['required', 'string'],
             'gender' => ['required', 'string'],
             'age' => ['required', 'string'],
@@ -362,7 +365,7 @@ class UserController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/api/admin/user/SetManage",
+     *     path="/api/admin/user/setManage",
      *     tags={"总台管理系统-人员管理"},
      *     summary="设置店长",
      *     @OA\Parameter(name="token", in="header", @OA\Schema(type="string"), required=true, description="token"),

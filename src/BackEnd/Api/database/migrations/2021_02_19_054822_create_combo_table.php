@@ -26,6 +26,7 @@ class CreateComboTable extends Migration
             $table->unsignedTinyInteger('state')->default(0)->comment('状态，0：待上架，1：已上架，1：已下架 ');
             $table->timestamps();
             $table->softDeletes();
+            $table->primary('id');
         });
     }
 

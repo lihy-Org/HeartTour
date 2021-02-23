@@ -24,6 +24,7 @@ class CreateUserWorktimeTable extends Migration
             $table->string('orderPrice')->nullable()->comment('订单价格');
             $table->timestamps();
             $table->softDeletes();
+            $table->primary('id');
         });
     }
 

@@ -90,7 +90,7 @@ class AppointmentController extends Controller
             'storeId' => ['required', Rule::exists('stores', 'id')],
             'startDate' => ['date_format:"Y-m-d H:i:s"'],
             'endDate' => ['date_format:"Y-m-d H:i:s"'],
-            'state' => [Rule::in(['0', '1', '2', '3'])],
+            'state' => [Rule::in([0, 1, 2, 3])],
             'searchKey' => ['string'],
             'pageSize' => ['integer', 'gt:0'],
             'page' => ['integer', 'gt:0'],
@@ -113,18 +113,178 @@ class AppointmentController extends Controller
             $total = $appts->count();
             $list = $appts->skip($skipNum)->take($takeNum)->get();
             $pageTotal = $total / $takeNum;
-            $result['pages']['total'] = is_int($pageTotal) ? ($pageTotal) : (floor($pageTotal) + 1);
-            $result['pages']['pageNo'] = $page;
-            $result['data'] = $list;
+            $pageRes = (object) [];
+            $pageRes->total = $total;
+            $pageRes->pageNo = $page;
+            $pageRes->pageSize = $takeNum;
+            $pageRes->pages = is_int($pageTotal) ? ($pageTotal) : (floor($pageTotal) + 1);
             return json_encode(
                 array(
                     'status' => 200,
                     'msg' => '获取列表成功!',
-                    'data' => $result,
+                    'data' => $list,
+                    'page' => $pageRes,
                 )
             );
 
         }
+    }
+    /**
+     * @OA\Post(
+     *     path="/api/storesys/appt/getWorkTime",
+     *     tags={"门店管理系统-预约管理"},
+     *     summary="人员排班表",
+     *     @OA\Parameter(name="token", in="header", @OA\Schema(type="string"), required=true, description="token"),
+     *     @OA\RequestBody(
+     *     @OA\MediaType(
+     *       mediaType="multipart/form-data",
+     *         @OA\Schema()
+     *       )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="成功",
+     *         @OA\JsonContent(
+     *            type="object",
+     *            @OA\Property(
+     *                   example="200",
+     *                   property="status",
+     *                   description="状态码",
+     *                   type="number",
+     *               ),
+     *            @OA\Property(
+     *                   example="获取列表成功!",
+     *                   property="msg",
+     *                   description="提示信息",
+     *                   type="string",
+     *              ),
+     *             @OA\Property(
+     *                  type="object",
+     *                  property="data",
+     *                  example="",
+     *              )
+     *         )),
+     *       @OA\Response(
+     *         response=500,
+     *         description="失败",
+     *         @OA\JsonContent(
+     *            type="object",
+     *            @OA\Property(
+     *                   example="500",
+     *                   property="status",
+     *                   description="状态码",
+     *                   type="number",
+     *               )   ,
+     *          @OA\Property(
+     *                  type="string",
+     *                  property="msg",
+     *                  description="提示信息",
+     *                  example="获取列表失败!",
+     *              ),
+     *          @OA\Property(
+     *                  type="object",
+     *                  property="data",
+     *                  example="{'page':['\u8bf7\u8f93\u5165\u5355\u4f4d\u540d\u79f0\uff01']}",
+     *              )
+     *         )
+     *     )
+     * )
+     */
+    public function GetWorktime(Request $request)
+    {
+        $rules = [];
+        $messages = [];
+        $validator = Validator::make($request->all(), $rules, $messages);
+        if ($validator->fails()) {
+            return json_encode(array(
+                'status' => 500,
+                'msg' => '验证失败!',
+                'data' => $validator->errors(),
+            ));
+        }
+        $data = (object) $request->all();
+        $data->storeId = $request->user->storeId;
+        return json_encode($this->appointmentRepository->GetWorktime($data)->get());
+    }
+
+    /**
+     * @OA\Post(
+     *     path="/api/storesys/appt/trans",
+     *     tags={"门店管理系统-预约管理"},
+     *     summary="修改预约信息",
+     *     @OA\Parameter(name="token", in="header", @OA\Schema(type="string"), required=true, description="token"),
+     *     @OA\RequestBody(
+     *     @OA\MediaType(
+     *       mediaType="multipart/form-data",
+     *         @OA\Schema(
+     *           @OA\Property(description="套餐编号", property="orderId", type="string", default="dd"),
+     *           @OA\Property(description="预约日期 2020-01-01", property="workDay", type="string", default="dd"),
+     *           @OA\Property(description="预约时间 9:00 必须是规定的整点", property="workTime", type="string", default="dd"),
+     *           @OA\Property(description="技师ID", property="userId", type="string", default="dd"),
+     *           required={"comboIds","workDay","workTime","petId","userId","storeId"})
+     *       )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="成功",
+     *         @OA\JsonContent(
+     *            type="object",
+     *            @OA\Property(
+     *                   example="200",
+     *                   property="status",
+     *                   description="状态码",
+     *                   type="number",
+     *               ),
+     *            @OA\Property(
+     *                  type="string",
+     *                  property="msg",
+     *                  example="成功!",
+     *              )
+     *         ),
+     *     ),
+     *      @OA\Response(
+     *         response=500,
+     *         description="失败",
+     *         @OA\JsonContent(
+     *            type="object",
+     *            @OA\Property(
+     *                   example="500",
+     *                   property="status",
+     *                   description="状态码",
+     *                   type="number",
+     *               ),
+     *           @OA\Property(
+     *                  type="string",
+     *                  property="msg",
+     *                  example="失败!",
+     *               )
+     *           )
+     *       ),
+     * )
+     */
+    public function TransferAppt(Request $request)
+    {
+        $rules = [
+            'workDay' => ['required', 'date_format:"Y-m-d"', 'after_or_equal:today'],
+            'workTime' => ['required', 'date_format:"H:i"'],
+            'userId' => ['required', Rule::exists('users', 'id')->where(function ($query) use ($request) {
+                $query->where('state', 0)->whereNotIn('type', [0, 1])->where('isBeautician', 1)->where('storeId', $request->user->storeId);
+            })],
+            'orderId' => ['required', Rule::exists('orders', 'id')->where(function ($query) use ($request) {
+                $query->where('state', 300)->where('storeId', $request->user->storeId);
+            })],
+        ];
+        $messages = [];
+        $validator = Validator::make($request->all(), $rules, $messages);
+        if ($validator->fails()) {
+            return json_encode(array(
+                'status' => 500,
+                'msg' => '验证失败!',
+                'data' => $validator->errors(),
+            ));
+        }
+        $data = (object) $request->all();
+        return json_encode($this->appointmentRepository->TransferAppt($data));
     }
 
 }

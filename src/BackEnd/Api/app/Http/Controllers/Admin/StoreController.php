@@ -111,14 +111,17 @@ class StoreController extends Controller
             $total = $store->count();
             $list = $store->skip($skipNum)->take($takeNum)->get();
             $pageTotal = $total / $takeNum;
-            $result['pages']['total'] = is_int($pageTotal) ? ($pageTotal) : (floor($pageTotal) + 1);
-            $result['pages']['pageNo'] = $page;
-            $result['data'] = $list;
+            $pageRes=(object)[];
+            $pageRes->total = $total;
+            $pageRes->pageNo = $page;
+            $pageRes->pageSize = $takeNum;
+            $pageRes->pages = is_int($pageTotal) ? ($pageTotal) : (floor($pageTotal) + 1);
             return json_encode(
                 array(
                     'status' => 200,
                     'msg' => '获取列表成功!',
-                    'data' => $result,
+                    'data' => $list,
+                    'page' => $pageRes,
                 )
             );
         }
@@ -195,8 +198,8 @@ class StoreController extends Controller
             'lng' => ['required', 'string'],
             'lat' => ['required', 'string'],
             'address' => ['required', 'string'],
-            'businessHourStart' => ['required', 'string'],
-            'businessHourEnd' => ['required', 'string'],
+            'businessHourStart' => ['required', 'string','date_format:"H:i"'],
+            'businessHourEnd' => ['required', 'string','date_format:"H:i"'],
         ];
         $messages = [
             'name.required' => '请输入门店名称!',
@@ -293,7 +296,7 @@ class StoreController extends Controller
 
     /**
      * @OA\Get(
-     *     path="/api/admin/store/GetSelectList",
+     *     path="/api/admin/store/getSelectList",
      *     tags={"总台管理系统-门店管理"},
      *     summary="门店选择列表",
      *     @OA\Parameter(name="token", in="header", @OA\Schema(type="string"), required=true, description="token"),

@@ -116,14 +116,17 @@ class UserController extends Controller
             $total = $users->count();
             $list = $users->skip($skipNum)->take($takeNum)->get();
             $pageTotal = $total / $takeNum;
-            $result['pages']['total'] = is_int($pageTotal) ? ($pageTotal) : (floor($pageTotal) + 1);
-            $result['pages']['pageNo'] = $page;
-            $result['data'] = $list;
+            $pageRes=(object)[];
+            $pageRes->total = $total;
+            $pageRes->pageNo = $page;
+            $pageRes->pageSize = $takeNum;
+            $pageRes->pages = is_int($pageTotal) ? ($pageTotal) : (floor($pageTotal) + 1);
             return json_encode(
                 array(
                     'status' => 200,
                     'msg' => '获取列表成功!',
-                    'data' => $result,
+                    'data' => $list,
+                    'page' => $pageRes,
                 )
             );
 
@@ -188,14 +191,14 @@ class UserController extends Controller
      * )
      */
     public function SetWorktime(Request $request)
-    {
+    {        
         $rules = [
             'days' => ['required', 'array'],
             'days.*'=>['date_format:"Y-m-d"','after_or_equal:today'],
             'startTime' => ['nullable', 'date_format:"H:i"'],
             'endTime' => ['nullable', 'date_format:"H:i"'],
             'userId' => ['required', Rule::exists('users', 'id')->where(function ($query)use($request) {
-                $query->where('state', 0)->whereNotIn('type', [0, 1])->where('storeId', $request->user->storeId);
+                $query->where('state', 0)->whereNotIn('type', [0, 1])->where('isBeautician', 1)->where('storeId', $request->user->storeId);
             })],
         ];
         $messages = [

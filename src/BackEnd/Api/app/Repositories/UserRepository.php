@@ -28,7 +28,7 @@ class UserRepository
                         'status' => 500,
                         'msg' => '无该职位信息!',
                         'data' => '');
-                }
+                }             
                 $user = User::create([
                     'name' => $data->name,
                     'phone' => $data->phone,

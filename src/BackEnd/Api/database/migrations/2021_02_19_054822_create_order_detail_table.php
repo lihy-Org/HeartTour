@@ -23,6 +23,7 @@ class CreateOrderDetailTable extends Migration
             $table->unsignedDecimal('totalMoney', 11, 2)->comment('总价');
             $table->timestamps();
             $table->softDeletes();
+            $table->primary('id');
         });
     }
 

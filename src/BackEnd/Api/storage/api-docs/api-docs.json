@@ -309,6 +309,99 @@
                 }
             }
         },
+        "/api/admin/appt/getWorkTime": {
+            "post": {
+                "tags": [
+                    "总台管理系统-预约管理"
+                ],
+                "summary": "人员排班表",
+                "operationId": "App\\Http\\Controllers\\Admin\\AppointmentController::GetWorktime",
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "header",
+                        "description": "token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "storeId"
+                                ],
+                                "properties": {
+                                    "storeId": {
+                                        "description": "门店编号",
+                                        "type": "number",
+                                        "default": "13888888888"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "状态码",
+                                            "type": "number",
+                                            "example": "200"
+                                        },
+                                        "msg": {
+                                            "description": "提示信息",
+                                            "type": "string",
+                                            "example": "获取列表成功!"
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "example": ""
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "失败",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "状态码",
+                                            "type": "number",
+                                            "example": "500"
+                                        },
+                                        "msg": {
+                                            "description": "提示信息",
+                                            "type": "string",
+                                            "example": "获取列表失败!"
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "example": "{'page':['\\u8bf7\\u8f93\\u5165\\u5355\\u4f4d\\u540d\\u79f0\\uff01']}"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/admin/combo/addOrUpdate": {
             "post": {
                 "tags": [
@@ -957,7 +1050,7 @@
                 }
             }
         },
-        "/api/admin/config/delete": {
+        "/api/admin/config/remove": {
             "post": {
                 "tags": [
                     "总台管理系统-配置管理"
@@ -1360,7 +1453,7 @@
                 }
             }
         },
-        "/api/admin/store/GetSelectList": {
+        "/api/admin/store/getSelectList": {
             "get": {
                 "tags": [
                     "总台管理系统-门店管理"
@@ -1855,7 +1948,7 @@
                 }
             }
         },
-        "/api/admin/user/SetManage": {
+        "/api/admin/user/setManage": {
             "post": {
                 "tags": [
                     "总台管理系统-人员管理"
@@ -2158,6 +2251,15 @@
                         "schema": {
                             "type": "string"
                         }
+                    },
+                    {
+                        "name": "wcId",
+                        "in": "query",
+                        "description": "用户id",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
                     }
                 ],
                 "responses": {
@@ -2428,6 +2530,87 @@
                                 },
                                 "type": "object"
                             }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "状态码",
+                                            "type": "number",
+                                            "example": "200"
+                                        },
+                                        "msg": {
+                                            "description": "提示信息",
+                                            "type": "string",
+                                            "example": "获取列表成功!"
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "example": ""
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "失败",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "状态码",
+                                            "type": "number",
+                                            "example": "500"
+                                        },
+                                        "msg": {
+                                            "description": "提示信息",
+                                            "type": "string",
+                                            "example": "获取列表失败!"
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "example": "{'page':['\\u8bf7\\u8f93\\u5165\\u5355\\u4f4d\\u540d\\u79f0\\uff01']}"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/storesys/appt/getWorkTime": {
+            "post": {
+                "tags": [
+                    "门店管理系统-预约管理"
+                ],
+                "summary": "人员排班表",
+                "operationId": "App\\Http\\Controllers\\StoreSystem\\AppointmentController::GetWorktime",
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "header",
+                        "description": "token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {}
                         }
                     }
                 },
@@ -2865,13 +3048,13 @@
                 }
             }
         },
-        "/api/address/delete": {
+        "/api/address/remove": {
             "post": {
                 "tags": [
                     "小程序-收货地址"
                 ],
                 "summary": "删除收货地址信息",
-                "operationId": "App\\Http\\Controllers\\WechatUser\\AddressController::Delete",
+                "operationId": "App\\Http\\Controllers\\WechatUser\\AddressController::Remove",
                 "parameters": [
                     {
                         "name": "token",

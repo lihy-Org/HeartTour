@@ -23,6 +23,7 @@ class CreateAddressTable extends Migration
             $table->unsignedTinyInteger('default')->default(0)->comment('地址状态，0：非默认，1：默认');
             $table->timestamps();
             $table->softDeletes();
+            $table->primary('id');
         });
     }
 

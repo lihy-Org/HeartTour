@@ -48,6 +48,7 @@ class CreateOrderTable extends Migration
             申请退款\售后 600 退货售后中601 拒绝退款501 完成退款502');
             $table->timestamps();
             $table->softDeletes();
+            $table->primary('id');
         });
     }
 

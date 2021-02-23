@@ -9,7 +9,7 @@ class WechatUserRepository
 
     public function GetList($data)
     {
-        $users = WechatUser::where('state', 0)->leftjoin(DB::raw('(SELECT wcid,count(1) count from pets WHERE deleted_at is NULL GROUP BY wcid) pets'), function ($join) {$join->on('pets.wcid', '=', 'wechatUser.id');
+        $users = WechatUser::leftjoin(DB::raw('(SELECT wcid,count(1) count from pets WHERE deleted_at is NULL GROUP BY wcid) pets'), function ($join) {$join->on('pets.wcid', '=', 'wechatUser.id');
         })->orderBy('lastlogin');
         if (isset($data->searchKey)) {
             $users = $users->where(function ($query) use ($data) {
@@ -19,6 +19,9 @@ class WechatUserRepository
         }
         if (isset($data->state)) {
             $users = $users->where('state', $data->state);
+        }
+        if (isset($data->wcId)) {
+            $users = $users->where('wcid', $data->wcId);
         }
         //累计消费 升序-ascend   降序-descend
         // if (isset($data->consumesSort)) {

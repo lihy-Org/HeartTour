@@ -28,6 +28,7 @@ class CreateStoresTable extends Migration
             $table->tinyInteger('state')->default(0)->comment('状态0正常，1停止营业'); 
             $table->softDeletes();
             $table->timestamps();
+            $table->primary('id');
         });
     }
 

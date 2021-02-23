@@ -30,6 +30,7 @@ class CreatePetTable extends Migration
             $table->integer('shoulderHeight')->nullable()->default(0)->comment('肩高');
             $table->unsignedTinyInteger('is_sterilization')->default(1)->comment('是否绝育，0：未绝育，1：已绝育');
             $table->string('remark')->nullable()->default('')->comment('备注');
+            $table->primary('id');
         });
     }
 

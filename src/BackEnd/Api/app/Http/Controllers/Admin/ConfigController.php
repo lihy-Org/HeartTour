@@ -102,7 +102,7 @@ class ConfigController extends Controller
                     array(
                         'status' => 200,
                         'msg' => '获取成功!',
-                        'data' => $this->configRepository->GetOneByType($type)->select('id', 'type', 'key', 'value', 'sort')->get(),
+                        'data' => $this->configRepository->GetByType($type)->select('id', 'type', 'key', 'value', 'sort')->get(),
                     )
                 );
             }
@@ -204,7 +204,7 @@ class ConfigController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/api/admin/config/delete",
+     *     path="/api/admin/config/remove",
      *     tags={"总台管理系统-配置管理"},
      *     summary="删除配置",
      *     @OA\Parameter(name="token", in="header", @OA\Schema(type="string"), required=true, description="token"),

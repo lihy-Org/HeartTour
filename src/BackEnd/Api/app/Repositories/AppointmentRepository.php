@@ -70,7 +70,7 @@ class AppointmentRepository
             for ($i = 0; $i < $times; $i++) {
                 $usertime = $usertimes[$i];
                 //第一个时间不是选择的时间 说明该技师在选择时间还未排班
-                if ($data->workTime != $usertime->workTime) {
+                if ($i == 0 && $data->workTime != $usertime->workTime) {
                     return array(
                         'status' => 500,
                         'msg' => '预约失败,技师' . $usertime->workTime . '还没进行排期!',
@@ -87,7 +87,7 @@ class AppointmentRepository
             }
             $wc = WechatUser::find($data->wcId);
             $user = User::find($data->userId);
-            $store = Store::find($data->storeId);
+            $store = Store::find($user->storeId);
             $pet = Pet::find($data->petId);
             //保存主订单
             $order = Order::create([
@@ -98,7 +98,7 @@ class AppointmentRepository
                 'petType' => $pet->type,
                 'userId' => $data->userId,
                 'userName' => $user->name,
-                'storeId' => $data->storeId,
+                'storeId' => $user->storeId,
                 'storeName' => $store->name,
                 'phone' => $wc->phone,
                 'mainComboName' => $mainCombo->name,
@@ -187,7 +187,7 @@ class AppointmentRepository
     public function GetWorktime($data)
     {
         return UserWorktime::where('workDay', '>=', Carbon::now())->where('storeId', $data->storeId)
-        ->select('storeId', 'uid', 'uname', 'workDay', 'workTime','orderId');
+            ->select('storeId', 'uid', 'uname', 'workDay', 'workTime', 'orderId');
     }
 
     public function SetWorktime($data)
@@ -232,5 +232,82 @@ class AppointmentRepository
                 'msg' => '失败!' . $ex->getMessage(),
                 'data' => '');
         }
+    }
+
+    //修改技师和预约时间
+    public function TransferAppt($data)
+    {
+        try {
+            $ConfigRepository = new ConfigRepository();
+            $config = $ConfigRepository->GetOne('TimeSlot', 'TimeSlot')->first();
+            $oldWorktimes = UserWorktime::where('orderId', $data->orderId)->get();
+            $times = $oldWorktimes->count();
+            DB::beginTransaction(); // 开启事务
+            UserWorktime::where('orderId', $data->orderId)->update(
+                ['orderId' => null, 'orderPrice' => null]
+            );
+
+            //直接获取之前预约的时间段数据
+            $apptUserWorktimes = [];
+            $usertimes = UserWorktime::where('workDay', $data->workDay)->where('uid', $data->userId)
+                ->where('workTime', '>=', $data->workTime)->orderby('workTime')->take($times)->get();
+            if ($usertimes->count() != $times) {
+                return array(
+                    'status' => 500,
+                    'msg' => '预约失败,该技师无可预约时间!',
+                    'data' => '');
+            }
+            for ($i = 0; $i < $times; $i++) {
+                $usertime = $usertimes[$i];
+                //第一个时间不是选择的时间 说明该技师在选择时间还未排班
+                if ($i == 0 && $data->workTime != $usertime->workTime) {
+                    return array(
+                        'status' => 500,
+                        'msg' => '预约失败,技师' . $usertime->workTime . '还没进行排期!',
+                        'data' => '');
+                }
+                if ($usertime == null || $usertime->orderId != null) {
+                    return array(
+                        'status' => 500,
+                        'msg' => '预约失败,技师' . $usertime->workTime . '已被预约!',
+                        'data' => '');
+
+                }
+                array_push($apptUserWorktimes, $usertime);
+            }
+            
+            $user = User::find($data->userId);
+            // $store = Store::find($data->storeId);
+
+            //修改主订单
+            $order=Order::find($data->orderId);
+            $order->userId=$data->userId;
+            $order->userName=$user->name;
+            $order->apptTime =$data->workDay . $apptUserWorktimes[0]->workTime;          
+           
+            //保存用户预约信息
+            for ($i = 0; $i < $times; $i++) {
+                $usertime = $apptUserWorktimes[$i];
+                $usertime->orderId = $order->id;
+                if ($i == 0) {
+                    $usertime->orderPrice = $order->totalMoney;
+                }
+                $usertime->save();
+            }
+            Db::commit(); // 提交事务
+            return array(
+                'status' => 200,
+                'msg' => '添加信息成功!',
+                'data' => '');
+
+        } catch (\Exception $exception) {
+            // dd($exception);
+            Db::rollback(); // 回滚事务
+            return array(
+                'status' => 500,
+                'msg' => '保存失败!' . $exception->getMessage(),
+                'data' => '');
+        }
+
     }
 }

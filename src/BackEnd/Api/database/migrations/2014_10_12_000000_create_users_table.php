@@ -29,6 +29,7 @@ class CreateUsersTable extends Migration
             $table->tinyInteger('state')->default(0)->comment('状态0正常，1离职'); 
             $table->timestamps();
             $table->softDeletes();
+            $table->primary('id');
         });
     }
 
