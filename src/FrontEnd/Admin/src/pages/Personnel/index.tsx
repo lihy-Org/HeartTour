@@ -1,7 +1,7 @@
 /*
  * @Author: Li-HONGYAO
  * @Date: 2021-01-18 11:15:25
- * @LastEditTime: 2021-01-31 09:58:03
+ * @LastEditTime: 2021-02-24 13:44:28
  * @LastEditors: Li-HONGYAO
  * @Description:
  * @FilePath: /Admin/src/pages/Personnel/index.tsx
@@ -30,6 +30,8 @@ import StoreSelect from '@/components/StoreSelect';
 import Validator from 'lg-validator';
 import { RuleObject } from 'antd/lib/form';
 import UploadFile from '@/components/UploadFile';
+import Api from '@/Api';
+import HT from '@/constants/interface';
 
 // 筛选条件
 type FilterParamsType = {
@@ -62,7 +64,7 @@ type PersonnelFormType = {
   postId: string /** 职位id */;
   phone: string /** 联系电话 */;
   title: string[] /** 头衔 */;
-  isTechnician: number; /** 是否技师 0-否 1-是 */
+  isTechnician: number /** 是否技师 0-否 1-是 */;
 };
 
 const { Option } = Select;
@@ -96,12 +98,13 @@ const Personnel: FC = () => {
   // state
   const [addModalVisible, setAddModalVisible] = useState(false);
   const [storeModalVisible, setStoreModalVisible] = useState(false);
+  // const [stores, setStores] = useState<any[]>([]);
   const [selectedStore, setSelectedStore] = useState(-1);
   const [form] = Form.useForm();
   const [personnelForm] = Form.useForm();
   const [dataSource, setDataSource] = useState<ColumnsType[]>([]);
   const [total, setTotal] = useState(0);
-  const [page, setPage] = useState<DP.TablePageDataType<FilterParamsType>>(
+  const [page, setPage] = useState<HT.TablePageDataType<FilterParamsType>>(
     () => ({
       pageSize: 20,
       page: 1,
@@ -113,30 +116,19 @@ const Personnel: FC = () => {
   // methods
   const getDataSource = () => {
     // console.log(filterParams);
-
     message.loading('数据加载中...');
-    const tempArr: ColumnsType[] = [];
-    for (let i = 0; i < 88; i++) {
-      tempArr.push({
-        id: i,
-        avatar:
-          'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fn.sinaimg.cn%2Ffront%2F342%2Fw700h442%2F20190321%2FxqrY-huqrnan7527352.jpg&refer=http%3A%2F%2Fn.sinaimg.cn&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1613916524&t=a4e12aa1c942ca1b4ac8c2fd35328896',
-        name: '迪丽热巴',
-        gender: '女',
-        age: 28,
-        title: i % 6 === 0 ? undefined : ['高级'],
-        post: '收营员',
-        phone: '15888899917',
-        store: i % 5 === 0 ? '' : '九里晴川店',
-        storeId: 2,
+    Api.personnel
+      .list<HT.BaseResponse<ColumnsType[]>>({
+        page: page.page,
+        pageSize: page.pageSize,
+      })
+      .then((res) => {
+        if (res.status === 200) {
+          setDataSource(res.data);
+          setTotal(res.page.total);
+        }
       });
-    }
 
-    setTimeout(() => {
-      setDataSource(tempArr);
-      setTotal(tempArr.length);
-      message.destroy();
-    }, 500);
   };
   // events
   const onAddPersonnel = async () => {
@@ -170,6 +162,13 @@ const Personnel: FC = () => {
   };
 
   // effects
+  useEffect(() =>{
+    // Api.store.getSelectList<HT.BaseResponse<any[]>>().then(res => {
+    //   if(res.status === 200) {
+    //     console.log(res);
+    //   }
+    // })
+  }, []);
   useEffect(() => {
     getDataSource();
   }, [page]);

@@ -71,7 +71,7 @@ const Headers: FC<IProps> = (props) => {
     message.warning('暂未开放');
   };
   const onLoginOut = () => {
-    Cookie.del('XXX_ADMIN_TOKEN');
+    Cookie.del('HT_TOKEN');
     history.push('/login');
   };
   // effects

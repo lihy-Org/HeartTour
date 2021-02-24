@@ -1,7 +1,7 @@
 /*
  * @Author: Li-HONGYAO
  * @Date: 2021-01-22 12:36:49
- * @LastEditTime: 2021-01-31 00:54:01
+ * @LastEditTime: 2021-02-23 22:09:08
  * @LastEditors: Li-HONGYAO
  * @Description:
  * @FilePath: /Admin/src/pages/Configs/index.tsx
@@ -10,11 +10,14 @@ import React, { FC, useState } from 'react';
 import { Card, Button } from 'antd';
 import { EditOutlined } from '@ant-design/icons';
 import TagModal from '@/components/TagModal';
+import { kPOST, kTITLE } from '@/constants';
 
 const { Meta } = Card;
 
 const Banner: FC = () => {
   // state
+  const [postVisible, setPostVisible] = useState(false);
+  const [titleVisible, setTitleVisible] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
 
   // list datas
@@ -45,7 +48,7 @@ const Banner: FC = () => {
           type="primary"
           size="small"
           icon={<EditOutlined key="edit" />}
-          onClick={() => setModalVisible(true)}
+          onClick={() => setPostVisible(true)}
         >
           查看编辑
         </Button>,
@@ -93,7 +96,7 @@ const Banner: FC = () => {
           type="primary"
           size="small"
           icon={<EditOutlined key="edit" />}
-          onClick={() => setModalVisible(true)}
+          onClick={() => setTitleVisible(true)}
         >
           查看编辑
         </Button>,
@@ -141,15 +144,19 @@ const Banner: FC = () => {
         </div>
       </div>
       {/* modals */}
+      {/* 职位管理 */}
       <TagModal
-        visible={modalVisible}
+        title="职位管理"
+        visible={postVisible}
+        type={kPOST}
+        onCancel={() => { setPostVisible(false)}}
+      />
+      {/* 头衔管理 */}
+      <TagModal
         title="头衔管理"
-        tags={['高级技师', '资深保洁', '王牌店长']}
-        onCancel={() => setModalVisible(false)}
-        onOk={(values) => {
-          console.log(values);
-          setModalVisible(false);
-        }}
+        visible={titleVisible}
+        type={kTITLE}
+        onCancel={() => { setTitleVisible(false)}}
       />
     </div>
   );

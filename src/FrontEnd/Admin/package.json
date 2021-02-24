@@ -40,7 +40,7 @@
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "react-particles-js": "^3.4.1",
-    "umi": "^3.3.3",
+    "umi": "^3.3.9",
     "yorkie": "^2.0.0"
   },
   "devDependencies": {

@@ -1,7 +1,7 @@
 /*
  * @Author: Li-HONGYAO
  * @Date: 2021-01-18 11:15:25
- * @LastEditTime: 2021-02-21 22:13:37
+ * @LastEditTime: 2021-02-23 14:46:37
  * @LastEditors: Li-HONGYAO
  * @Description:
  * @FilePath: /Admin/src/pages/Combo/index.tsx
@@ -92,7 +92,7 @@ const Combo: FC = () => {
   const [dataSource, setDataSource] = useState<ColumnsType[]>([]);
   const [total, setTotal] = useState(0);
   const [checkedStores, setCheckedStores] = useState<number[]>([]);
-  const [page, setPage] = useState<DP.TablePageDataType<FilterParamsType>>(
+  const [page, setPage] = useState<HT.TablePageDataType<FilterParamsType>>(
     () => ({
       pageSize: 20,
       page: 1,

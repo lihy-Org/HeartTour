@@ -1,7 +1,7 @@
 /*
  * @Author: Li-HONGYAO
  * @Date: 2021-01-18 11:15:25
- * @LastEditTime: 2021-01-29 11:27:21
+ * @LastEditTime: 2021-02-24 13:48:50
  * @LastEditors: Li-HONGYAO
  * @Description:
  * @FilePath: /Admin/src/pages/Store/index.tsx
@@ -24,6 +24,8 @@ import { ColumnProps } from 'antd/es/table';
 import { RuleObject } from 'antd/lib/form';
 import Validator from 'lg-validator';
 import moment from 'moment';
+import HT from '@/constants/interface';
+import Api from '@/Api';
 
 // 筛选条件
 type FilterParamsType = {};
@@ -40,6 +42,7 @@ type ShopAssistantType = {
   post: string /** 职位 */;
   isManager?: boolean /** 是否为店长 */;
 };
+type StoreFormTypeKeys = keyof StoreFormType;
 // 列表数据类型
 type ColumnsType = {
   id: number /** 门店id */;
@@ -77,7 +80,7 @@ const Store: FC = () => {
   const [saModalVisible, setSAModalVisible] = useState(false);
   const [dataSource, setDataSource] = useState<ColumnsType[]>([]);
   const [total, setTotal] = useState(0);
-  const [page, setPage] = useState<DP.TablePageDataType<FilterParamsType>>(
+  const [page, setPage] = useState<HT.TablePageDataType<FilterParamsType>>(
     () => ({
       pageSize: 20,
       page: 1,
@@ -87,6 +90,14 @@ const Store: FC = () => {
   // methods
   const getDataSource = () => {
     // console.log(filterParams);
+    Api.store.list<HT.BaseResponse<ColumnsType[]>>({
+      page: page.page,
+      pageSize: page.pageSize
+    }).then(res => {
+      if(res.status === 200) {
+        console.log(res);
+      }
+    })
     message.loading('数据加载中...');
     const tempArr: ColumnsType[] = [];
     for (let i = 0; i < 88; i++) {
@@ -113,9 +124,25 @@ const Store: FC = () => {
   const onAddStore = async () => {
     try {
       const values: StoreFormType = await storeForm.validateFields();
-      console.log(values);
-      message.success('添加成功');
-      setAddModalVisible(false);
+      if (values) {
+        Api.store
+          .addOrUpdate<HT.BaseResponse<any>>({
+            name: values.name,
+            phone: values.phone,
+            lat: values.lat,
+            lng: values.lng,
+            address: values.address,
+            businessHourStart: values.businessHours[0].format('HH:mm'),
+            businessHourEnd: values.businessHours[1].format('HH:mm'),
+          })
+          .then((res) => {
+            if (res.status === 200) {
+              console.log(res);
+            }
+          });
+        // message.success('添加成功');
+        // setAddModalVisible(false);
+      }
     } catch (err) {}
   };
   const onDeleteStore = (id: number) => {
@@ -132,7 +159,7 @@ const Store: FC = () => {
     message.success('设置成功');
   };
   const onQueryShopAssistant = (id: number) => {
-    if(id % 5 === 0) {
+    if (id % 5 === 0) {
       message.info('该门店暂未分配店员');
       return;
     }
@@ -221,6 +248,7 @@ const Store: FC = () => {
     message.success('删除成功');
   };
   // effects
+
   useEffect(() => {
     getDataSource();
   }, [page]);
@@ -233,7 +261,12 @@ const Store: FC = () => {
       width: 60,
     },
     { title: '门店名称', dataIndex: 'name' },
-    { title: '店长', dataIndex: 'shopManager', render: (record) => record || <span className="color-C5C5C5">暂未设置</span> },
+    {
+      title: '店长',
+      dataIndex: 'shopManager',
+      render: (record) =>
+        record || <span className="color-C5C5C5">暂未设置</span>,
+    },
     {
       title: '店员',
       key: 'query_shopAssistant',
@@ -275,7 +308,7 @@ const Store: FC = () => {
                   moment(record.businessHours[0], 'HH:mm'),
                   moment(record.businessHours[1], 'HH:mm'),
                 ],
-              })
+              });
               setAddModalVisible(true);
             }}
           >
