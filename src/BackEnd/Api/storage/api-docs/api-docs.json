@@ -186,6 +186,222 @@
                 }
             }
         },
+        "/api/admin/appt/list": {
+            "post": {
+                "tags": [
+                    "总台管理系统-预约管理"
+                ],
+                "summary": "预约列表",
+                "operationId": "App\\Http\\Controllers\\Admin\\AppointmentController::GetList",
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "header",
+                        "description": "token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "state"
+                                ],
+                                "properties": {
+                                    "storeId": {
+                                        "description": "门店编号",
+                                        "type": "string",
+                                        "default": "13888888888"
+                                    },
+                                    "state": {
+                                        "description": "0-已预约 1-进行中 2-待接取 3-已完成",
+                                        "type": "string",
+                                        "default": ""
+                                    },
+                                    "startDate": {
+                                        "description": "预约开始时间",
+                                        "type": "string",
+                                        "default": ""
+                                    },
+                                    "endDate": {
+                                        "description": "预约结束时间",
+                                        "type": "string",
+                                        "default": ""
+                                    },
+                                    "pageSize": {
+                                        "description": "条数",
+                                        "type": "number",
+                                        "default": "10"
+                                    },
+                                    "page": {
+                                        "description": "页数",
+                                        "type": "number",
+                                        "default": "1"
+                                    },
+                                    "searchKey": {
+                                        "description": "关键字",
+                                        "type": "string",
+                                        "default": ""
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "状态码",
+                                            "type": "number",
+                                            "example": "200"
+                                        },
+                                        "msg": {
+                                            "description": "提示信息",
+                                            "type": "string",
+                                            "example": "获取列表成功!"
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "example": ""
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "失败",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "状态码",
+                                            "type": "number",
+                                            "example": "500"
+                                        },
+                                        "msg": {
+                                            "description": "提示信息",
+                                            "type": "string",
+                                            "example": "获取列表失败!"
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "example": "{'page':['\\u8bf7\\u8f93\\u5165\\u5355\\u4f4d\\u540d\\u79f0\\uff01']}"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/appt/getWorkTime": {
+            "post": {
+                "tags": [
+                    "总台管理系统-预约管理"
+                ],
+                "summary": "人员排班表",
+                "operationId": "App\\Http\\Controllers\\Admin\\AppointmentController::GetWorktime",
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "header",
+                        "description": "token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "storeId"
+                                ],
+                                "properties": {
+                                    "storeId": {
+                                        "description": "门店编号",
+                                        "type": "number",
+                                        "default": "13888888888"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "状态码",
+                                            "type": "number",
+                                            "example": "200"
+                                        },
+                                        "msg": {
+                                            "description": "提示信息",
+                                            "type": "string",
+                                            "example": "获取列表成功!"
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "example": ""
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "失败",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "状态码",
+                                            "type": "number",
+                                            "example": "500"
+                                        },
+                                        "msg": {
+                                            "description": "提示信息",
+                                            "type": "string",
+                                            "example": "获取列表失败!"
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "example": "{'page':['\\u8bf7\\u8f93\\u5165\\u5355\\u4f4d\\u540d\\u79f0\\uff01']}"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/admin/combo/addOrUpdate": {
             "post": {
                 "tags": [
@@ -625,7 +841,7 @@
                     "总台管理系统-配置管理"
                 ],
                 "summary": "获取配置",
-                "operationId": "App\\Http\\Controllers\\Admin\\ConfigController::getConfig",
+                "operationId": "App\\Http\\Controllers\\Admin\\ConfigController::GetConfig",
                 "parameters": [
                     {
                         "name": "token",
@@ -715,7 +931,7 @@
                     "总台管理系统-配置管理"
                 ],
                 "summary": "添加或修改配置",
-                "operationId": "App\\Http\\Controllers\\Admin\\ConfigController::addOrUpdate",
+                "operationId": "App\\Http\\Controllers\\Admin\\ConfigController::AddOrUpdate",
                 "parameters": [
                     {
                         "name": "token",
@@ -834,7 +1050,7 @@
                 }
             }
         },
-        "/api/admin/config/delete": {
+        "/api/admin/config/remove": {
             "post": {
                 "tags": [
                     "总台管理系统-配置管理"
@@ -1033,7 +1249,7 @@
                     "总台管理系统-门店管理"
                 ],
                 "summary": "新增或修改门店信息",
-                "operationId": "App\\Http\\Controllers\\Admin\\StoreController::addOrUpdate",
+                "operationId": "App\\Http\\Controllers\\Admin\\StoreController::AddOrUpdate",
                 "parameters": [
                     {
                         "name": "token",
@@ -1154,12 +1370,13 @@
                 }
             }
         },
-        "/api/admin/store/switch": {
+        "/api/admin/store/remove": {
             "post": {
                 "tags": [
                     "总台管理系统-门店管理"
                 ],
                 "summary": "禁用启用门店",
+                "operationId": "App\\Http\\Controllers\\Admin\\StoreController::Remove",
                 "parameters": [
                     {
                         "name": "token",
@@ -1226,6 +1443,78 @@
                                         "msg": {
                                             "type": "string",
                                             "example": "禁用/启用失败!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/store/getSelectList": {
+            "get": {
+                "tags": [
+                    "总台管理系统-门店管理"
+                ],
+                "summary": "门店选择列表",
+                "operationId": "App\\Http\\Controllers\\Admin\\StoreController::GetSelectList",
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "header",
+                        "description": "token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "状态码",
+                                            "type": "number",
+                                            "example": "200"
+                                        },
+                                        "msg": {
+                                            "type": "string",
+                                            "example": "获取成功!"
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "example": "{'status':200,'msg':'\\u83b7\\u53d6\\u6210\\u529f!','data':[{'id':'855a4b22-ae76-404b-915b-9b3dcbdc9908','type':'15828242712','key':'1','value':'1','sort':1,'children':[{'id':'9638c2f2-4042-4748-8bbf-42ebdd835b9d','type':'15828242712','key':'44','value':'33','sort':1,'parentId':'855a4b22-ae76-404b-915b-9b3dcbdc9908','children':[]}]},{'id':'a58d75e9-e95f-4eb2-afa5-0f765d8f2a21','type':'15828242712','key':'2','value':'2','sort':1,'children':[]},{'id':'ae9b506b-51d0-4d6a-8ba7-861bf0e06e11','type':'15828242712','key':'11','value':'11','sort':1,'children':[]},{'id':'80270597-e8e9-4f03-9f49-f256063fb5fc','type':'15828242712','key':'22','value':'22','sort':1,'children':[]},{'id':'43287466-0b1b-46de-803d-efa3219814e7','type':'15828242712','key':'33','value':'22','sort':1,'children':[]}]}"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "失败",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "状态码",
+                                            "type": "number",
+                                            "example": "500"
+                                        },
+                                        "msg": {
+                                            "type": "string",
+                                            "example": "获取失败!"
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "example": "错误信息"
                                         }
                                     },
                                     "type": "object"
@@ -1361,7 +1650,7 @@
                     "总台管理系统-人员管理"
                 ],
                 "summary": "新增或修改人员信息",
-                "operationId": "App\\Http\\Controllers\\Admin\\UserController::addOrUpdate",
+                "operationId": "App\\Http\\Controllers\\Admin\\UserController::AddOrUpdate",
                 "parameters": [
                     {
                         "name": "token",
@@ -1659,7 +1948,7 @@
                 }
             }
         },
-        "/api/admin/user/SetManage": {
+        "/api/admin/user/setManage": {
             "post": {
                 "tags": [
                     "总台管理系统-人员管理"
@@ -1962,6 +2251,15 @@
                         "schema": {
                             "type": "string"
                         }
+                    },
+                    {
+                        "name": "wcId",
+                        "in": "query",
+                        "description": "用户id",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
                     }
                 ],
                 "responses": {
@@ -2095,7 +2393,7 @@
         "/api/storesys/verifCode": {
             "post": {
                 "tags": [
-                    "总台管理系统-授权"
+                    "门店管理系统-授权"
                 ],
                 "summary": "获取登录验证码",
                 "requestBody": {
@@ -2163,6 +2461,205 @@
                                         "data": {
                                             "type": "object",
                                             "example": "错误信息"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/storesys/appt/list": {
+            "post": {
+                "tags": [
+                    "门店管理系统-预约管理"
+                ],
+                "summary": "预约列表",
+                "operationId": "App\\Http\\Controllers\\StoreSystem\\AppointmentController::GetList",
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "header",
+                        "description": "token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "state"
+                                ],
+                                "properties": {
+                                    "state": {
+                                        "description": "0-已预约 1-进行中 2-待接取 3-已完成",
+                                        "type": "string",
+                                        "default": ""
+                                    },
+                                    "startDate": {
+                                        "description": "预约开始时间",
+                                        "type": "string",
+                                        "default": ""
+                                    },
+                                    "endDate": {
+                                        "description": "预约结束时间",
+                                        "type": "string",
+                                        "default": ""
+                                    },
+                                    "pageSize": {
+                                        "description": "条数",
+                                        "type": "number",
+                                        "default": "10"
+                                    },
+                                    "page": {
+                                        "description": "页数",
+                                        "type": "number",
+                                        "default": "1"
+                                    },
+                                    "searchKey": {
+                                        "description": "关键字",
+                                        "type": "string",
+                                        "default": ""
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "状态码",
+                                            "type": "number",
+                                            "example": "200"
+                                        },
+                                        "msg": {
+                                            "description": "提示信息",
+                                            "type": "string",
+                                            "example": "获取列表成功!"
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "example": ""
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "失败",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "状态码",
+                                            "type": "number",
+                                            "example": "500"
+                                        },
+                                        "msg": {
+                                            "description": "提示信息",
+                                            "type": "string",
+                                            "example": "获取列表失败!"
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "example": "{'page':['\\u8bf7\\u8f93\\u5165\\u5355\\u4f4d\\u540d\\u79f0\\uff01']}"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/storesys/appt/getWorkTime": {
+            "post": {
+                "tags": [
+                    "门店管理系统-预约管理"
+                ],
+                "summary": "人员排班表",
+                "operationId": "App\\Http\\Controllers\\StoreSystem\\AppointmentController::GetWorktime",
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "header",
+                        "description": "token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {}
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "状态码",
+                                            "type": "number",
+                                            "example": "200"
+                                        },
+                                        "msg": {
+                                            "description": "提示信息",
+                                            "type": "string",
+                                            "example": "获取列表成功!"
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "example": ""
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "失败",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "状态码",
+                                            "type": "number",
+                                            "example": "500"
+                                        },
+                                        "msg": {
+                                            "description": "提示信息",
+                                            "type": "string",
+                                            "example": "获取列表失败!"
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "example": "{'page':['\\u8bf7\\u8f93\\u5165\\u5355\\u4f4d\\u540d\\u79f0\\uff01']}"
                                         }
                                     },
                                     "type": "object"
@@ -2551,13 +3048,13 @@
                 }
             }
         },
-        "/api/address/delete": {
+        "/api/address/remove": {
             "post": {
                 "tags": [
                     "小程序-收货地址"
                 ],
                 "summary": "删除收货地址信息",
-                "operationId": "App\\Http\\Controllers\\WechatUser\\AddressController::Delete",
+                "operationId": "App\\Http\\Controllers\\WechatUser\\AddressController::Remove",
                 "parameters": [
                     {
                         "name": "token",
@@ -2593,6 +3090,212 @@
                                         "msg": {
                                             "type": "string",
                                             "example": "删除收货地址成功!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/appt/add": {
+            "post": {
+                "tags": [
+                    "小程序-预约"
+                ],
+                "summary": "预约",
+                "operationId": "App\\Http\\Controllers\\WechatUser\\AppointmentController::Appointment",
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "header",
+                        "description": "token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "comboIds",
+                                    "workDay",
+                                    "workTime",
+                                    "petId",
+                                    "userId",
+                                    "storeId"
+                                ],
+                                "properties": {
+                                    "comboIds": {
+                                        "description": "套餐编号",
+                                        "type": "string",
+                                        "default": "dd"
+                                    },
+                                    "workDay": {
+                                        "description": "预约日期 2020-01-01",
+                                        "type": "string",
+                                        "default": "dd"
+                                    },
+                                    "workTime": {
+                                        "description": "预约时间 9:00 必须是规定的整点",
+                                        "type": "string",
+                                        "default": "dd"
+                                    },
+                                    "petId": {
+                                        "description": "预约宠物id",
+                                        "type": "string",
+                                        "default": "dd"
+                                    },
+                                    "userId": {
+                                        "description": "技师ID",
+                                        "type": "string",
+                                        "default": "dd"
+                                    },
+                                    "storeId": {
+                                        "description": "门店ID",
+                                        "type": "string",
+                                        "default": "dd"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "状态码",
+                                            "type": "number",
+                                            "example": "200"
+                                        },
+                                        "msg": {
+                                            "type": "string",
+                                            "example": "成功!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "失败",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "状态码",
+                                            "type": "number",
+                                            "example": "500"
+                                        },
+                                        "msg": {
+                                            "type": "string",
+                                            "example": "失败!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/appt/getWorkTime": {
+            "post": {
+                "tags": [
+                    "小程序-预约"
+                ],
+                "summary": "人员排班表",
+                "operationId": "App\\Http\\Controllers\\WechatUser\\AppointmentController::GetWorktime",
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "header",
+                        "description": "token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "storeId"
+                                ],
+                                "properties": {
+                                    "storeId": {
+                                        "description": "门店编号",
+                                        "type": "number",
+                                        "default": "13888888888"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "状态码",
+                                            "type": "number",
+                                            "example": "200"
+                                        },
+                                        "msg": {
+                                            "description": "提示信息",
+                                            "type": "string",
+                                            "example": "获取列表成功!"
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "example": ""
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "失败",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "状态码",
+                                            "type": "number",
+                                            "example": "500"
+                                        },
+                                        "msg": {
+                                            "description": "提示信息",
+                                            "type": "string",
+                                            "example": "获取列表失败!"
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "example": "{'page':['\\u8bf7\\u8f93\\u5165\\u5355\\u4f4d\\u540d\\u79f0\\uff01']}"
                                         }
                                     },
                                     "type": "object"

@@ -28,7 +28,7 @@ class ConfigRepository
                 'key' => $config->key,
                 'value' => $config->value,
                 'sort' => isset($config->sort) ? $config->sort : 1,
-                'parentId' => isset($config->parentId) ? $config->parentId : 1,
+                'parentId' => isset($config->parentId) ? $config->parentId : null,
             ]);
             return array(
                 'status' => 200,
@@ -55,10 +55,20 @@ class ConfigRepository
     {
         return Config::where('type', $type)->where('key', $key)->orderBy('sort');
     }
-    public function GetOneByType($type)
+    public function GetByType($type)
     {
-        return Config::whereNull('parentId')->with(array('children' => function ($query) {
+        return Config::with(array('children' => function ($query) {
             $query->select('id', 'type', 'key', 'value', 'sort', 'parentId');
         }))->where('type', $type)->orderBy('sort');
+    }
+
+    public function GetTopConfig($configId)
+    {
+        $config = $this->GetOne($type, $key);
+        if ($config->parentId == '' || $config->parentId == null) {
+            return $config;
+        } else {
+            return $this->GetTopConfig($config->parentId);
+        }
     }
 }

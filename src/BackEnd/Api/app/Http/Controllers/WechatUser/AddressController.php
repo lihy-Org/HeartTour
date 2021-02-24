@@ -169,7 +169,7 @@ class AddressController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/api/address/delete",
+     *     path="/api/address/remove",
      *     tags={"小程序-收货地址"},
      *     summary="删除收货地址信息",
      *     @OA\Parameter(name="token", in="header", @OA\Schema(type="string"), required=true, description="token"),
@@ -194,7 +194,7 @@ class AddressController extends Controller
      *    )
      * )
      */
-    public function Delete(Request $request)
+    public function Remove(Request $request)
     {
         $addr = Address::where('uid', $request->user->id)->where('id', $request->addrId)->first();
         if ($addr) {

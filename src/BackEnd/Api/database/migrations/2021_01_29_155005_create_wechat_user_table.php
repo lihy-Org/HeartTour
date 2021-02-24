@@ -32,6 +32,7 @@ class CreateWechatUserTable extends Migration
             $table->unsignedTinyInteger('state')->default(0)->comment('状态，0：正常，1：禁用 ');
             $table->timestamps();           
             $table->softDeletes();
+            $table->primary('id');
         });
     }
 

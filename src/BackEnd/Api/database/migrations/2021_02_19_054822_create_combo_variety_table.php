@@ -20,6 +20,7 @@ class CreateComboVarietyTable extends Migration
             $table->string('variety')->comment('品种名称');
             $table->timestamps();
             $table->softDeletes();
+            $table->primary('id');
         });
     }
 

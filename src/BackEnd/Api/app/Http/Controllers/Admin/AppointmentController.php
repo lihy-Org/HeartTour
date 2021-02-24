@@ -1,42 +1,39 @@
 <?php
 
-namespace App\Http\Controllers\StoreSystem;
+namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
-use App\Repositories\UserRepository;
 use App\Repositories\AppointmentRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 
-class UserController extends Controller
+class AppointmentController extends Controller
 {
-    protected $userRepository;
     protected $appointmentRepository;
-   
-    public function __construct(UserRepository $_userRepository,AppointmentRepository $_appointmentRepository)
+
+    public function __construct(AppointmentRepository $_appointmentRepository)
     {
-        $this->userRepository = $_userRepository;
         $this->appointmentRepository = $_appointmentRepository;
     }
     /**
      * @OA\Post(
-     *     path="/api/storesys/user/list",
-     *     tags={"门店管理系统-人员管理"},
-     *     summary="人员列表",
+     *     path="/api/admin/appt/list",
+     *     tags={"总台管理系统-预约管理"},
+     *     summary="预约列表",
      *     @OA\Parameter(name="token", in="header", @OA\Schema(type="string"), required=true, description="token"),
      *     @OA\RequestBody(
      *     @OA\MediaType(
      *       mediaType="multipart/form-data",
      *         @OA\Schema(
-     *           @OA\Property(description="门店编号", property="storeId", type="number", default="13888888888"),
-     *           @OA\Property(description="职位", property="post", type="string", default=""),
-     *           @OA\Property(description="性别", property="gender", type="string", default=""),
+     *           @OA\Property(description="门店编号", property="storeId", type="string", default="13888888888"),
+     *           @OA\Property(description="0-已预约 1-进行中 2-待接取 3-已完成", property="state", type="string", default=""),
+     *           @OA\Property(description="预约开始时间", property="startDate", type="string", default=""),
+     *           @OA\Property(description="预约结束时间", property="endDate", type="string", default=""),
      *           @OA\Property(description="条数", property="pageSize", type="number", default="10"),
      *           @OA\Property(description="页数", property="page", type="number", default="1"),
      *           @OA\Property(description="关键字", property="searchKey", type="string", default=""),
-     *           required={"storeId","post"})
+     *           required={"state"})
      *       )
      *     ),
      *     @OA\Response(
@@ -91,9 +88,10 @@ class UserController extends Controller
     public function GetList(Request $request)
     {
         $rules = [
-            'storeId' => ['uuid'],
-            'post' => ['string'],
-            'gender' => ['string'],
+            'storeId' => ['required', Rule::exists('stores', 'id')],
+            'startDate' => ['date_format:"Y-m-d H:i:s"'],
+            'endDate' => ['date_format:"Y-m-d H:i:s"'],
+            'state' => [Rule::in(['0', '1', '2', '3'])],
             'searchKey' => ['string'],
             'pageSize' => ['integer', 'gt:0'],
             'page' => ['integer', 'gt:0'],
@@ -108,13 +106,12 @@ class UserController extends Controller
             ));
         } else {
             $data = (object) $request->all();
-            $data = $request->user->storeId;
             $takeNum = isset($data->pageSize) ? $data->pageSize : 10;
             $page = isset($data->page) ? $data->page : 1;
             $skipNum = ($page - 1) * $takeNum;
-            $users = $this->userRepository->GetList($data);
-            $total = $users->count();
-            $list = $users->skip($skipNum)->take($takeNum)->get();
+            $appts = $this->appointmentRepository->GetList($data);
+            $total = $appts->count();
+            $list = $appts->skip($skipNum)->take($takeNum)->get();
             $pageTotal = $total / $takeNum;
             $pageRes=(object)[];
             $pageRes->total = $total;
@@ -129,27 +126,21 @@ class UserController extends Controller
                     'page' => $pageRes,
                 )
             );
-
         }
     }
-   
 
     /**
      * @OA\Post(
-     *     path="/api/storesys/user/SetWorktime",
-     *     tags={"门店管理系统-人员管理"},
-     *     summary="人员排期",       *     
+     *     path="/api/admin/appt/getWorkTime",
+     *     tags={"总台管理系统-预约管理"},
+     *     summary="人员排班表",
      *     @OA\Parameter(name="token", in="header", @OA\Schema(type="string"), required=true, description="token"),
      *     @OA\RequestBody(
      *     @OA\MediaType(
      *       mediaType="multipart/form-data",
      *         @OA\Schema(
-     *           @OA\Property(description="用户ID", property="userId", type="string", default="10"),
-     *           @OA\Property(description="排期日期", property="days", type="string", default="10"),
-     *           @OA\Property(description="排期当天开始时间 09:00", property="startTime", type="string", default="10"),
-     *           @OA\Property(description="排期当天结束时间 21:00", property="endTime", type="string", default="10"),
-     *           required={"userId"}
-     *           )
+     *           @OA\Property(description="门店编号", property="storeId", type="number", default="13888888888"),     *
+     *           required={"storeId"})
      *       )
      *     ),
      *     @OA\Response(
@@ -164,13 +155,18 @@ class UserController extends Controller
      *                   type="number",
      *               ),
      *            @OA\Property(
-     *                  type="string",
-     *                  property="msg",
-     *                  example="成功!",
+     *                   example="获取列表成功!",
+     *                   property="msg",
+     *                   description="提示信息",
+     *                   type="string",
+     *              ),
+     *             @OA\Property(
+     *                  type="object",
+     *                  property="data",
+     *                  example="",
      *              )
-     *         ),
-     *     ),
-     *      @OA\Response(
+     *         )),
+     *       @OA\Response(
      *         response=500,
      *         description="失败",
      *         @OA\JsonContent(
@@ -180,31 +176,30 @@ class UserController extends Controller
      *                   property="status",
      *                   description="状态码",
      *                   type="number",
-     *               ),
-     *           @OA\Property(
+     *               )   ,
+     *          @OA\Property(
      *                  type="string",
      *                  property="msg",
-     *                  example="失败!",
-     *               )
-     *           )
-     *       ),
+     *                  description="提示信息",
+     *                  example="获取列表失败!",
+     *              ),
+     *          @OA\Property(
+     *                  type="object",
+     *                  property="data",
+     *                  example="{'page':['\u8bf7\u8f93\u5165\u5355\u4f4d\u540d\u79f0\uff01']}",
+     *              )
+     *         )
+     *     )
      * )
      */
-    public function SetWorktime(Request $request)
-    {        
+    public function GetWorktime(Request $request)
+    {
         $rules = [
-            'days' => ['required', 'array'],
-            'days.*'=>['date_format:"Y-m-d"','after_or_equal:today'],
-            'startTime' => ['nullable', 'date_format:"H:i"'],
-            'endTime' => ['nullable', 'date_format:"H:i"'],
-            'userId' => ['required', Rule::exists('users', 'id')->where(function ($query)use($request) {
-                $query->where('state', 0)->whereNotIn('type', [0, 1])->where('isBeautician', 1)->where('storeId', $request->user->storeId);
+            'storeId' => ['required', Rule::exists('stores', 'id')->where(function ($query) {
+                $query->where('state', 0);
             })],
         ];
-        $messages = [
-            'userId.required' => '请输入人员编号!',
-            'userId.exists' => '错误的人员编号或该用户不是该门店!',
-        ];
+        $messages = [];
         $validator = Validator::make($request->all(), $rules, $messages);
         if ($validator->fails()) {
             return json_encode(array(
@@ -213,6 +208,8 @@ class UserController extends Controller
                 'data' => $validator->errors(),
             ));
         }
-        return json_encode($this->appointmentRepository->SetWorktime((object) $request->all()));
+        $data = (object) $request->all();
+        return json_encode($this->appointmentRepository->GetWorktime($data)->get());
     }
+
 }

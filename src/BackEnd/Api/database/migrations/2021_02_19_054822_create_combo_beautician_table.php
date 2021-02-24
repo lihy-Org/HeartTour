@@ -21,6 +21,7 @@ class CreateComboBeauticianTable extends Migration
             $table->string('userName')->comment('美容师名称');
             $table->timestamps();
             $table->softDeletes();
+            $table->primary('id');
         });
     }
 

@@ -19,6 +19,7 @@ class CreateGoodsDetailTable extends Migration
             $table->string('url')->comment('详细图地址');
             $table->timestamps();
             $table->softDeletes();
+            $table->primary('id');
         });
     }
 

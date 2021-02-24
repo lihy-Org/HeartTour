@@ -9,8 +9,14 @@ class WechatUserRepository
 
     public function GetList($data)
     {
-        $users = WechatUser::where('state', 0)->leftjoin(DB::raw('(SELECT wcid,count(1) count from pets WHERE deleted_at is NULL GROUP BY wcid) pets'), function ($join) {$join->on('pets.wcid', '=', 'wechatUser.id');
-        })->orderBy('lastlogin');
+        $users = WechatUser::leftjoin(DB::raw('(SELECT wcid,count(1) count from pets WHERE deleted_at is NULL GROUP BY wcid) pets'),
+            function ($join) {$join->on('pets.wcid', '=', 'wechatUser.id');
+            })->leftjoin(DB::raw('(SELECT wcid,sum(payMoney) payMoney from orders WHERE deleted_at is NULL and state BETWEEN 300 and 500 GROUP BY wcid) payMoney'),
+            function ($join) {$join->on('payMoney.wcid', '=', 'wechatUser.id');
+            })->leftjoin(DB::raw('(SELECT wcid,count(1) apptCount from orders WHERE deleted_at is NULL and state BETWEEN 300 and 500 and type=1 GROUP BY wcid) apptCount'),
+            function ($join) {$join->on('apptCount.wcid', '=', 'wechatUser.id');
+            })
+            ->orderBy('lastlogin');
         if (isset($data->searchKey)) {
             $users = $users->where(function ($query) use ($data) {
                 $query->where('nickname', 'like', '%' . $data->searchKey . '%')
@@ -19,6 +25,9 @@ class WechatUserRepository
         }
         if (isset($data->state)) {
             $users = $users->where('state', $data->state);
+        }
+        if (isset($data->wcId)) {
+            $users = $users->where('wcid', $data->wcId);
         }
         //累计消费 升序-ascend   降序-descend
         // if (isset($data->consumesSort)) {
