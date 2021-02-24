@@ -26,7 +26,7 @@ class AppointmentController extends Controller
      *     @OA\MediaType(
      *       mediaType="multipart/form-data",
      *         @OA\Schema(
-     *           @OA\Property(description="0-已预约 1-进行中 2-待接取 3-已完成", property="state", type="string", default=""),
+     *           @OA\Property(description="状态", property="state", type="string", default=""),
      *           @OA\Property(description="预约开始时间", property="startDate", type="string", default=""),
      *           @OA\Property(description="预约结束时间", property="endDate", type="string", default=""),
      *           @OA\Property(description="条数", property="pageSize", type="number", default="10"),
@@ -91,7 +91,7 @@ class AppointmentController extends Controller
             'startDate' => ['date_format:"Y-m-d H:i:s"'],
             'endDate' => ['date_format:"Y-m-d H:i:s"'],
             'state' => [Rule::in([0, 1, 2, 3])],
-            'searchKey' => ['string'],
+            'searchKey' => ['nullable', 'string'],
             'pageSize' => ['integer', 'gt:0'],
             'page' => ['integer', 'gt:0'],
         ];
@@ -138,7 +138,11 @@ class AppointmentController extends Controller
      *     @OA\RequestBody(
      *     @OA\MediaType(
      *       mediaType="multipart/form-data",
-     *         @OA\Schema()
+     *         @OA\Schema(
+     *           @OA\Property(description="日期", property="workDay", type="string", default=""),
+     *           @OA\Property(description="时间", property="workTime", type="string", default=""),
+     *           @OA\Property(description="用户编号", property="userId", type="string", default="")
+     *          )
      *       )
      *     ),
      *     @OA\Response(
@@ -192,7 +196,13 @@ class AppointmentController extends Controller
      */
     public function GetWorktime(Request $request)
     {
-        $rules = [];
+        $rules = [
+            'workDay' => ['nullable', 'date_format:"Y-m-d"', 'after_or_equal:today'],
+            'workTime' => ['nullable', 'date_format:"H:i"'],
+            'userId' => ['nullable', Rule::exists('users', 'id')->where(function ($query) use ($request) {
+                $query->where('state', 0)->whereNotIn('type', [0, 1])->where('isBeautician', 1)->where('storeId', $request->storeId);
+            })],
+        ];
         $messages = [];
         $validator = Validator::make($request->all(), $rules, $messages);
         if ($validator->fails()) {
@@ -271,7 +281,7 @@ class AppointmentController extends Controller
                 $query->where('state', 0)->whereNotIn('type', [0, 1])->where('isBeautician', 1)->where('storeId', $request->user->storeId);
             })],
             'orderId' => ['required', Rule::exists('orders', 'id')->where(function ($query) use ($request) {
-                $query->where('state', 300)->where('storeId', $request->user->storeId);
+                $query->where('state', 200)->where('storeId', $request->user->storeId);
             })],
         ];
         $messages = [];

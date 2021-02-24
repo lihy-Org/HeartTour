@@ -118,7 +118,9 @@ class UserRepository
 
     public function GetList($data)
     {
-        $users = User::where('state', 0)->whereNotIn('type', [0, 1])->orderBy('created_at');
+        $users = User::where('state', 0)->with(array('Titles' => function ($query) {
+            $query->select('id', 'uid','titleId', 'title');
+        }))->whereNotIn('type', [0, 1])->orderBy('created_at');
         if (isset($data->searchKey)) {
             $users = $users->where(function ($query) use ($data) {
                 $query->where('name', 'like', '%' . $data->searchKey . '%')

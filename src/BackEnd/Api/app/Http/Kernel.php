@@ -65,5 +65,6 @@ class Kernel extends HttpKernel
         'adminapi'=>\App\Http\Middleware\AdminApi::class,
         'wechatapi'=>\App\Http\Middleware\WechatAppApi::class,        
         'storeapi'=>\App\Http\Middleware\StoreSystemApi::class,
+        'beautapi'=>\App\Http\Middleware\StoreSystemApi::class,
     ];
 }

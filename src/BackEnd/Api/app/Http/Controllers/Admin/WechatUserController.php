@@ -93,7 +93,7 @@ class WechatUserController extends Controller
     {
         $rules = [
             'gender' => [Rule::in([0,1,2])],
-            'searchKey' => ['string'],
+            'searchKey' => ['nullable','string'],
             'pageSize' => ['integer', 'gt:0'],
             'page' => ['integer', 'gt:0'],
         ];

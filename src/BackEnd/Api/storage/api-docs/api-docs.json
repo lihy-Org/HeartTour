@@ -218,7 +218,7 @@
                                         "default": "13888888888"
                                     },
                                     "state": {
-                                        "description": "0-已预约 1-进行中 2-待接取 3-已完成",
+                                        "description": "状态",
                                         "type": "string",
                                         "default": ""
                                     },
@@ -337,8 +337,23 @@
                                 "properties": {
                                     "storeId": {
                                         "description": "门店编号",
-                                        "type": "number",
-                                        "default": "13888888888"
+                                        "type": "string",
+                                        "default": ""
+                                    },
+                                    "workDay": {
+                                        "description": "日期",
+                                        "type": "string",
+                                        "default": ""
+                                    },
+                                    "workTime": {
+                                        "description": "时间",
+                                        "type": "string",
+                                        "default": ""
+                                    },
+                                    "userId": {
+                                        "description": "用户编号",
+                                        "type": "string",
+                                        "default": ""
                                     }
                                 },
                                 "type": "object"
@@ -392,6 +407,109 @@
                                         "data": {
                                             "type": "object",
                                             "example": "{'page':['\\u8bf7\\u8f93\\u5165\\u5355\\u4f4d\\u540d\\u79f0\\uff01']}"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/appt/trans": {
+            "post": {
+                "tags": [
+                    "门店管理系统-预约管理"
+                ],
+                "summary": "修改预约信息",
+                "operationId": "App\\Http\\Controllers\\Admin\\AppointmentController::TransferAppt",
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "header",
+                        "description": "token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "comboIds",
+                                    "workDay",
+                                    "workTime",
+                                    "petId",
+                                    "userId",
+                                    "storeId"
+                                ],
+                                "properties": {
+                                    "orderId": {
+                                        "description": "套餐编号",
+                                        "type": "string",
+                                        "default": "dd"
+                                    },
+                                    "workDay": {
+                                        "description": "预约日期 2020-01-01",
+                                        "type": "string",
+                                        "default": "dd"
+                                    },
+                                    "workTime": {
+                                        "description": "预约时间 9:00 必须是规定的整点",
+                                        "type": "string",
+                                        "default": "dd"
+                                    },
+                                    "userId": {
+                                        "description": "技师ID",
+                                        "type": "string",
+                                        "default": "dd"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "状态码",
+                                            "type": "number",
+                                            "example": "200"
+                                        },
+                                        "msg": {
+                                            "type": "string",
+                                            "example": "成功!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "失败",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "状态码",
+                                            "type": "number",
+                                            "example": "500"
+                                        },
+                                        "msg": {
+                                            "type": "string",
+                                            "example": "失败!"
                                         }
                                     },
                                     "type": "object"
@@ -1313,6 +1431,11 @@
                                         "description": "结束营业时间",
                                         "type": "string",
                                         "default": "dd"
+                                    },
+                                    "type": {
+                                        "description": "类型1分店，2总店",
+                                        "type": "string",
+                                        "default": "dd"
                                     }
                                 },
                                 "type": "object"
@@ -1859,7 +1982,7 @@
                 }
             }
         },
-        "/api/admin/user/SetStore": {
+        "/api/admin/user/setStore": {
             "post": {
                 "tags": [
                     "总台管理系统-人员管理"
@@ -2291,6 +2414,287 @@
                 }
             }
         },
+        "/api/beaut/login": {
+            "post": {
+                "tags": [
+                    "技师公众号系统-授权"
+                ],
+                "summary": "登录",
+                "operationId": "App\\Http\\Controllers\\StoreSystem\\AccountController::Login",
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "header",
+                        "description": "token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "username",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "phone": {
+                                        "description": "手机号码",
+                                        "type": "number",
+                                        "default": "13888888888"
+                                    },
+                                    "code": {
+                                        "description": "验证码",
+                                        "type": "number",
+                                        "default": ""
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "状态码",
+                                            "type": "number",
+                                            "example": "200"
+                                        },
+                                        "msg": {
+                                            "description": "提示信息",
+                                            "type": "string",
+                                            "example": "登录成功!"
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "example": ""
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "失败",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "状态码",
+                                            "type": "number",
+                                            "example": "500"
+                                        },
+                                        "msg": {
+                                            "description": "提示信息",
+                                            "type": "string",
+                                            "example": "登录失败!"
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "example": "错误信息"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/beaut/verifCode": {
+            "post": {
+                "tags": [
+                    "技师公众号系统-授权"
+                ],
+                "summary": "获取登录验证码",
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "phone"
+                                ],
+                                "properties": {
+                                    "phone": {
+                                        "description": "手机号码",
+                                        "type": "number",
+                                        "default": "13888888888"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "状态码",
+                                            "type": "number",
+                                            "example": "200"
+                                        },
+                                        "msg": {
+                                            "description": "提示信息",
+                                            "type": "string",
+                                            "example": "获取验证码成功!"
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "example": ""
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "失败",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "状态码",
+                                            "type": "number",
+                                            "example": "500"
+                                        },
+                                        "msg": {
+                                            "description": "提示信息",
+                                            "type": "string",
+                                            "example": "获取验证码失败!"
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "example": "错误信息"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/beaut/appt/list": {
+            "post": {
+                "tags": [
+                    "技师公众号系统-预约管理"
+                ],
+                "summary": "预约列表",
+                "operationId": "App\\Http\\Controllers\\Beautician\\AppointmentController::GetList",
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "header",
+                        "description": "token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [],
+                                "properties": {
+                                    "pageSize": {
+                                        "description": "条数",
+                                        "type": "number",
+                                        "default": "10"
+                                    },
+                                    "page": {
+                                        "description": "页数",
+                                        "type": "number",
+                                        "default": "1"
+                                    },
+                                    "searchKey": {
+                                        "description": "关键字",
+                                        "type": "string",
+                                        "default": ""
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "状态码",
+                                            "type": "number",
+                                            "example": "200"
+                                        },
+                                        "msg": {
+                                            "description": "提示信息",
+                                            "type": "string",
+                                            "example": "获取列表成功!"
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "example": ""
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "失败",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "状态码",
+                                            "type": "number",
+                                            "example": "500"
+                                        },
+                                        "msg": {
+                                            "description": "提示信息",
+                                            "type": "string",
+                                            "example": "获取列表失败!"
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "example": "{'page':['\\u8bf7\\u8f93\\u5165\\u5355\\u4f4d\\u540d\\u79f0\\uff01']}"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/storesys/login": {
             "post": {
                 "tags": [
@@ -2498,7 +2902,7 @@
                                 ],
                                 "properties": {
                                     "state": {
-                                        "description": "0-已预约 1-进行中 2-待接取 3-已完成",
+                                        "description": "状态",
                                         "type": "string",
                                         "default": ""
                                     },
@@ -2610,7 +3014,26 @@
                 "requestBody": {
                     "content": {
                         "multipart/form-data": {
-                            "schema": {}
+                            "schema": {
+                                "properties": {
+                                    "workDay": {
+                                        "description": "日期",
+                                        "type": "string",
+                                        "default": ""
+                                    },
+                                    "workTime": {
+                                        "description": "时间",
+                                        "type": "string",
+                                        "default": ""
+                                    },
+                                    "userId": {
+                                        "description": "用户编号",
+                                        "type": "string",
+                                        "default": ""
+                                    }
+                                },
+                                "type": "object"
+                            }
                         }
                     }
                 },
@@ -2660,6 +3083,109 @@
                                         "data": {
                                             "type": "object",
                                             "example": "{'page':['\\u8bf7\\u8f93\\u5165\\u5355\\u4f4d\\u540d\\u79f0\\uff01']}"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/storesys/appt/trans": {
+            "post": {
+                "tags": [
+                    "门店管理系统-预约管理"
+                ],
+                "summary": "修改预约信息",
+                "operationId": "App\\Http\\Controllers\\StoreSystem\\AppointmentController::TransferAppt",
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "header",
+                        "description": "token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "comboIds",
+                                    "workDay",
+                                    "workTime",
+                                    "petId",
+                                    "userId",
+                                    "storeId"
+                                ],
+                                "properties": {
+                                    "orderId": {
+                                        "description": "套餐编号",
+                                        "type": "string",
+                                        "default": "dd"
+                                    },
+                                    "workDay": {
+                                        "description": "预约日期 2020-01-01",
+                                        "type": "string",
+                                        "default": "dd"
+                                    },
+                                    "workTime": {
+                                        "description": "预约时间 9:00 必须是规定的整点",
+                                        "type": "string",
+                                        "default": "dd"
+                                    },
+                                    "userId": {
+                                        "description": "技师ID",
+                                        "type": "string",
+                                        "default": "dd"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "状态码",
+                                            "type": "number",
+                                            "example": "200"
+                                        },
+                                        "msg": {
+                                            "type": "string",
+                                            "example": "成功!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "失败",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "状态码",
+                                            "type": "number",
+                                            "example": "500"
+                                        },
+                                        "msg": {
+                                            "type": "string",
+                                            "example": "失败!"
                                         }
                                     },
                                     "type": "object"

@@ -7,7 +7,7 @@ class StoreRepository
 {
     public function GetList($data)
     {
-        $store = Store::orderBy('created_at');
+        $store = Store::where('state', '0')->orderBy('created_at');
         if (isset($data->searchKey)) {
             $store = $store->where('name', 'like', '%' . $data->searchKey . '%');
         }
@@ -37,7 +37,7 @@ class StoreRepository
                 'address' => $data->address,
                 'businessHourStart' => $data->businessHourStart,
                 'businessHourEnd' => $data->businessHourEnd,
-                'type' => 1,
+                'type' => isset($data->type) ? $data->type : 1,
             ]);
             return array(
                 'status' => 200,
@@ -46,14 +46,14 @@ class StoreRepository
             );
 
         } else {
-            $store->name = $request->name;
-            $store->phone = $request->phone;
-            $store->lng = $request->lng;
-            $store->lat = $request->lat;
-            $store->address = $request->address;
-            $store->businessHourStart = $request->businessHourStart;
-            $store->businessHourEnd = $request->businessHourEnd;
-            $store->type = $request->type;
+            $store->name = $data->name;
+            $store->phone = $data->phone;
+            $store->lng = $data->lng;
+            $store->lat = $data->lat;
+            $store->address = $data->address;
+            $store->businessHourStart = $data->businessHourStart;
+            $store->businessHourEnd = $data->businessHourEnd;
+            $store->type = isset($data->type) ? $data->type : 1;
             $store->save();
             return array(
                 'status' => 200,

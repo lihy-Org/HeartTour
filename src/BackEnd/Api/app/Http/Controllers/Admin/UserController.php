@@ -91,7 +91,7 @@ class UserController extends Controller
             'storeId' => ['uuid'],
             'post' => ['string'],
             'gender' => ['string'],
-            'searchKey' => ['string'],
+            'searchKey' => ['nullable','string'],
             'pageSize' => ['integer', 'gt:0'],
             'page' => ['integer', 'gt:0'],
         ];
@@ -112,7 +112,7 @@ class UserController extends Controller
             $total = $users->count();
             $list = $users->skip($skipNum)->take($takeNum)->get();
             $pageTotal = $total / $takeNum;
-            $pageRes=(object)[];
+            $pageRes = (object) [];
             $pageRes->total = $total;
             $pageRes->pageNo = $page;
             $pageRes->pageSize = $takeNum;
@@ -197,13 +197,13 @@ class UserController extends Controller
     {
         $rules = [
             'name' => ['required', 'string'],
-            'phone' => ['required','regex:/^((13[0-9])|(14[5,7])|(15[0-3,5-9])|(17[0,3,5-8])|(18[0-9])|166|198|199)\d{8}$/', 'string', Rule::unique('users')->ignore($request->userId, 'id')],
+            'phone' => ['required', 'regex:/^((13[0-9])|(14[5,7])|(15[0-3,5-9])|(17[0,3,5-8])|(18[0-9])|166|198|199)\d{8}$/', 'string', Rule::unique('users')->ignore($request->userId, 'id')],
             'avatar' => ['required', 'string'],
-            'gender' => ['required', 'string'],
-            'age' => ['required', 'string'],
+            'gender' => ['required', 'integer', Rule::in([0, 1, 2])],
+            'age' => ['required', 'integer', 'gt:0'],
             'postId' => ['required', 'string'],
             'titleIds' => ['nullable', 'array'],
-            'isBeautician' => ['nullable', Rule::in(['0', '1'])],
+            'isBeautician' => ['nullable', Rule::in([0, 1])],
         ];
         $messages = [
             'name.required' => '请输入用户名称!',
@@ -285,7 +285,7 @@ class UserController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/api/admin/user/SetStore",
+     *     path="/api/admin/user/setStore",
      *     tags={"总台管理系统-人员管理"},
      *     summary="分配门店",
      *     @OA\Parameter(name="token", in="header", @OA\Schema(type="string"), required=true, description="token"),

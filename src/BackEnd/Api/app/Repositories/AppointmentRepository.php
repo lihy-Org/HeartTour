@@ -156,27 +156,14 @@ class AppointmentRepository
                     ->orWhere('phone', 'like', '%' . $data->searchKey . '%');
             });
         }
+        if (isset($data->userId)) {
+            $orders = $orders->where('userId', $data->userId);
+        }
         if (isset($data->storeId)) {
             $orders = $orders->where('storeId', $data->storeId);
         }
         if (isset($data->state)) {
-            //已预约
-            if ($data->state == 0) {
-                $orders = $orders->where('state', 300);
-            }
-            //进行中
-            if ($data->state == 1) {
-                $orders = $orders->where('state', 350);
-            }
-            //待接取
-            if ($data->state == 2) {
-                $orders = $orders->where('state', 400);
-            }
-            //已完成
-            if ($data->state == 3) {
-                $orders = $orders->where('state', 500);
-            }
-
+            $orders = $orders->where('state', $data->state);
         }
         if (isset($data->startDate) && isset($data->endDate)) {
             $orders = $orders->whereBetween('apptTime', [$data->startDate, $data->endDate]);
@@ -186,8 +173,19 @@ class AppointmentRepository
 
     public function GetWorktime($data)
     {
-        return UserWorktime::where('workDay', '>=', Carbon::now())->where('storeId', $data->storeId)
-            ->select('storeId', 'uid', 'uname', 'workDay', 'workTime', 'orderId');
+        $worktimes = UserWorktime::where('storeId', $data->storeId);
+        if (isset($data->workDay)) {
+            $worktimes = $worktimes->where('workDay', $data->workDay);
+        } else {
+            $worktimes = $worktimes->where('workDay', Carbon::now()->format('y-m-d'));
+        }
+        if (isset($data->workTime)) {
+            $worktimes = $worktimes->where('workTime', $data->workTime);
+        }
+        if (isset($data->userId)) {
+            $worktimes = $worktimes->where('uid', $data->userId);
+        }
+        return $worktimes->select('storeId', 'uid', 'uname', 'workDay', 'workTime', 'orderId');
     }
 
     public function SetWorktime($data)
@@ -275,16 +273,16 @@ class AppointmentRepository
                 }
                 array_push($apptUserWorktimes, $usertime);
             }
-            
+
             $user = User::find($data->userId);
             // $store = Store::find($data->storeId);
 
             //修改主订单
-            $order=Order::find($data->orderId);
-            $order->userId=$data->userId;
-            $order->userName=$user->name;
-            $order->apptTime =$data->workDay . $apptUserWorktimes[0]->workTime;          
-           
+            $order = Order::find($data->orderId);
+            $order->userId = $data->userId;
+            $order->userName = $user->name;
+            $order->apptTime = $data->workDay . $apptUserWorktimes[0]->workTime;
+
             //保存用户预约信息
             for ($i = 0; $i < $times; $i++) {
                 $usertime = $apptUserWorktimes[$i];
@@ -309,5 +307,38 @@ class AppointmentRepository
                 'data' => '');
         }
 
+    }
+
+    //修改状态
+    public function ChangeState($data)
+    {
+        $order = Order::find($data->orderId);
+        if ($data->state == 300 && $order->state == 200) {
+            $order->state = 300;
+            $order->save();
+            return array(
+                'status' => 200,
+                'msg' => '操作成功!',
+                'data' => '');
+        } else if ($data->state == 400 && $order->state == 300) {
+            $order->state = 400;
+            $order->save();
+            return array(
+                'status' => 200,
+                'msg' => '操作成功!',
+                'data' => '');
+        } else if ($data->state == 500 && $order->state == 400) {
+            $order->state = 500;
+            $order->save();
+            return array(
+                'status' => 200,
+                'msg' => '操作成功!',
+                'data' => '');
+        } else {
+            return array(
+                'status' => 200,
+                'msg' => '失败，订单状态不正确!',
+                'data' => '');
+        }
     }
 }

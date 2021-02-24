@@ -94,7 +94,7 @@ class UserController extends Controller
             'storeId' => ['uuid'],
             'post' => ['string'],
             'gender' => ['string'],
-            'searchKey' => ['string'],
+            'searchKey' => ['nullable','string'],
             'pageSize' => ['integer', 'gt:0'],
             'page' => ['integer', 'gt:0'],
         ];
