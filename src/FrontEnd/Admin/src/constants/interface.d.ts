@@ -1,45 +1,59 @@
 /*
  * @Author: Li-HONGYAO
  * @Date: 2020-11-23 10:38:41
- * @LastEditTime: 2021-01-30 12:51:18
+ * @LastEditTime: 2021-02-23 21:07:09
  * @LastEditors: Li-HONGYAO
- * @Description: 
+ * @Description:
  * @FilePath: /Admin/src/constants/interface.d.ts
  */
 // 提示：全局ts类型定义，使用时需将XXX修改为项目名称，如DDOUH5，将‘XXX’ 修改为 ‘DDOUH5’
 // 访问：DDOUH5.BaseResponse
 
-export = DP;
-export as namespace DP;
+export = HT;
+export as namespace HT;
 
 declare global {
   interface Window {
     _hmt: any;
     wx: any;
-    AMap: any
+    AMap: any;
   }
 }
 
-declare namespace DP {
+declare namespace HT {
   interface BaseResponse<T = any> {
-    code: number;
+    /** 状态码 */
+    status: number;
+    /** 实际数据 */
     data: T;
+    /** 提示信息 */
     msg: string;
+    /** 分页信息 */
     page: {
-      pageNo: number;
-      pageSize: number;
-      pages: number;
-      total: number;
+      pageNo: number /** 当前页 */;
+      pageSize: number /** 每页大小 */;
+      pages: number /** 总页数 */;
+      total: number /** 总条数 */;
     };
-    success: boolean;
   }
 
+  /**
+   * 配置相关类型
+   */
+  type ConfigsItemType = {
+    id: string;
+    key: string;
+    sort: number;
+    type: string;
+    value: string | number;
+  }
+  
   /**
    * 表格数据类型
    */
   type TablePageDataType<T> = {
-    page: number,
-    pageSize: number,
-    filters: T
-  }
+    page: number;
+    pageSize: number;
+    filters: T;
+  };
 }

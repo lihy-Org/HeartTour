@@ -1,7 +1,7 @@
 /*
  * @Author: Li-HONGYAO
  * @Date: 2021-01-17 23:30:37
- * @LastEditTime: 2021-01-30 14:53:59
+ * @LastEditTime: 2021-02-23 15:12:27
  * @LastEditors: Li-HONGYAO
  * @Description: 
  * @FilePath: /Admin/src/app.tsx
@@ -11,7 +11,7 @@ import { history } from 'umi';
 
 // 登录鉴权
 export function render(oldRender: any) {
-  if (Cookie.get('XXX_ADMIN_TOKEN')) {
+  if (Cookie.get('HT_TOKEN')) {
     oldRender();
   } else {
     history.push('/login');

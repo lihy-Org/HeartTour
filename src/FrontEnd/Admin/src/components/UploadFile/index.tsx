@@ -1,7 +1,7 @@
 /*
  * @Author: Li-HONGYAO
  * @Date: 2021-01-23 11:18:34
- * @LastEditTime: 2021-01-25 21:47:47
+ * @LastEditTime: 2021-02-24 11:48:28
  * @LastEditors: Li-HONGYAO
  * @Description:
  * @FilePath: /Admin/src/components/UploadFile/index.tsx
@@ -10,6 +10,7 @@
 import React, { FC, memo, useState } from 'react';
 import { Upload, Modal } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
+
 
 interface IProps {
   max?: number;

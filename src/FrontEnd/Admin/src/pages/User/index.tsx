@@ -1,7 +1,7 @@
 /*
  * @Author: Li-HONGYAO
  * @Date: 2021-01-18 11:35:12
- * @LastEditTime: 2021-01-31 10:36:47
+ * @LastEditTime: 2021-02-23 17:29:00
  * @LastEditors: Li-HONGYAO
  * @Description:
  * @FilePath: /Admin/src/pages/User/index.tsx
@@ -27,30 +27,31 @@ import {
   ReloadOutlined,
 } from '@ant-design/icons';
 import { ColumnProps } from 'antd/es/table';
+import Api from '@/Api';
 
 // 筛选条件
 type FilterParamsType = {
   gender?: number;
   searchKey?: string;
-  status?: number /** 0-正常 1-已加入黑名单 */;
+  state?: number /** 0-正常 1-禁用 */;
 };
 type SubFilterParamsType = {
   pageSize: number;
   page: number;
-  id: number /** 用户id */;
+  id: string /** 用户id */;
 };
 
-// 宠物类型
+// 宠物信息
 type PetColumnsType = {
-  id: number;
+  id: string;
   avatar: string /** 宠物头像 */;
-  name: string /** 宠物姓名 */;
+  nickname: string /** 宠物姓名 */;
   gender: number /** 宠物性别  1-弟弟 2-妹妹 */;
-  varieties: string /** 宠物品种 */;
+  variety: string /** 宠物品种 */;
   birthday: string /** 宠物生日 */;
-  colour: string /** 毛色 */;
+  color: string /** 毛色 */;
   shoulderHeight: number /** 肩高 -- 单位cm */;
-  note: string /** 备注 */;
+  remark: string /** 备注 */;
 };
 // 消费总额
 type ConsumeRecordsType = {
@@ -61,21 +62,22 @@ type ConsumeRecordsType = {
 
 // 表格数据
 type ColumnsType = {
-  id: number /** 用户id */;
+  id: string /** 用户id */;
   avatar: string /** 用户头像 */;
-  nikeName: string /** 微信昵称 */;
+  nickname: string /** 微信昵称 */;
   phone: string /** 手机号 */;
   gender: string /** 性别 0-未知 1-男性 2-女性 */;
   appointmentCount: number /** 预约次数 */;
-  pets: PetColumnsType[] /** 宠物信息 */;
+  count: number /** 宠物数量 */;
   consumes: ConsumeRecordsType /** 消费总额 */;
-  status: number /** 账户状态 0-未被拉黑/正常状态 1-制裁中/被拉黑 */;
+  state: number /** 账户状态 0-正常 1-禁用 */;
+  wcid: string /** 查看宠物信息时用到的用户id值 */;
 };
 
 // 用户预约记录
 type AptRecordsColumnsType = {
   id: number /** 预约id */;
-  nikeName: string /** 预约用户（微信昵称） */;
+  nickName: string /** 预约用户（微信昵称） */;
   store: string /** 预约门店 */;
   time: string /** 预约时间 */;
   status: number /** 预约状态  0-已预约 1-已过期 2-已完成 */;
@@ -107,7 +109,7 @@ const User: FC = () => {
   // 列表数据
   const [dataSource, setDataSource] = useState<ColumnsType[]>([]);
   const [total, setTotal] = useState(0);
-  const [page, setPage] = useState<DP.TablePageDataType<FilterParamsType>>(
+  const [page, setPage] = useState<HT.TablePageDataType<FilterParamsType>>(
     () => ({
       pageSize: 20,
       page: 1,
@@ -115,65 +117,46 @@ const User: FC = () => {
     }),
   );
 
+  const [consumesSort, setConsumesSort] = useState<string | undefined>();
+  const [aptTimesSort, setAptTimesSort] = useState<string | undefined>();
+
   const [aptRecords, setAptRecords] = useState<AptRecordsColumnsType[]>([]);
   const [aptTotal, setAptTotal] = useState(0);
   const [aptPage, setAptPage] = useState<SubFilterParamsType | null>(null);
 
   // methods
   // 获取用户数据
-  const getDataSource = () => {
-    // console.log(filterParams);
-
-    message.loading('数据加载中...');
-    const tempArr: ColumnsType[] = [];
-    for (let i = 0; i < 88; i++) {
-      tempArr.push({
-        id: i,
-        avatar:
-          'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fn.sinaimg.cn%2Ffront%2F342%2Fw700h442%2F20190321%2FxqrY-huqrnan7527352.jpg&refer=http%3A%2F%2Fn.sinaimg.cn&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1613916524&t=a4e12aa1c942ca1b4ac8c2fd35328896',
-        nikeName: '李鸿耀',
-        gender: '男',
-        phone: '15888899917',
-        appointmentCount: 12,
-        pets: [
-          {
-            id: 1,
-            avatar:
-              'https://img.meituan.net/csc/5c439189cc693becd5338682dcb666ef4201069.jpg',
-            name: '旺仔',
-            gender: 1,
-            varieties: '雪纳瑞',
-            birthday: '2018-04-22',
-            colour: '黑色',
-            shoulderHeight: 35,
-            note: '非常可爱',
-          },
-          {
-            id: 2,
-            avatar:
-              'https://img.meituan.net/csc/5c439189cc693becd5338682dcb666ef4201069.jpg',
-            name: 'Lucky',
-            gender: 1,
-            varieties: '雪纳瑞',
-            birthday: '2018-04-22',
-            colour: '绿色',
-            shoulderHeight: 35,
-            note: '非常可爱',
-          },
-        ],
-        consumes: {
-          totalAppointmentAmount: 80932.0,
-          totalOfflineShopAmount: 321.23,
-          totalOnlineShopAmount: 302932.2,
-        },
-        status: i % 8 === 0 ? 1 : 0,
+  const getDataSource = (loading: boolean) => {
+    loading && message.loading('数据加载中...');
+    Api.user
+      .list<HT.BaseResponse<ColumnsType[]>>({
+        consumesSort,
+        aptTimesSort,
+        gender: page.filters.gender,
+        state: page.filters.state,
+        searchKey: page.filters.searchKey,
+        pageSize: 10,
+        page: 1,
+      })
+      .then((res) => {
+        if (res.status === 200) {
+          // @ts-ignore
+          setDataSource(res.data.data);
+          // setTotal(res.data.length);
+          loading && message.destroy();
+        }
       });
-    }
-    setTimeout(() => {
-      setDataSource(tempArr);
-      setTotal(tempArr.length);
+  };
+  // 获取用户宠物列表信息
+  const getPets = (wcId: string) => {
+    message.loading('数据加载中...');
+    Api.user.pets<HT.BaseResponse<PetColumnsType[]>>(wcId).then((res) => {
       message.destroy();
-    }, 500);
+      if (res.status === 200) {
+        setPets(res.data);
+        setPetModalVisible(true);
+      }
+    });
   };
   // 获取用户预约记录
   const getAptRecords = () => {
@@ -183,7 +166,7 @@ const User: FC = () => {
     for (let i = 0; i < 88; i++) {
       tempArr.push({
         id: i,
-        nikeName: '苟玉梅',
+        nickName: '苟玉梅',
         status: 2,
         store: '九里晴川店',
         time: '2021/01/23 15:30',
@@ -202,37 +185,35 @@ const User: FC = () => {
 
   // events
 
-  const onUpdateSanctions = (id: number, status: number) => {
+  const onUpdateState = (id: string, status: number) => {
     Modal.warning({
       content: status ? '您确定要禁用该用户么？' : '你确定要解封该用户么？',
       closable: true,
       okText: '确定',
       onOk: () => {
-        message.success(`${status ? '禁用' : '解封'}成功`);
+        Api.user.updateState<HT.BaseResponse<any>>(id).then((res) => {
+          if (res.status === 200) {
+            message.success(`${status ? '禁用' : '解封'}成功`);
+            getDataSource(false);
+          }
+        });
       },
     });
   };
   const onTableChange = (pagination: any, filters: any, sorter: any) => {
-    let msg = '';
-    console.log(sorter.order)
     switch (sorter.columnKey) {
       case 'consumes':
-        msg = `根据累计消费${
-          !sorter.order ? '不' : (sorter.order === 'ascend' ? '升序' : '降序')
-        }排序`;
+        setConsumesSort(sorter.order);
         break;
       case 'appointment':
-        msg = `根据预约次数${
-          !sorter.order  ? '不' : (sorter.order === 'ascend' ? '升序' : '降序')
-        }排序`;
+        setAptTimesSort(sorter.order);
         break;
     }
-    message.info(msg);
   };
   // effects
   useEffect(() => {
-    getDataSource();
-  }, [page]);
+    getDataSource(true);
+  }, [page, consumesSort, aptTimesSort]);
   useEffect(() => {
     if (aptPage) {
       getAptRecords();
@@ -242,6 +223,7 @@ const User: FC = () => {
   // render
   const columns: ColumnProps<ColumnsType>[] = [
     {
+      width: 80,
       title: '用户头像',
       dataIndex: 'avatar',
       render: (record) =>
@@ -251,11 +233,11 @@ const User: FC = () => {
           <span className="color-C5C5C5">暂无</span>
         ),
     },
-    { title: '微信昵称', dataIndex: 'nikeName' },
+    { title: '微信昵称', dataIndex: 'nickname' },
     {
       title: '账户状态',
-      dataIndex: 'status',
-      render: (status: number) => (status ? '禁用' : '正常'),
+      dataIndex: 'state',
+      render: (record) => (record ? '禁用' : '正常'),
     },
     {
       title: '手机号',
@@ -278,18 +260,12 @@ const User: FC = () => {
     },
     {
       title: '宠物信息',
-      dataIndex: 'pets',
-      render: (record) =>
-        record && record.length > 0 ? (
+      dataIndex: 'count',
+      render: (petNum, record: ColumnsType) =>
+        record ? (
           <>
-            <div>数量：{record.length}</div>
-            <div
-              style={buttonStyle}
-              onClick={() => {
-                setPets(record);
-                setPetModalVisible(true);
-              }}
-            >
+            <div>数量：{petNum}</div>
+            <div style={buttonStyle} onClick={() => getPets(record.wcid)}>
               查看宠物
             </div>
           </>
@@ -305,12 +281,7 @@ const User: FC = () => {
       sorter: true,
       render: (record: ConsumeRecordsType) => (
         <>
-          <div>
-            消费总额：
-            {record.totalAppointmentAmount +
-              record.totalOfflineShopAmount +
-              record.totalOnlineShopAmount}
-          </div>
+          <div>消费总额：0</div>
           <div
             style={buttonStyle}
             onClick={() => {
@@ -353,21 +324,21 @@ const User: FC = () => {
       render: (record: ColumnsType) => (
         <Space size="small">
           <Button
-            disabled={!!record.status}
+            disabled={!record.state}
             type="primary"
             size="small"
             icon={<ReloadOutlined />}
-            onClick={() => onUpdateSanctions(record.id, 0)}
+            onClick={() => onUpdateState(record.id, 0)}
           >
             解封
           </Button>
           <Button
-            disabled={!record.status}
+            disabled={!!record.state}
             type="primary"
             size="small"
             icon={<AlertOutlined />}
             danger
-            onClick={() => onUpdateSanctions(record.id, 1)}
+            onClick={() => onUpdateState(record.id, 1)}
           >
             禁用
           </Button>
@@ -386,21 +357,21 @@ const User: FC = () => {
           <span className="color-C5C5C5">暂无</span>
         ),
     },
-    { title: '昵称', dataIndex: 'name' },
+    { title: '昵称', dataIndex: 'nickname' },
     {
       title: '性别',
       dataIndex: 'gender',
       render: (record) => (record === 1 ? '弟弟' : '妹妹'),
     },
-    { title: '品种', dataIndex: 'varieties' },
+    { title: '品种', dataIndex: 'variety' },
     { title: '生日', dataIndex: 'birthday' },
-    { title: '毛色', dataIndex: 'colour' },
+    { title: '毛色', dataIndex: 'color' },
     {
       title: '肩高',
       dataIndex: 'shoulderHeight',
-      render: (record) => (record ? `${record}cm` : '-'),
+      render: (record) => `${record}cm`,
     },
-    { title: '备注', dataIndex: 'note' },
+    { title: '备注', dataIndex: 'remark' },
   ];
   const aptRecordsColumns: ColumnProps<AptRecordsColumnsType>[] = [
     { title: '预约用户', dataIndex: 'nikeName' },
@@ -447,7 +418,7 @@ const User: FC = () => {
           }
         >
           {/* 账号状态 */}
-          <Form.Item label="账户状态：" name="status">
+          <Form.Item label="账户状态：" name="state">
             <Select placeholder="全部" allowClear style={{ width: 90 }}>
               <Option value={0}>正常</Option>
               <Option value={1}>禁用</Option>
