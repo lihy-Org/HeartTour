@@ -1,7 +1,7 @@
 /*
  * @Author: Li-HONGYAO
  * @Date: 2021-01-18 11:35:12
- * @LastEditTime: 2021-02-23 17:29:00
+ * @LastEditTime: 2021-02-24 13:42:52
  * @LastEditors: Li-HONGYAO
  * @Description:
  * @FilePath: /Admin/src/pages/User/index.tsx
@@ -135,14 +135,13 @@ const User: FC = () => {
         gender: page.filters.gender,
         state: page.filters.state,
         searchKey: page.filters.searchKey,
-        pageSize: 10,
-        page: 1,
+        pageSize: page.pageSize,
+        page: page.page,
       })
       .then((res) => {
         if (res.status === 200) {
-          // @ts-ignore
-          setDataSource(res.data.data);
-          // setTotal(res.data.length);
+          setDataSource(res.data);
+          setTotal(res.page.total);
           loading && message.destroy();
         }
       });

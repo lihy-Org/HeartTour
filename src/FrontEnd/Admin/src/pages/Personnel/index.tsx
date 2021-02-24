@@ -1,7 +1,7 @@
 /*
  * @Author: Li-HONGYAO
  * @Date: 2021-01-18 11:15:25
- * @LastEditTime: 2021-02-23 20:10:45
+ * @LastEditTime: 2021-02-24 13:44:28
  * @LastEditors: Li-HONGYAO
  * @Description:
  * @FilePath: /Admin/src/pages/Personnel/index.tsx
@@ -119,15 +119,13 @@ const Personnel: FC = () => {
     message.loading('数据加载中...');
     Api.personnel
       .list<HT.BaseResponse<ColumnsType[]>>({
-        page: 1,
-        pageSize: 10,
+        page: page.page,
+        pageSize: page.pageSize,
       })
       .then((res) => {
-        message.destroy();
         if (res.status === 200) {
-          // @ts-ignore
-          setDataSource(res.data.data);
-          // setTotal(tempArr.length);
+          setDataSource(res.data);
+          setTotal(res.page.total);
         }
       });
 

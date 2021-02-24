@@ -1,7 +1,7 @@
 /*
  * @Author: Li-HONGYAO
  * @Date: 2021-01-18 11:15:25
- * @LastEditTime: 2021-02-23 22:14:07
+ * @LastEditTime: 2021-02-24 13:48:50
  * @LastEditors: Li-HONGYAO
  * @Description:
  * @FilePath: /Admin/src/pages/Store/index.tsx
@@ -91,8 +91,8 @@ const Store: FC = () => {
   const getDataSource = () => {
     // console.log(filterParams);
     Api.store.list<HT.BaseResponse<ColumnsType[]>>({
-      page: 1,
-      pageSize: 20
+      page: page.page,
+      pageSize: page.pageSize
     }).then(res => {
       if(res.status === 200) {
         console.log(res);
