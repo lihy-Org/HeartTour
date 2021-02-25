@@ -1,9 +1,9 @@
 /*
  * @Author: Li-HONGYAO
  * @Date: 2021-02-23 20:02:10
- * @LastEditTime: 2021-02-23 20:18:13
+ * @LastEditTime: 2021-02-24 16:19:22
  * @LastEditors: Li-HONGYAO
- * @Description: 
+ * @Description:
  * @FilePath: /Admin/src/Api/store.ts
  */
 
@@ -11,28 +11,28 @@ import request from './request';
 
 /**
  * 获取门店列表
- * @param data 
+ * @param data
  */
-export function list<T>(data:{
+export function list<T>(data: {
   searchKey?: string;
   pageSize: number;
   page: number;
-}){
+}) {
   return request.post<T>('/admin/store/list', {
-    data
-  })
+    data,
+  });
 }
 
 /**
  * 获取门店选择列表
  */
 export function getSelectList<T>() {
-  return request.get<T>('/admin/store/GetSelectList');
+  return request.get<T>('/admin/store/getSelectList');
 }
 
 /**
  * 新增/修改门店
- * @param data 
+ * @param data
  */
 export function addOrUpdate<T>(data: {
   storeId?: string;
@@ -45,6 +45,16 @@ export function addOrUpdate<T>(data: {
   businessHourEnd: string;
 }) {
   return request.post<T>('/admin/store/addOrUpdate', {
-    data
-  })
+    data,
+  });
+}
+
+/**
+ * 移除门店
+ * @param storeId
+ */
+export function remove<T>(storeId: string) {
+  return request.post<T>('/admin/store/remove', {
+    data: { storeId },
+  });
 }

@@ -1,7 +1,7 @@
 /*
  * @Author: Li-HONGYAO
  * @Date: 2021-01-23 11:18:34
- * @LastEditTime: 2021-02-24 12:00:46
+ * @LastEditTime: 2021-02-24 14:51:11
  * @LastEditors: Li-HONGYAO
  * @Description:
  * @FilePath: /Admin/src/components/UploadFile/index.tsx
@@ -10,6 +10,7 @@
 import React, { FC, memo, useState } from 'react';
 import { Upload, Modal } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
+import OSS from 'ali-oss';
 
 
 interface IProps {

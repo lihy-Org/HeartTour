@@ -1,7 +1,7 @@
 /*
  * @Author: Li-HONGYAO
  * @Date: 2021-01-22 12:36:49
- * @LastEditTime: 2021-02-23 22:09:08
+ * @LastEditTime: 2021-02-25 15:48:09
  * @LastEditors: Li-HONGYAO
  * @Description:
  * @FilePath: /Admin/src/pages/Configs/index.tsx
@@ -11,6 +11,7 @@ import { Card, Button } from 'antd';
 import { EditOutlined } from '@ant-design/icons';
 import TagModal from '@/components/TagModal';
 import { kPOST, kTITLE } from '@/constants';
+import Varieties from './Varieties';
 
 const { Meta } = Card;
 
@@ -18,6 +19,7 @@ const Banner: FC = () => {
   // state
   const [postVisible, setPostVisible] = useState(false);
   const [titleVisible, setTitleVisible] = useState(false);
+  const [varietiesVisible, setVarietiesVisible] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
 
   // list datas
@@ -40,7 +42,7 @@ const Banner: FC = () => {
     },
     {
       cover:
-        'https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png',
+        'https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=3062556219,1093566700&fm=26&gp=0.jpg',
       title: '职位管理',
       description: '职位相关管理',
       actions: [
@@ -56,39 +58,7 @@ const Banner: FC = () => {
     },
     {
       cover:
-        'https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png',
-      title: '宠物种类',
-      description: '宠物种类相关分类管理',
-      actions: [
-        <Button
-          type="primary"
-          size="small"
-          icon={<EditOutlined key="edit" />}
-          onClick={() => setModalVisible(true)}
-        >
-          查看编辑
-        </Button>,
-      ],
-    },
-    {
-      cover:
-        'https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png',
-      title: '职位管理',
-      description: '职位相关管理',
-      actions: [
-        <Button
-          type="primary"
-          size="small"
-          icon={<EditOutlined key="edit" />}
-          onClick={() => setModalVisible(true)}
-        >
-          查看编辑
-        </Button>,
-      ],
-    },
-    {
-      cover:
-        'https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png',
+        'https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=967197514,2532988482&fm=26&gp=0.jpg',
       title: '头衔管理',
       description: '头衔相关管理',
       actions: [
@@ -102,6 +72,23 @@ const Banner: FC = () => {
         </Button>,
       ],
     },
+    {
+      cover:
+        'https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png',
+      title: '宠物种类',
+      description: '宠物种类相关分类管理',
+      actions: [
+        <Button
+          type="primary"
+          size="small"
+          icon={<EditOutlined key="edit" />}
+          onClick={() => setVarietiesVisible(true)}
+        >
+          查看编辑
+        </Button>,
+      ],
+    },
+
     {
       cover:
         'https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png',
@@ -149,14 +136,23 @@ const Banner: FC = () => {
         title="职位管理"
         visible={postVisible}
         type={kPOST}
-        onCancel={() => { setPostVisible(false)}}
+        onCancel={() => {
+          setPostVisible(false);
+        }}
       />
       {/* 头衔管理 */}
       <TagModal
         title="头衔管理"
         visible={titleVisible}
         type={kTITLE}
-        onCancel={() => { setTitleVisible(false)}}
+        onCancel={() => {
+          setTitleVisible(false);
+        }}
+      />
+      {/* 宠物种类配置 */}
+      <Varieties
+        visible={varietiesVisible}
+        onCancel={() => setVarietiesVisible(false)}
       />
     </div>
   );

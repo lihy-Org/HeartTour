@@ -1,7 +1,7 @@
 /*
  * @Author: Li-HONGYAO
  * @Date: 2021-02-23 18:04:53
- * @LastEditTime: 2021-02-23 21:30:28
+ * @LastEditTime: 2021-02-25 15:15:59
  * @LastEditors: Li-HONGYAO
  * @Description:
  * @FilePath: /Admin/src/Api/config.ts
@@ -19,27 +19,27 @@ export function get<T>(type: string, key?: string) {
 
 /**
  * 添加或修改配置
- * @param data 
+ * @param data
  */
-export function addOrUpdate<T>(data:{
+export function addOrUpdate<T>(data: {
   type: string;
   key: string;
   value: string;
   configId?: string;
   parentId?: string;
-  delAll?: number; /** 是否清空,1则清空所有type下配置 */
+  delAll?: number /** 是否清空,1则清空所有type下配置 */;
 }) {
   return request.post<T>('/admin/config/addOrUpdate', {
-    data
-  })
+    data,
+  });
 }
 
 /**
  * 移除配置
- * @param configId 
+ * @param configId
  */
 export function remove<T>(configId: string) {
   return request.post<T>('/admin/config/remove', {
-    params: { configId }
-  })
+    params: { configId },
+  });
 }

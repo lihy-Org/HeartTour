@@ -1,7 +1,7 @@
 /*
  * @Author: Li-HONGYAO
  * @Date: 2021-01-18 11:15:25
- * @LastEditTime: 2021-02-24 13:48:50
+ * @LastEditTime: 2021-02-24 18:06:24
  * @LastEditors: Li-HONGYAO
  * @Description:
  * @FilePath: /Admin/src/pages/Store/index.tsx
@@ -28,31 +28,34 @@ import HT from '@/constants/interface';
 import Api from '@/Api';
 
 // 筛选条件
-type FilterParamsType = {};
+type FilterParamsType = {
+  searchKey?: string;
+};
 
 // 店员类型
 type ShopAssistantType = {
-  id: number;
+  id: string;
+  storeId: string /** 所属门店id */;
   avatar: string /** 头像 */;
   name: string /** 姓名 */;
-  gender: string /** 性别 */;
+  gender: number /** 性别 */;
   age: number /** 年龄 */;
   phone: string /** 电话 */;
   title: string[] /** 头衔 */;
   post: string /** 职位 */;
-  isManager?: boolean /** 是否为店长 */;
+  type: number /** 2:门店系统管理员（店长） 3:普通人员 */;
 };
-type StoreFormTypeKeys = keyof StoreFormType;
 // 列表数据类型
 type ColumnsType = {
-  id: number /** 门店id */;
+  id: string /** 门店id */;
   name: string /** 门店名称 */;
   shopManager: string /** 店长 */;
   phone: string /** 联系电话 */;
   lng: string /** 经度 */;
   lat: string /** 纬度 */;
   address: string /** 详细地址 */;
-  businessHours: string[] /** 营业时间 */;
+  businessHourStart: string /** 营业开始时间 */;
+  businessHourEnd: string /** 营业结束时间 */;
 };
 
 // 表单类型
@@ -75,6 +78,7 @@ const Store: FC = () => {
   // state
   const [form] = Form.useForm();
   const [storeForm] = Form.useForm();
+  const [storeId, setStoreId] = useState<string | undefined>();
   const [addModalVisible, setAddModalVisible] = useState(false);
   const [shopAssistant, setShopAssistant] = useState<ShopAssistantType[]>([]);
   const [saModalVisible, setSAModalVisible] = useState(false);
@@ -88,45 +92,55 @@ const Store: FC = () => {
     }),
   );
   // methods
-  const getDataSource = () => {
-    // console.log(filterParams);
-    Api.store.list<HT.BaseResponse<ColumnsType[]>>({
-      page: page.page,
-      pageSize: page.pageSize
-    }).then(res => {
-      if(res.status === 200) {
-        console.log(res);
-      }
-    })
-    message.loading('数据加载中...');
-    const tempArr: ColumnsType[] = [];
-    for (let i = 0; i < 88; i++) {
-      tempArr.push({
-        id: i,
-        name: '九里晴川店',
-        shopManager: i % 7 === 0 ? '' : '李鸿耀',
-        phone: '17398888669',
-        lat: '104.01043703125',
-        lng: '30.503119612406724',
-        address: '成都市高新区雅和南四路216号',
-        businessHours: ['09:30', '20:00'],
+  const getDataSource = (loading: boolean) => {
+    loading && message.loading('数据加载中...');
+    Api.store
+      .list<HT.BaseResponse<ColumnsType[]>>({
+        ...page.filters,
+        page: page.page,
+        pageSize: page.pageSize,
+      })
+      .then((res) => {
+        if (res && res.status === 200) {
+          setDataSource(res.data);
+          setTotal(res.page.total);
+        }
       });
-    }
-
-    setTimeout(() => {
-      setDataSource(tempArr);
-      setTotal(tempArr.length);
-      message.destroy();
-    }, 500);
+  };
+  const getShopAssistant = (loading: boolean, id: string) => {
+    loading && message.loading('数据加载中...');
+    Api.personnel
+      .list<HT.BaseResponse<ShopAssistantType[]>>({
+        storeId: id,
+        page: 1,
+        pageSize: 10000,
+      })
+      .then((res) => {
+        if (res && res.status === 200) {
+          if (loading) {
+            if (res.data.length > 0) {
+              setShopAssistant(res.data);
+              setSAModalVisible(true);
+            } else {
+              message.info('该门店暂未分配店员');
+            }
+          } else {
+            setShopAssistant(res.data);
+          }
+        }
+      });
   };
 
   // events
+  // 添加、编辑门店
   const onAddStore = async () => {
     try {
       const values: StoreFormType = await storeForm.validateFields();
+
       if (values) {
         Api.store
           .addOrUpdate<HT.BaseResponse<any>>({
+            storeId,
             name: values.name,
             phone: values.phone,
             lat: values.lat,
@@ -136,130 +150,52 @@ const Store: FC = () => {
             businessHourEnd: values.businessHours[1].format('HH:mm'),
           })
           .then((res) => {
-            if (res.status === 200) {
-              console.log(res);
+            if (res && res.status === 200) {
+              message.success(storeId ? '编辑成功' : '添加成功');
+              getDataSource(false);
+              setAddModalVisible(false);
             }
           });
-        // message.success('添加成功');
-        // setAddModalVisible(false);
       }
     } catch (err) {}
   };
-  const onDeleteStore = (id: number) => {
+  // 删除门店
+  const onDeleteStore = (id: string) => {
     Modal.info({
       content: '您确定删除该门店么？',
       okText: '确定',
       closable: true,
       onOk: () => {
-        message.success('删除成功');
+        Api.store.remove<HT.BaseResponse<any>>(id).then((res) => {
+          if (res && res.status === 200) {
+            console.log(res);
+            message.success('删除成功');
+            getDataSource(false);
+          }
+        });
       },
     });
   };
-  const onSetShopManager = (id: number) => {
-    message.success('设置成功');
+  // 设置管理员
+  const onSetShopManager = (userId: string, storeId: string) => {
+    Api.personnel.setManage<HT.BaseResponse<any>>(userId).then((res) => {
+      if (res && res.status === 200) {
+        message.success('设置成功');
+        getShopAssistant(false, storeId);
+        getDataSource(false);
+      }
+    });
   };
-  const onQueryShopAssistant = (id: number) => {
-    if (id % 5 === 0) {
-      message.info('该门店暂未分配店员');
-      return;
-    }
-    setShopAssistant([
-      {
-        id: 1,
-        avatar:
-          'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fn.sinaimg.cn%2Ffront%2F342%2Fw700h442%2F20190321%2FxqrY-huqrnan7527352.jpg&refer=http%3A%2F%2Fn.sinaimg.cn&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1613916524&t=a4e12aa1c942ca1b4ac8c2fd35328896',
-        name: '迪丽热巴',
-        gender: '女',
-        age: 28,
-        title: ['性感', '知性'],
-        post: '收营员',
-        phone: '15888899917',
-      },
-      {
-        id: 2,
-        avatar:
-          'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fn.sinaimg.cn%2Ffront%2F342%2Fw700h442%2F20190321%2FxqrY-huqrnan7527352.jpg&refer=http%3A%2F%2Fn.sinaimg.cn&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1613916524&t=a4e12aa1c942ca1b4ac8c2fd35328896',
-        name: '迪丽热巴',
-        gender: '女',
-        age: 28,
-        title: ['性感', '知性'],
-        post: '收营员',
-        phone: '15888899917',
-      },
-      {
-        id: 3,
-        avatar:
-          'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fn.sinaimg.cn%2Ffront%2F342%2Fw700h442%2F20190321%2FxqrY-huqrnan7527352.jpg&refer=http%3A%2F%2Fn.sinaimg.cn&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1613916524&t=a4e12aa1c942ca1b4ac8c2fd35328896',
-        name: '迪丽热巴',
-        gender: '女',
-        age: 28,
-        title: ['性感', '知性'],
-        post: '收营员',
-        phone: '15888899917',
-      },
-      {
-        id: 4,
-        avatar:
-          'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fn.sinaimg.cn%2Ffront%2F342%2Fw700h442%2F20190321%2FxqrY-huqrnan7527352.jpg&refer=http%3A%2F%2Fn.sinaimg.cn&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1613916524&t=a4e12aa1c942ca1b4ac8c2fd35328896',
-        name: '迪丽热巴',
-        gender: '女',
-        age: 28,
-        title: ['性感', '知性'],
-        post: '收营员',
-        phone: '15888899917',
-      },
-      {
-        id: 5,
-        avatar:
-          'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fn.sinaimg.cn%2Ffront%2F342%2Fw700h442%2F20190321%2FxqrY-huqrnan7527352.jpg&refer=http%3A%2F%2Fn.sinaimg.cn&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1613916524&t=a4e12aa1c942ca1b4ac8c2fd35328896',
-        name: '迪丽热巴',
-        gender: '女',
-        age: 28,
-        title: ['性感', '知性'],
-        post: '收营员',
-        phone: '15888899917',
-      },
-      {
-        id: 6,
-        avatar:
-          'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fn.sinaimg.cn%2Ffront%2F342%2Fw700h442%2F20190321%2FxqrY-huqrnan7527352.jpg&refer=http%3A%2F%2Fn.sinaimg.cn&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1613916524&t=a4e12aa1c942ca1b4ac8c2fd35328896',
-        name: '迪丽热巴',
-        gender: '女',
-        age: 28,
-        title: ['性感', '知性'],
-        post: '收营员',
-        phone: '15888899917',
-      },
-      {
-        id: 7,
-        avatar:
-          'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fn.sinaimg.cn%2Ffront%2F342%2Fw700h442%2F20190321%2FxqrY-huqrnan7527352.jpg&refer=http%3A%2F%2Fn.sinaimg.cn&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1613916524&t=a4e12aa1c942ca1b4ac8c2fd35328896',
-        name: '迪丽热巴',
-        gender: '女',
-        age: 28,
-        title: ['性感', '知性'],
-        post: '收营员',
-        phone: '15888899917',
-      },
-    ]);
-    setSAModalVisible(true);
-  };
-  const onDeleteShopAssistant = (id: number) => {
-    message.success('删除成功');
+  // 查看门店店员
+  const onQueryShopAssistant = (id: string) => {
+    getShopAssistant(true, id);
   };
   // effects
-
   useEffect(() => {
-    getDataSource();
+    getDataSource(true);
   }, [page]);
   // columns
   const columns: ColumnProps<ColumnsType>[] = [
-    {
-      title: '序号',
-      key: 'No.',
-      render: (record, row, index) => index + 1,
-      width: 60,
-    },
     { title: '门店名称', dataIndex: 'name' },
     {
       title: '店长',
@@ -289,8 +225,9 @@ const Store: FC = () => {
     { title: '门店地址', dataIndex: 'address' },
     {
       title: '营业时间',
-      dataIndex: 'businessHours',
-      render: (record: string[]) => `${record[0]} ~ ${record[1]}`,
+      key: 'businessHours',
+      render: (record: ColumnsType) =>
+        `${record.businessHourStart} ~ ${record.businessHourEnd}`,
     },
     {
       width: 170,
@@ -302,11 +239,12 @@ const Store: FC = () => {
             type="primary"
             size="small"
             onClick={() => {
+              setStoreId(record.id);
               storeForm.setFieldsValue({
                 ...record,
                 businessHours: [
-                  moment(record.businessHours[0], 'HH:mm'),
-                  moment(record.businessHours[1], 'HH:mm'),
+                  moment(record.businessHourStart, 'HH:mm'),
+                  moment(record.businessHourEnd, 'HH:mm'),
                 ],
               });
               setAddModalVisible(true);
@@ -329,16 +267,6 @@ const Store: FC = () => {
   ];
   const shopAssistantColumns: ColumnProps<ShopAssistantType>[] = [
     {
-      width: 50,
-      title: '序号',
-      key: 'No.',
-      render: (
-        No: ShopAssistantType,
-        record: ShopAssistantType,
-        index: number,
-      ) => index + 1,
-    },
-    {
       title: '头像',
       dataIndex: 'avatar',
       render: (avatarUrl) => (
@@ -346,7 +274,11 @@ const Store: FC = () => {
       ),
     },
     { title: '姓名', dataIndex: 'name' },
-    { title: '性别', dataIndex: 'gender' },
+    {
+      title: '性别',
+      dataIndex: 'gender',
+      render: (record) => (record === 1 ? '男' : '女'),
+    },
     { title: '年龄', dataIndex: 'age' },
     { title: '电话', dataIndex: 'phone' },
     { title: '职位', dataIndex: 'post' },
@@ -355,37 +287,28 @@ const Store: FC = () => {
       dataIndex: 'title',
       render: (record: string[]) => (
         <Space size="small">
-          {record.map((title, i) => (
-            <Tag style={{ fontSize: 10 }} color="#87d068" key={`title__${i}`}>
-              {title}
-            </Tag>
-          ))}
+          {record &&
+            record.map((title, i) => (
+              <Tag style={{ fontSize: 10 }} color="#87d068" key={`title__${i}`}>
+                {title}
+              </Tag>
+            ))}
         </Space>
       ),
     },
     {
-      width: 164,
+      width: 90,
       title: '操作',
       key: 'action',
       render: (record: ShopAssistantType) => (
-        <Space size="small">
-          <Button
-            type="primary"
-            size="small"
-            onClick={() => onSetShopManager(record.id)}
-          >
-            设为店长
-          </Button>
-          <Button
-            type="primary"
-            size="small"
-            danger
-            icon={<DeleteOutlined />}
-            onClick={() => onDeleteShopAssistant(record.id)}
-          >
-            删除
-          </Button>
-        </Space>
+        <Button
+          disabled={record.type === 2}
+          type="primary"
+          size="small"
+          onClick={() => onSetShopManager(record.id, record.storeId)}
+        >
+          设为店长
+        </Button>
       ),
     },
   ];
@@ -404,6 +327,7 @@ const Store: FC = () => {
           shape="round"
           onClick={() => {
             storeForm.resetFields();
+            setStoreId(undefined);
             setAddModalVisible(true);
           }}
         >
@@ -492,6 +416,7 @@ const Store: FC = () => {
       <Modal
         title="添加门店"
         visible={addModalVisible}
+        maskClosable={false}
         onCancel={() => setAddModalVisible(false)}
         onOk={onAddStore}
         okButtonProps={{
@@ -502,7 +427,6 @@ const Store: FC = () => {
         <Form
           {...layout}
           form={storeForm}
-          // initialValues={defaultStoreForm}
           autoComplete="off"
           onFinish={onAddStore}
         >
@@ -515,7 +439,7 @@ const Store: FC = () => {
             rules={[
               {
                 required: true,
-                validator: (ruls: RuleObject, value: any) => {
+                validator: (rules: RuleObject, value: any) => {
                   if (!value) {
                     return Promise.reject('请填写联系电话');
                   } else if (!Validator.tel(value)) {

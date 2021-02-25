@@ -1,7 +1,7 @@
 /*
  * @Author: Li-HONGYAO
  * @Date: 2021-01-18 11:15:25
- * @LastEditTime: 2021-02-24 13:44:28
+ * @LastEditTime: 2021-02-24 17:22:21
  * @LastEditors: Li-HONGYAO
  * @Description:
  * @FilePath: /Admin/src/pages/Personnel/index.tsx
@@ -32,18 +32,25 @@ import { RuleObject } from 'antd/lib/form';
 import UploadFile from '@/components/UploadFile';
 import Api from '@/Api';
 import HT from '@/constants/interface';
+import { kPOST, kTITLE } from '@/constants';
 
 // 筛选条件
 type FilterParamsType = {
-  storeId?: number /** 所在门店id */;
+  storeId?: string /** 所在门店id */;
   postId?: string;
   gender?: number /** 1-男  2-女 */;
   searchKey?: string;
 };
 
+// 门店类型
+type StoreType = {
+  id: string;
+  name: string;
+};
+
 // 列表
 type ColumnsType = {
-  id: number;
+  id: string /** 人员id */;
   avatar: string /** 头像 */;
   name: string /** 姓名 */;
   gender: string /** 性别 */;
@@ -52,7 +59,7 @@ type ColumnsType = {
   title?: string[] /** 头衔 */;
   post: string /** 职位 */;
   store?: string /** 所属门店 */;
-  storeId?: number /** 所属门店id */;
+  storeId?: string /** 所属门店id */;
 };
 
 // 表单类型
@@ -63,8 +70,8 @@ type PersonnelFormType = {
   age: number /** 年龄 */;
   postId: string /** 职位id */;
   phone: string /** 联系电话 */;
-  title: string[] /** 头衔 */;
-  isTechnician: number /** 是否技师 0-否 1-是 */;
+  titleIds: string[] /** 头衔 */;
+  isBeautician: number /** 是否技师 0-否 1-是 */;
 };
 
 const { Option } = Select;
@@ -73,33 +80,19 @@ const layout = {
   wrapperCol: { span: 20 },
 };
 
-const stores = [
-  { id: 1, store: '九里晴川店' },
-  { id: 2, store: '名著司南店' },
-  { id: 3, store: '蒂凡尼店' },
-  { id: 4, store: '怡馨家园店' },
-  { id: 5, store: '大城际店' },
-  { id: 6, store: '未来方舟店' },
-  { id: 7, store: '中德英伦·联邦店' },
-  { id: 8, store: '孵化园店' },
-  { id: 9, store: '环球中心店' },
-];
-
-const titles = [
-  '美容达人',
-  '中级技师',
-  '高级技师',
-  '金牌技师',
-  '初级技师',
-  '爱宠人士',
-];
-
 const Personnel: FC = () => {
   // state
   const [addModalVisible, setAddModalVisible] = useState(false);
   const [storeModalVisible, setStoreModalVisible] = useState(false);
-  // const [stores, setStores] = useState<any[]>([]);
-  const [selectedStore, setSelectedStore] = useState(-1);
+  const [stores, setStores] = useState<StoreType[]>([]);
+  const [selectedStore, setSelectedStore] = useState('');
+  const [userId, setUserId] = useState('');
+
+  // 职位列表
+  const [posts, setPosts] = useState<HT.ConfigType[]>([]);
+  // 头衔列表
+  const [titles, setTitles] = useState<HT.ConfigType[]>([]);
+
   const [form] = Form.useForm();
   const [personnelForm] = Form.useForm();
   const [dataSource, setDataSource] = useState<ColumnsType[]>([]);
@@ -108,17 +101,15 @@ const Personnel: FC = () => {
     () => ({
       pageSize: 20,
       page: 1,
-      filters: {
-        storeId: -1,
-      },
+      filters: {},
     }),
   );
   // methods
-  const getDataSource = () => {
-    // console.log(filterParams);
-    message.loading('数据加载中...');
+  const getDataSource = (loading: boolean) => {
+    loading && message.loading('数据加载中...');
     Api.personnel
       .list<HT.BaseResponse<ColumnsType[]>>({
+        ...page.filters,
         page: page.page,
         pageSize: page.pageSize,
       })
@@ -128,65 +119,101 @@ const Personnel: FC = () => {
           setTotal(res.page.total);
         }
       });
-
   };
   // events
+  // 添加人员
   const onAddPersonnel = async () => {
     try {
       const values: PersonnelFormType = await personnelForm.validateFields();
-      console.log(values);
-      message.success('添加成功');
-      setAddModalVisible(false);
+      Api.personnel
+        .addOrUpdate<HT.BaseResponse<any>>({
+          ...values,
+          userId,
+          avatar:
+            'https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=308361380,190071612&fm=26&gp=0.jpg',
+        })
+        .then((res) => {
+          if (res && res.status === 200) {
+            getDataSource(false);
+            message.success(userId ? '编辑成功' : '添加成功');
+            setAddModalVisible(false);
+          }
+        });
     } catch (err) {}
   };
 
-  const onDeletePersonnel = (id: number) => {
+  // 删除人员
+  const onDeletePersonnel = (id: string) => {
     Modal.warning({
       content: '您确定要要删除该人员么？',
       closable: true,
       okText: '确定',
       onOk: () => {
-        message.success('删除成功');
+        Api.personnel.remove<HT.BaseResponse<any>>(id).then((res) => {
+          if (res && res.status === 200) {
+            message.success('删除成功');
+            getDataSource(false);
+          }
+        });
       },
     });
   };
 
+  // 分配门店
   const onDistributeStore = () => {
-    if (selectedStore === -1) {
+    if (!selectedStore) {
       message.info('请选择分配门店');
       return;
     }
-    message.success('已分配');
-    setSelectedStore(-1);
-    setStoreModalVisible(false);
+    Api.personnel
+      .setStore<HT.BaseResponse<any>>({
+        storeId: selectedStore,
+        userId,
+      })
+      .then((res) => {
+        if (res && res.status === 200) {
+          message.success('已分配');
+          getDataSource(false);
+          setSelectedStore('');
+          setStoreModalVisible(false);
+        }
+      });
   };
 
   // effects
-  useEffect(() =>{
-    // Api.store.getSelectList<HT.BaseResponse<any[]>>().then(res => {
-    //   if(res.status === 200) {
-    //     console.log(res);
-    //   }
-    // })
-  }, []);
+  // 获取门店选择列表
   useEffect(() => {
-    getDataSource();
+    Api.store.getSelectList<HT.BaseResponse<StoreType[]>>().then((res) => {
+      if (res && res.status === 200) {
+        setStores(res.data);
+      }
+    });
+  }, []);
+  // 获取人员列表
+  useEffect(() => {
+    getDataSource(true);
   }, [page]);
+  // 获取职位/头衔列表
+  useEffect(() => {
+    Api.config.get<HT.BaseResponse<HT.ConfigType[]>>(kPOST).then((res) => {
+      if (res && res.status === 200) {
+        setPosts(res.data);
+      }
+    });
+    Api.config.get<HT.BaseResponse<HT.ConfigType[]>>(kTITLE).then((res) => {
+      if (res && res.status === 200) {
+        setTitles(res.data);
+      }
+    });
+  }, []);
   // columns
   const columns: ColumnProps<ColumnsType>[] = [
-    {
-      width: 50,
-      title: '序号',
-      key: 'No.',
-      render: (No: ColumnsType, record: ColumnsType, index: number) =>
-        index + 1,
-    },
     { title: '姓名', dataIndex: 'name' },
     {
       title: '头像',
       dataIndex: 'avatar',
       render: (avatarUrl) => (
-        <Image src={avatarUrl} style={{ width: 'auto', height: 30 }} />
+        <Image src={avatarUrl} style={{ width: 'auto', height: 50 }} />
       ),
     },
     {
@@ -195,7 +222,11 @@ const Personnel: FC = () => {
       render: (record) =>
         record || <span className="color-C5C5C5">当前未分配</span>,
     },
-    { title: '性别', dataIndex: 'gender' },
+    {
+      title: '性别',
+      dataIndex: 'gender',
+      render: (record) => (record == 1 ? '男' : '女'),
+    },
     { title: '年龄', dataIndex: 'age' },
     { title: '电话', dataIndex: 'phone' },
     { title: '职位', dataIndex: 'post' },
@@ -229,6 +260,7 @@ const Personnel: FC = () => {
                 ...record,
               });
               setAddModalVisible(true);
+              setUserId(record.id);
             }}
           >
             编辑
@@ -238,6 +270,7 @@ const Personnel: FC = () => {
             size="small"
             onClick={() => {
               setStoreModalVisible(true);
+              setUserId(record.id);
               record.storeId && setSelectedStore(record.storeId);
             }}
           >
@@ -271,6 +304,7 @@ const Personnel: FC = () => {
           shape="round"
           onClick={() => {
             personnelForm.resetFields();
+            setUserId('');
             setAddModalVisible(true);
           }}
         >
@@ -292,16 +326,17 @@ const Personnel: FC = () => {
           }
         >
           {/* 店铺 */}
-          <Form.Item label="店铺：" name="store">
+          <Form.Item label="店铺：" name="storeId">
             <StoreSelect />
           </Form.Item>
           {/* 职位 */}
           <Form.Item label="职位：" name="post">
             <Select placeholder="全部" allowClear>
-              <Option value="店长">店长</Option>
-              <Option value="技师">技师</Option>
-              <Option value="收银">收银</Option>
-              <Option value="保洁">保洁</Option>
+              {posts.map((item, i) => (
+                <Option key={item.id} value={item.id}>
+                  {item.value}
+                </Option>
+              ))}
             </Select>
           </Form.Item>
           {/* 性别 */}
@@ -379,38 +414,40 @@ const Personnel: FC = () => {
           <Form.Item label="姓名" name="name" rules={[{ required: true }]}>
             <Input />
           </Form.Item>
-          <Form.Item label="头像" name="avatar" rules={[{ required: true }]}>
+          <Form.Item label="头像" name="avatar">
             <UploadFile />
           </Form.Item>
           <Form.Item name="gender" label="性别" rules={[{ required: true }]}>
             <Radio.Group>
-              <Radio value="男">男</Radio>
-              <Radio value="女">女</Radio>
+              <Radio value={1}>男</Radio>
+              <Radio value={2}>女</Radio>
             </Radio.Group>
           </Form.Item>
           <Form.Item name="age" label="年龄" rules={[{ required: true }]}>
             <InputNumber min={18} max={65} />
           </Form.Item>
-          <Form.Item name="post" label="职位" rules={[{ required: true }]}>
+          <Form.Item name="postId" label="职位" rules={[{ required: true }]}>
             <Radio.Group>
-              <Radio value="技师">技师</Radio>
-              <Radio value="收营员">收营员</Radio>
-              <Radio value="保洁">保洁</Radio>
+              {posts.map((item) => (
+                <Radio key={item.id} value={item.id}>
+                  {item.value}
+                </Radio>
+              ))}
             </Radio.Group>
           </Form.Item>
-          <Form.Item name="title" label="头衔" rules={[{ required: true }]}>
+          <Form.Item name="titleIds" label="头衔">
             <Checkbox.Group>
               <Row>
-                {titles.map((item, i) => (
-                  <Col span={6} key={item}>
-                    <Checkbox value={item}>{item}</Checkbox>
+                {titles.map((item) => (
+                  <Col span={8} key={item.id}>
+                    <Checkbox value={item.id}>{item.value}</Checkbox>
                   </Col>
                 ))}
               </Row>
             </Checkbox.Group>
           </Form.Item>
           <Form.Item
-            name="isTechnician"
+            name="isBeautician"
             label="是否技师"
             rules={[{ required: true }]}
           >
@@ -445,27 +482,29 @@ const Personnel: FC = () => {
       <Modal
         width={1000}
         title="分配门店"
-        onCancel={() => {
-          setStoreModalVisible(false);
-        }}
+        onCancel={() => setStoreModalVisible(false)}
         onOk={onDistributeStore}
         visible={storeModalVisible}
       >
-        <Radio.Group
-          style={{ width: '100%' }}
-          value={selectedStore}
-          onChange={(e) => {
-            setSelectedStore(e.target.value);
-          }}
-        >
-          <Row>
-            {stores.map((item, i) => (
-              <Col span={6} key={`__check_store_${i}`}>
-                <Radio value={item.id}>{item.store}</Radio>
-              </Col>
-            ))}
-          </Row>
-        </Radio.Group>
+        {stores.length > 0 ? (
+          <Radio.Group
+            style={{ width: '100%' }}
+            value={selectedStore}
+            onChange={(e) => {
+              setSelectedStore(e.target.value);
+            }}
+          >
+            <Row>
+              {stores.map((item, i) => (
+                <Col span={6} key={`__check_store_${i}`}>
+                  <Radio value={item.id}>{item.name}</Radio>
+                </Col>
+              ))}
+            </Row>
+          </Radio.Group>
+        ) : (
+          <span className="color-C5C5C5">当前还没有添加门店哦~</span>
+        )}
       </Modal>
     </div>
   );
