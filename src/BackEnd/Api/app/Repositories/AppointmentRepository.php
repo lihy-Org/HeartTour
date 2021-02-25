@@ -185,7 +185,7 @@ class AppointmentRepository
         if (isset($data->userId)) {
             $worktimes = $worktimes->where('uid', $data->userId);
         }
-        return $worktimes->select('storeId', 'uid', 'uname', 'workDay', 'workTime', 'orderId');
+        return $worktimes->orderBy('workTime')->select('storeId', 'uid', 'uname', 'workDay', 'workTime', 'orderId');
     }
 
     public function SetWorktime($data)
