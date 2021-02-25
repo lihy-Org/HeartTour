@@ -1,3 +1,11 @@
+/*
+ * @Author: Li-HONGYAO
+ * @Date: 2021-01-17 23:30:37
+ * @LastEditTime: 2021-02-24 21:48:42
+ * @LastEditors: Li-HONGYAO
+ * @Description: 
+ * @FilePath: /Admin/src/utils/utils.ts
+ */
 import { history } from 'umi';
 
 class Utils {
@@ -39,5 +47,6 @@ class Utils {
   public static back() {
     history.goBack();
   }
+
 }
 export default Utils;
