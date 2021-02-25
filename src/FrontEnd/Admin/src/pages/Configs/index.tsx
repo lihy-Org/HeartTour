@@ -1,7 +1,7 @@
 /*
  * @Author: Li-HONGYAO
  * @Date: 2021-01-22 12:36:49
- * @LastEditTime: 2021-02-24 21:17:52
+ * @LastEditTime: 2021-02-25 15:48:09
  * @LastEditors: Li-HONGYAO
  * @Description:
  * @FilePath: /Admin/src/pages/Configs/index.tsx
@@ -11,7 +11,7 @@ import { Card, Button } from 'antd';
 import { EditOutlined } from '@ant-design/icons';
 import TagModal from '@/components/TagModal';
 import { kPOST, kTITLE } from '@/constants';
-import PetType from './PetType';
+import Varieties from './Varieties';
 
 const { Meta } = Card;
 
@@ -19,7 +19,7 @@ const Banner: FC = () => {
   // state
   const [postVisible, setPostVisible] = useState(false);
   const [titleVisible, setTitleVisible] = useState(false);
-  const [petTypeVisible, setPetTypeVisible] = useState(false);
+  const [varietiesVisible, setVarietiesVisible] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
 
   // list datas
@@ -82,7 +82,7 @@ const Banner: FC = () => {
           type="primary"
           size="small"
           icon={<EditOutlined key="edit" />}
-          onClick={() => setModalVisible(true)}
+          onClick={() => setVarietiesVisible(true)}
         >
           查看编辑
         </Button>,
@@ -150,7 +150,10 @@ const Banner: FC = () => {
         }}
       />
       {/* 宠物种类配置 */}
-      {/* <PetType visible={true} /> */}
+      <Varieties
+        visible={varietiesVisible}
+        onCancel={() => setVarietiesVisible(false)}
+      />
     </div>
   );
 };

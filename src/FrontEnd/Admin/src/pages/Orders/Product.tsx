@@ -1,7 +1,7 @@
 /*
  * @Author: Li-HONGYAO
  * @Date: 2021-01-30 22:07:01
- * @LastEditTime: 2021-02-01 21:35:05
+ * @LastEditTime: 2021-02-25 16:05:17
  * @LastEditors: Li-HONGYAO
  * @Description:
  * @FilePath: /Admin/src/pages/Orders/Product.tsx
@@ -53,7 +53,7 @@ const Product: FC = () => {
   const [form] = Form.useForm();
   const [dataSource, setDataSource] = useState<ColumnsType[]>([]);
   const [total, setTotal] = useState(0);
-  const [page, setPage] = useState<DP.TablePageDataType<FilterParamsType>>(
+  const [page, setPage] = useState<HT.TablePageDataType<FilterParamsType>>(
     () => ({
       pageSize: 20,
       page: 1,

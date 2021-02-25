@@ -1,7 +1,7 @@
 /*
  * @Author: Li-HONGYAO
  * @Date: 2021-01-28 18:18:09
- * @LastEditTime: 2021-02-23 22:11:10
+ * @LastEditTime: 2021-02-25 16:22:52
  * @LastEditors: Li-HONGYAO
  * @Description:
  * @FilePath: /Admin/src/components/TagModal/index.tsx
@@ -47,7 +47,7 @@ const TagModal: FC<IProps> = (props) => {
         value,
       })
       .then((res) => {
-        if (res.status === 200) {
+        if (res && res.status === 200) {
           getTags(false);
         }
       });
@@ -57,7 +57,7 @@ const TagModal: FC<IProps> = (props) => {
   const removeTag = (id: string) => {
     message.loading('删除中...');
     Api.config.remove<HT.BaseResponse<any>>(id).then((res) => {
-      if (res.status === 200) {
+      if (res && res.status === 200) {
         getTags(false);
       }
     });
@@ -65,7 +65,7 @@ const TagModal: FC<IProps> = (props) => {
   const getTags = (loading: boolean) => {
     loading && message.loading('数据加载中...');
     Api.config.get<HT.BaseResponse<TagType[]>>(props.type).then((res) => {
-      if (res.status === 200) {
+      if (res && res.status === 200) {
         setTags(res.data);
       }
     });
