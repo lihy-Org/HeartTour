@@ -87,7 +87,7 @@ class StoreController extends Controller
         $rules = [
             'pageSize' => ['integer', 'gt:0'],
             'page' => ['integer', 'gt:0'],
-            'searchKey' => ['string'],
+            'searchKey' => ['nullable','string'],
         ];
         $messages = [
             'page.integer' => '页码格式错误!',
@@ -145,6 +145,7 @@ class StoreController extends Controller
      *           @OA\Property(description="地址", property="address", type="string", default="dd"),
      *           @OA\Property(description="起始营业时间", property="businessHourStart", type="string", default="dd"),
      *           @OA\Property(description="结束营业时间", property="businessHourEnd", type="string", default="dd"),
+     *           @OA\Property(description="类型1分店，2总店", property="type", type="string", default="dd"),
      *           required={"name","address","lng","lat","businessHourStart","businessHourEnd"})
      *       )
      *     ),
@@ -349,6 +350,12 @@ class StoreController extends Controller
      */
     public function GetSelectList(Request $request)
     {
-        return json_encode($this->storeRepository->GetSelectList()->get());
+        return json_encode(
+            array(
+                'status' => 200,
+                'msg' => '获取列表成功!',
+                'data' => $this->storeRepository->GetSelectList()->get(),
+            )
+        );
     }
 }

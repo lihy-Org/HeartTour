@@ -16,4 +16,8 @@ class User extends Authenticatable
     protected $fillable = [
         'id','name', 'phone', 'avatar','gender','age','title','postId','post','type','storeId','store','state','isBeautician'
     ];  
+    public function Titles()
+    {
+        return $this->hasMany(UserTitle::class, 'uid', 'id');
+    }
 }

@@ -21,12 +21,12 @@ class CreateOrderTable extends Migration
             $table->string('phone')->nullable()->comment('联系方式');
             // 预约的信息
             $table->uuid('petId')->nullable()->comment('预约宠物Id');
-            $table->uuid('petType')->nullable()->comment('宠物种类');
+            $table->integer('petType')->nullable()->comment('宠物种类');
             $table->uuid('userId')->nullable()->comment('预约技师id');
-            $table->uuid('userName')->nullable()->comment('预约技师姓名');
+            $table->string('userName')->nullable()->comment('预约技师姓名');
             $table->uuid('storeId')->nullable()->comment('预约门店id');
-            $table->uuid('storeName')->nullable()->comment('预约门店名称');
-            $table->uuid('mainComboName')->nullable()->comment('主套餐名称');
+            $table->string('storeName')->nullable()->comment('预约门店名称');
+            $table->string('mainComboName')->nullable()->comment('主套餐名称');
             $table->string('apptTime')->nullable()->comment('预约日');
             //订单的信息
             $table->uuid('addId')->nullable()->comment('收货地址id');
@@ -44,8 +44,8 @@ class CreateOrderTable extends Migration
             $table->timestamp('shippingTime')->nullable()->comment('发货时间');
             $table->timestamp('finishTime')->nullable()->comment('完成时间');
             $table->timestamp('cancelTime')->nullable()->comment('取消时间');
-            $table->unsignedInteger('state')->default(100)->comment('订单状态:正常状态100、支付失败202、待发货/已预约300、进行中（技师点击开始服务）350 
-            已发货/待接取400、已收货/已完成500、申请退款\售后 600 退货售后中601 拒绝退款501 完成退款502');
+            $table->unsignedInteger('state')->default(100)->comment('待支付100、 待发货/已预约200、进行中（技师点击开始服务）300 已发货/待接取400、
+            已收货/已完成500、拒绝退款501 完成退款502 申请退款\售后 600 、退货售后中 601');
             $table->timestamps();
             $table->softDeletes();
             $table->primary('id');
