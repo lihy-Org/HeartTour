@@ -2,6 +2,7 @@
 namespace App\Repositories;
 
 use App\Models\Config;
+use Illuminate\Support\Facades\DB;
 
 class ConfigRepository
 {
@@ -57,7 +58,7 @@ class ConfigRepository
     }
     public function GetByType($type)
     {
-        return Config::with(array('children' => function ($query) {
+        return Config::whereNull('parentId')->with(array('children' => function ($query) {
             $query->select('id', 'type', 'key', 'value', 'sort', 'parentId');
         }))->where('type', $type)->orderBy('sort');
     }
@@ -69,6 +70,39 @@ class ConfigRepository
             return $config;
         } else {
             return $this->GetTopConfig($config->parentId);
+        }
+    }
+
+    public function Remove($configId)
+    {
+        try {
+            DB::beginTransaction(); // 开启事务
+            $this->RemoveChild($configId);
+            Db::commit(); // 提交事务
+            return array(
+                'status' => 200,
+                'msg' => '操作成功!',
+                'data' => '');
+
+        } catch (\Exception $exception) {
+            dd($exception);
+            Db::rollback(); // 回滚事务
+            return array(
+                'status' => 500,
+                'msg' => '操作失败!',
+                'data' => '');
+        }
+    }
+
+    public function RemoveChild($configId)
+    {
+        $config = Config::find($configId);
+        if ($config) {
+            $children = Config::where('parentId', $config->id)->get();
+            foreach ($children as $child) {
+                $this->RemoveChild($child->id);
+            }
+            $config->forceDelete();
         }
     }
 }

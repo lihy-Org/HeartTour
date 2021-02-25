@@ -102,7 +102,7 @@ class AppointmentRepository
                 'storeName' => $store->name,
                 'phone' => $wc->phone,
                 'mainComboName' => $mainCombo->name,
-                'apptTime' => $data->workDay . $apptUserWorktimes[0]->workTime,
+                'apptTime' => $data->workDay .' '. $apptUserWorktimes[0]->workTime,
                 'totalMoney' => $totalMoney,
                 'freight' => 0,
                 'payMoney' => $totalMoney,
@@ -177,7 +177,7 @@ class AppointmentRepository
         if (isset($data->workDay)) {
             $worktimes = $worktimes->where('workDay', $data->workDay);
         } else {
-            $worktimes = $worktimes->where('workDay', Carbon::now()->format('y-m-d'));
+            $worktimes = $worktimes->where('workDay', Carbon::now()->format('Y-m-d'));
         }
         if (isset($data->workTime)) {
             $worktimes = $worktimes->where('workTime', $data->workTime);

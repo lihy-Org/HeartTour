@@ -297,4 +297,76 @@ class AppointmentController extends Controller
         return json_encode($this->appointmentRepository->TransferAppt($data));
     }
 
+    /**
+     * @OA\Post(
+     *     path="/api/storesys/appt/changeState",
+     *     tags={"门店管理系统-预约管理"},
+     *     summary="待接取订单客户不点击完成时门店点击完成",
+     *     @OA\Parameter(name="token", in="header", @OA\Schema(type="string"), required=true, description="token"),
+     *     @OA\RequestBody(
+     *     @OA\MediaType(
+     *       mediaType="multipart/form-data",
+     *         @OA\Schema(
+     *           @OA\Property(description="套餐编号", property="orderId", type="string", default="dd"),
+     *           required={"orderId","state"})
+     *       )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="成功",
+     *         @OA\JsonContent(
+     *            type="object",
+     *            @OA\Property(
+     *                   example="200",
+     *                   property="status",
+     *                   description="状态码",
+     *                   type="number",
+     *               ),
+     *            @OA\Property(
+     *                  type="string",
+     *                  property="msg",
+     *                  example="成功!",
+     *              )
+     *         ),
+     *     ),
+     *      @OA\Response(
+     *         response=500,
+     *         description="失败",
+     *         @OA\JsonContent(
+     *            type="object",
+     *            @OA\Property(
+     *                   example="500",
+     *                   property="status",
+     *                   description="状态码",
+     *                   type="number",
+     *               ),
+     *           @OA\Property(
+     *                  type="string",
+     *                  property="msg",
+     *                  example="失败!",
+     *               )
+     *           )
+     *       ),
+     * )
+     */
+    public function ChangeState(Request $request)
+    {
+        $rules = [
+            'orderId' => ['required', Rule::exists('orders', 'id')->where(function ($query) use ($request) {
+                $query->where('state', '400')->where('userId', $request->user->id);
+            })],
+        ];
+        $messages = [];
+        $validator = Validator::make($request->all(), $rules, $messages);
+        if ($validator->fails()) {
+            return json_encode(array(
+                'status' => 500,
+                'msg' => '验证失败!',
+                'data' => $validator->errors(),
+            ));
+        }
+        $data = (object) $request->all();
+        $data->state = 500;
+        return json_encode($this->appointmentRepository->ChangeState($data));
+    }
 }

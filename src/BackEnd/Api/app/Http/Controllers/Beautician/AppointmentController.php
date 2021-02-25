@@ -125,9 +125,9 @@ class AppointmentController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/api/storesys/appt/trans",
-     *     tags={"门店管理系统-预约管理"},
-     *     summary="修改预约信息",
+     *     path="/api/beaut/appt/changeState",
+     *     tags={"技师公众号系统-预约管理"},
+     *     summary="预约订单开始服务/预约订单待接取",
      *     @OA\Parameter(name="token", in="header", @OA\Schema(type="string"), required=true, description="token"),
      *     @OA\RequestBody(
      *     @OA\MediaType(
