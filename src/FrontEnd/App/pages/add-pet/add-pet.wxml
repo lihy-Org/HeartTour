@@ -1,0 +1,63 @@
+<!-- pages/add-pet/add-pet.wxml -->
+<view class="container px-20 bg-F7F8FA" style="padding-top:150rpx;">
+    <!-- 基本信息 -->
+    <view class="content px-20 pt-32 bg-FFFFFF rounded-24 position-relative">
+        <!-- 上传图片 -->
+        <view class="flex-v-center position-absolute" style="left:calc(50% - 115rpx);top:-115rpx;">
+            <van-uploader class="avatar-uploader" accept="image" max-count="1" mutiple="{{false}}" file-list="{{ files }}" bind:after-read="onFilesAfterRead" bind:delete="onDelete" />
+        </view>
+        <!-- 表单 -->
+        <view class="form pt-102">
+            <!-- 昵称 -->
+            <view class="form-item d-flex justify-content-between align-items-center">
+                <justify-view class="item-title mr-42 f26 color-272727" text="昵称" required />
+                <input data-key="nickname" value="{{values.nickname}}" class="color-828282 f24" type="text" placeholder="请输入宠物昵称" bindinput="onInput" />
+            </view>
+            <!-- 品种 -->
+            <view class="form-item d-flex justify-content-between align-items-center" catchtap="toSelectPet">
+                <justify-view class="item-title mr-42 f26 color-272727" text="品种" required />
+                <input data-key="breed" disabled="{{true}}" focus="{{false}}" value="{{values.breed}}" class="color-828282 f24" type="text" placeholder="请输入宠物品种" bindinput="onInput" />
+            </view>
+            <!-- 性别 -->
+            <view class="form-item d-flex justify-content-between align-items-center">
+                <justify-view class="item-title mr-42 f26 color-272727" text="性别" required />
+                <lg-radio key="gender" data="{{radio.gender}}" defaultSelected="{{values.gender}}" bind:change="onRadioChange" />
+            </view>
+            <!-- 毛色 -->
+            <view class="form-item d-flex justify-content-between align-items-center">
+                <justify-view class="item-title mr-42 f26 color-272727" text="毛色" />
+                <input data-key="color" value="{{values.color}}" class="color-828282 f24" type="text" placeholder="请输入宠物毛色" bindinput="onInput" />
+            </view>
+            <!-- 生日 -->
+            <view class="form-item d-flex justify-content-between align-items-center" catch:tap="onShowPicker" data-key="birthday">
+                <justify-view class="item-title mr-42 f26 color-272727" text="生日" />
+                <text class="color-828282 f24" style="text-align:right;padding-right:50rpx;line-height:0;">
+                    {{values.birthday || '请选择宠物生日'}}
+                </text>
+            </view>
+            <!-- 肩高 -->
+            <view class="form-item d-flex justify-content-between align-items-center">
+                <justify-view class="item-title mr-42 f26 color-272727" text="肩高" />
+                <lg-radio key="grade" data="{{radio.grade}}" defaultSelected="{{values.grade}}" bind:change="onRadioChange" />
+            </view>
+            <!-- 是否绝育 -->
+            <view class="form-item d-flex justify-content-between align-items-center">
+                <justify-view class="item-title mr-42 f26 color-272727" text="是否绝育" />
+                <lg-radio key="is_sterilization" data="{{radio.sterilization}}" defaultSelected="{{values.is_sterilization}}" bind:change="onRadioChange" />
+            </view>
+            <!-- 是否打育苗 -->
+            <view class="form-item d-flex justify-content-between align-items-center">
+                <justify-view class="item-title mr-42 f26 color-272727" text="是否疫苗" />
+                <lg-radio key="is_vaccine" data="{{radio.vaccine}}" defaultSelected="{{values.is_vaccine}}" bind:change="onRadioChange" />
+            </view>
+        </view>
+    </view>
+    <!-- 添加按钮 -->
+    <view class="mt-48 d-flex justify-content-center pb-74">
+        <van-button type="default" custom-style="width: 394rpx; height: 88rpx; background-color:#F82F5C; color:#FFFFFF; border-radius: 50rpx;" catch:tap="onAddPets">
+            {{isAdd ? '添加宠物' : '确认编辑'}}
+        </van-button>
+    </view>
+    <!-- 日期选择器 -->
+    <lg-date-picker show="{{show}}" bind:change="onPickerChange" />
+</view>

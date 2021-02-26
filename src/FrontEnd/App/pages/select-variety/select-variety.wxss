@@ -1,0 +1,4 @@
+/* pages/select-variety/select-variety.wxss */
+.van-cell__value{
+  text-align: left !important;
+}

@@ -1,1 +1,4 @@
 /* pages/pet/pet.wxss */
+.van-cell__value{
+    text-align: left !important;
+}

@@ -1,0 +1,25 @@
+<!-- pages/map/map.wxml -->
+<view class="" hover-class="none" hover-stop-propagation="false" style="width: 100%; height: 100%;">
+  <map id="map" longitude="{{myLongitude}}" latitude="{{myLatitude}}" markers="{{makers}}" scale="11" show-location style="width: 100%; height: 40%;"></map>
+  <view class="" style="height:60%;" hover-class="none" hover-stop-propagation="false">
+    <van-tree-select items="{{ items }}" height="100%">
+      <block wx:for="{{makers}}" wx:key="index">
+        <view class="px-20 py-24" slot="content" bind:tap="tapPet" data-text="{{item.name}}" hover-class="none" hover-stop-propagation="false">
+          <view class="flex-between color-393939 f32" hover-class="none" hover-stop-propagation="false">
+            <span>{{item.name}} ></span>
+            <span wx:if="{{index === 0}}" class="f24 d-inline-block px-12 py-4 bg-FF9191 rounded-8 color-FFFFFF">离我最近</span>
+          </view>
+          <view class="mt-20 f24 color-999999" hover-class="none" hover-stop-propagation="false">
+            <p class="mb-10 d-block">{{item.time}}</p>
+            <span class="d-inline-block" style="width:330rpx;">
+              {{item.ass}}
+            </span>
+            <span class="d-inline-block color-393939 text-right" style="width:130rpx;">
+              {{item.kilo}}KM
+            </span>
+          </view>
+        </view>
+      </block>
+    </van-tree-select>
+  </view>
+</view>

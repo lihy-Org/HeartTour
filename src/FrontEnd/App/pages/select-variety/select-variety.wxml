@@ -1,0 +1,16 @@
+<!--pages/select-variety/select-variety.wxml-->
+<van-index-bar index-list="{{ indexList }}">
+    <block wx:for="{{bbb}}" wx:key="index">
+        <view>
+            <van-index-anchor index="{{item.title}}" />
+            <block wx:for="{{item.datas}}" wx:for-item="itemName" wx:key="index">
+                <view slot="title" class="">                  
+                    <van-cell is-link border="{{ true }}" data-text="{{itemName.name}}" catchtap="petName">
+                        <image class="mr-20" src="{{itemName.src}}" style="width:56rpx;height:56rpx;object-fit: cover;"></image>
+                        <span>{{itemName.name}}</span>
+                    </van-cell>         
+                </view>
+            </block>
+        </view>
+    </block>
+</van-index-bar>

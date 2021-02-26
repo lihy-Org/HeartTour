@@ -1,0 +1,29 @@
+<!-- pages/my-order/my-order.wxml -->
+<view class="container bg-F7F8FA ">
+    <van-tabs active="{{ yuyue.active }}" tab-class="tab-style1" animated class="index-tabs" bind:change="onChange">
+        <block wx:for="{{yuyue.items}}" wx:key="index">
+            <van-tab title="{{item.title}}">
+                <view class="mx-24">
+                    <block wx:for="{{mockData[item.type]}}" wx:key="index">
+                        <view class="rounded-16 bg-FFFFFF  pt-20 mt-20" hover-class="none" hover-stop-propagation="false">
+                            <view class="border-bottom flex-between pb-24 px-20">
+                                <span class="f32 f-bold color-384359">{{item.name}}</span>
+                                <span class="f28 color-F63D24">{{item.status}}</span>
+                            </view>
+                            <view class="border-bottom py-12" hover-class="none" hover-stop-propagation="false">
+                                <business-card options="{{options}}"></business-card>
+                            </view>
+                            <view class="flex-between py-24 px-20">
+                                <view class="flex-center" hover-class="none" hover-stop-propagation="false">
+                                    <span class="f24 color-384359">合计</span>
+                                    <span class="f32 color-384359 f-bold ml-10">¥45</span>
+                                </view>
+                                <van-button type="primary" size="small" color="#F63D24" class="pay-btn">去支付</van-button>
+                            </view>
+                        </view>
+                    </block>
+                </view>
+            </van-tab>
+        </block>
+    </van-tabs>
+</view>

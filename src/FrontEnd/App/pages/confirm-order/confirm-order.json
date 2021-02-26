@@ -1,0 +1,7 @@
+{  
+  "navigationBarTitleText": "确认订单",
+  "usingComponents": {
+    "van-cell":"../../miniprogram_npm/@vant/weapp/cell/",
+    "van-button": "../../miniprogram_npm/@vant/weapp/button/index"
+  }
+}
