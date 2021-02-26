@@ -90,7 +90,7 @@ class AppointmentController extends Controller
             'storeId' => ['required', Rule::exists('stores', 'id')],
             'startDate' => ['date_format:"Y-m-d H:i:s"'],
             'endDate' => ['date_format:"Y-m-d H:i:s"'],
-            'state' => [Rule::in([0, 1, 2, 3])],
+            'state' => [Rule::in([100, 200, 300, 400, 500, 501, 502, 600, 601])],
             'searchKey' => ['nullable', 'string'],
             'pageSize' => ['integer', 'gt:0'],
             'page' => ['integer', 'gt:0'],
@@ -353,7 +353,7 @@ class AppointmentController extends Controller
     {
         $rules = [
             'orderId' => ['required', Rule::exists('orders', 'id')->where(function ($query) use ($request) {
-                $query->where('state', '400')->where('userId', $request->user->id);
+                $query->where('state', '400')->where('storeId', $request->user->soc);
             })],
         ];
         $messages = [];

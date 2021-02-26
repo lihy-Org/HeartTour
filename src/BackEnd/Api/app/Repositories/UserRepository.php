@@ -212,4 +212,8 @@ class UserRepository
         }
     }  
     
+    public function GetSelectList()
+    {
+        return User::where('state', 0)->where('isBeautician',1)->select('id', 'name');
+    }
 }

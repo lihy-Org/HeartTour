@@ -1,12 +1,12 @@
 <?php
 namespace App\Repositories;
 
-use App\Models\User;
 use App\Models\Combo;
 use App\Models\ComboBeautician;
 use App\Models\ComboVariety;
 use App\Models\GoodsBanner;
 use App\Models\GoodsDetail;
+use App\Models\User;
 use App\Repositories\ConfigRepository;
 use Illuminate\Support\Facades\DB;
 
@@ -124,7 +124,11 @@ class ComboRepository
 
     public function GetList($data)
     {
-        $combo = Combo::orderBy('created_at');
+        $combo = Combo::with(array('Varietys' => function ($query) {
+            $query->select('id', 'cid', 'varietyId', 'variety');
+        }, 'Users' => function ($query) {
+            $query->select('id', 'cid', 'userId', 'userName');
+        }))->orderBy('created_at');
         if (isset($data->searchKey)) {
             $combo = $combo->where(function ($query) use ($data) {
                 $query->where('name', 'like', '%' . $data->searchKey . '%')
@@ -161,8 +165,21 @@ class ComboRepository
     public function Remove($comboId)
     {
         $combo = Combo::find($comboId);
+        $state = 2;
         if ($combo) {
-            $combo->state = $combo->state == 1 ? 0 : 1;
+            if ($combo->state == 0) {
+                $state = 1;
+            }
+
+            if ($combo->state == 1) {
+                $state = 2;
+            }
+
+            if ($combo->state == 2) {
+                $state = 1;
+            }
+
+            $combo->state = $state;
             $combo->save();
             return array(
                 'status' => 200,

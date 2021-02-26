@@ -33,7 +33,7 @@ class AppointmentController extends Controller
      *           @OA\Property(description="条数", property="pageSize", type="number", default="10"),
      *           @OA\Property(description="页数", property="page", type="number", default="1"),
      *           @OA\Property(description="关键字", property="searchKey", type="string", default=""),
-     *           required={"state"})
+     *           required={})
      *       )
      *     ),
      *     @OA\Response(
@@ -91,7 +91,7 @@ class AppointmentController extends Controller
             'storeId' => [Rule::exists('stores', 'id')],
             'startDate' => ['date_format:"Y-m-d H:i:s"'],
             'endDate' => ['date_format:"Y-m-d H:i:s"'],
-            'state' => [Rule::in(['0', '1', '2', '3'])],
+            'state' => [Rule::in([100, 200, 300, 400,500,501,502,600,601])],
             'searchKey' => ['nullable','string'],
             'pageSize' => ['integer', 'gt:0'],
             'page' => ['integer', 'gt:0'],
@@ -230,7 +230,7 @@ class AppointmentController extends Controller
     /**
      * @OA\Post(
      *     path="/api/admin/appt/trans",
-     *     tags={"门店管理系统-预约管理"},
+     *     tags={"总台管理系统-预约管理"},
      *     summary="修改预约信息",
      *     @OA\Parameter(name="token", in="header", @OA\Schema(type="string"), required=true, description="token"),
      *     @OA\RequestBody(
@@ -288,7 +288,7 @@ class AppointmentController extends Controller
             'workDay' => ['required', 'date_format:"Y-m-d"', 'after_or_equal:today'],
             'workTime' => ['required', 'date_format:"H:i"'],
             'userId' => ['required', Rule::exists('users', 'id')->where(function ($query) use ($request) {
-                $query->where('state', 0)->whereNotIn('type', [0, 1])->where('isBeautician', 1)->where('storeId', $request->user->storeId);
+                $query->where('state', 0)->whereNotIn('type', [0, 1])->where('isBeautician', 1);
             })],
             'orderId' => ['required', Rule::exists('orders', 'id')->where(function ($query) use ($request) {
                 $query->where('state', 200);
@@ -310,7 +310,7 @@ class AppointmentController extends Controller
     /**
      * @OA\Post(
      *     path="/api/admin/appt/changeState",
-     *     tags={"门店管理系统-预约管理"},
+     *     tags={"总台管理系统-预约管理"},
      *     summary="待接取订单客户不点击完成时门店点击完成",
      *     @OA\Parameter(name="token", in="header", @OA\Schema(type="string"), required=true, description="token"),
      *     @OA\RequestBody(
