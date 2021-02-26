@@ -1,7 +1,7 @@
 /*
  * @Author: Li-HONGYAO
  * @Date: 2021-01-18 11:35:12
- * @LastEditTime: 2021-01-26 22:23:14
+ * @LastEditTime: 2021-01-31 10:36:47
  * @LastEditors: Li-HONGYAO
  * @Description:
  * @FilePath: /Admin/src/pages/User/index.tsx
@@ -23,9 +23,8 @@ import {
 } from 'antd';
 import {
   SearchOutlined,
-  DeleteOutlined,
   AlertOutlined,
-  ReloadOutlined
+  ReloadOutlined,
 } from '@ant-design/icons';
 import { ColumnProps } from 'antd/es/table';
 
@@ -33,7 +32,7 @@ import { ColumnProps } from 'antd/es/table';
 type FilterParamsType = {
   gender?: number;
   searchKey?: string;
-  status?: number; /** 0-正常 1-制裁 */
+  status?: number /** 0-正常 1-已加入黑名单 */;
 };
 type SubFilterParamsType = {
   pageSize: number;
@@ -187,7 +186,7 @@ const User: FC = () => {
         nikeName: '苟玉梅',
         status: 2,
         store: '九里晴川店',
-        time: '2021/01/23',
+        time: '2021/01/23 15:30',
         technician: '李鸿耀',
         userName: '郑云龙',
         petType: '狗狗',
@@ -202,25 +201,33 @@ const User: FC = () => {
   };
 
   // events
-  const onDeleteUser = (id: number) => {
+
+  const onUpdateSanctions = (id: number, status: number) => {
     Modal.warning({
-      content: '您确定要注销该用户么？',
+      content: status ? '您确定要禁用该用户么？' : '你确定要解封该用户么？',
       closable: true,
       okText: '确定',
       onOk: () => {
-        message.success('注销成功');
+        message.success(`${status ? '禁用' : '解封'}成功`);
       },
     });
   };
-  const onUpdateSanctions = (id: number, isSanctions: number) => {
-    Modal.warning({
-      content: `您确定要${isSanctions ? '制裁' : '解封'}用户么`,
-      closable: true,
-      okText: '确定',
-      onOk: () => {
-        message.success(`${isSanctions ? '制裁' : '解封'}成功`);
-      },
-    });
+  const onTableChange = (pagination: any, filters: any, sorter: any) => {
+    let msg = '';
+    console.log(sorter.order)
+    switch (sorter.columnKey) {
+      case 'consumes':
+        msg = `根据累计消费${
+          !sorter.order ? '不' : (sorter.order === 'ascend' ? '升序' : '降序')
+        }排序`;
+        break;
+      case 'appointment':
+        msg = `根据预约次数${
+          !sorter.order  ? '不' : (sorter.order === 'ascend' ? '升序' : '降序')
+        }排序`;
+        break;
+    }
+    message.info(msg);
   };
   // effects
   useEffect(() => {
@@ -247,8 +254,8 @@ const User: FC = () => {
     { title: '微信昵称', dataIndex: 'nikeName' },
     {
       title: '账户状态',
-      dataIndex: 'isSanctions',
-      render: (isSanctions: number) => (isSanctions ? '制裁中' : '正常'),
+      dataIndex: 'status',
+      render: (status: number) => (status ? '禁用' : '正常'),
     },
     {
       title: '手机号',
@@ -294,6 +301,8 @@ const User: FC = () => {
       width: 180,
       title: '累计消费',
       dataIndex: 'consumes',
+      key: 'consumes',
+      sorter: true,
       render: (record: ConsumeRecordsType) => (
         <>
           <div>
@@ -316,8 +325,9 @@ const User: FC = () => {
     },
     {
       title: '预约次数',
-      key: 'appointmentCount',
-      render: (record: ColumnsType) => (
+      key: 'appointment',
+      sorter: true,
+      render: (_: any, record: ColumnsType) => (
         <>
           <div>预约次数：{record.appointmentCount}</div>
           <div
@@ -337,44 +347,30 @@ const User: FC = () => {
       ),
     },
     {
-      width: 155,
+      width: 160,
       title: '操作',
       key: 'action',
       render: (record: ColumnsType) => (
         <Space size="small">
           <Button
+            disabled={!!record.status}
             type="primary"
             size="small"
-            danger
-            icon={<DeleteOutlined />}
-            onClick={() => onDeleteUser(record.id)}
+            icon={<ReloadOutlined />}
+            onClick={() => onUpdateSanctions(record.id, 0)}
           >
-            注销
+            解封
           </Button>
-          {record.status ? (
-            <Button
-              type="primary"
-              size="small"
-              icon={<ReloadOutlined />}
-              onClick={() => onUpdateSanctions(record.id, 0)}
-            >
-              解封
-            </Button>
-          ) : (
-            <Button
-              type="primary"
-              size="small"
-              icon={<AlertOutlined />}
-              style={{
-                backgroundColor: '#000',
-                color: '#fff',
-                border: 'none',
-              }}
-              onClick={() => onUpdateSanctions(record.id, 1)}
-            >
-              制裁
-            </Button>
-          )}
+          <Button
+            disabled={!record.status}
+            type="primary"
+            size="small"
+            icon={<AlertOutlined />}
+            danger
+            onClick={() => onUpdateSanctions(record.id, 1)}
+          >
+            禁用
+          </Button>
         </Space>
       ),
     },
@@ -452,14 +448,14 @@ const User: FC = () => {
         >
           {/* 账号状态 */}
           <Form.Item label="账户状态：" name="status">
-            <Select placeholder="请选择" allowClear style={{ width: 90 }}>
+            <Select placeholder="全部" allowClear style={{ width: 90 }}>
               <Option value={0}>正常</Option>
-              <Option value={1}>已制裁</Option>
+              <Option value={1}>禁用</Option>
             </Select>
           </Form.Item>
           {/* 性别 */}
           <Form.Item label="性别：" name="gender">
-            <Select placeholder="请选择" allowClear style={{ width: 90 }}>
+            <Select placeholder="全部" allowClear style={{ width: 90 }}>
               <Option value={0}>未知</Option>
               <Option value={1}>男</Option>
               <Option value={2}>女</Option>
@@ -491,6 +487,7 @@ const User: FC = () => {
         scroll={{ y: 'calc(100vh - 280px)' }}
         rowKey="id"
         size="middle"
+        onChange={onTableChange}
         pagination={{
           current: page.page /** 当前页数 */,
           hideOnSinglePage: false /** 只有一页时是否隐藏分页器 */,

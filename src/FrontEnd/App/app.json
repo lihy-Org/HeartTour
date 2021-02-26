@@ -1,19 +1,20 @@
 {
   "pages": [
+    "pages/confirm-order/confirm-order",
+    "pages/login/login",
+    "pages/index/index",
     "pages/map/map",
     "pages/address-management/address-management",
     "pages/add-pet/add-pet",
-    "pages/index/index",
     "pages/my-pet/my-pet",
     "pages/pet/pet",
     "pages/my-order/my-order",
-    "pages/confirm-order/confirm-order",
+    
     "pages/mine/mine",
     "pages/goods/goods",
     "pages/rim/rim",
     "pages/select-variety/select-variety",
     "pages/update-address/update-address"
- 
   ],
   "window": {
     "backgroundTextStyle": "dark",

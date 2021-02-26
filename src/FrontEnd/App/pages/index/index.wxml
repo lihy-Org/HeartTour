@@ -12,10 +12,11 @@
         </view>
         <!-- 定位和添加宠物 -->
         <view class="flex-wrap flex-center add-pet-wrap my-32">
-            <view class="location flex-wrap flex-center">
+            <view class="location flex-wrap flex-center" bind:tap='goMap'>
                 <image class="" src="../../assets/images/location.png"></image>
                 <view class="add-pet ml-10">
-                    <text class="f-bold f36">定位</text>
+                    <text class="f-bold f36 color-384359" wx:if="{{shopName == ''}}">定位</text>
+                    <text class="f-bold f36 color-384359">{{shopName}}</text>
                     <image class="" src="../../assets/images/loca.png" lazy-load="false" binderror="" bindload=""></image>
                 </view>
             </view>
@@ -23,7 +24,7 @@
             <view class="location flex-wrap flex-center" bind:tap="addPet">
                 <image style="width:56rpx;height:56rpx;" src="../../assets/images/addasstes.png"></image>
                 <view class="add-pet ml-10">
-                    <text class="f-bold f36">添加</text>
+                    <text class="f-bold f36 color-384359">添加</text>
                     <image style="width:108rpx;" src="../../assets/images/ADDTO.png" lazy-load="false" binderror="" bindload=""></image>
                 </view>
             </view>
@@ -47,16 +48,18 @@
                             </view>
                             <view class="" style="display: flex;flex-wrap: wrap;align-content: space-between;">
                                 <view class="" hover-class="none" hover-stop-propagation="false">
-                                    <h4 class="d-block f32 f-bold color-384359">{{item.name}}11</h4>
-                                    <p class="d-block f28 f-bold color-384359" selectable="false" space="false" decode="false">
+                                    <h4 class="d-block f32 f-bold color-384359 mb-10">
+                                        {{item.name}}11
+                                    </h4>
+                                    <p class="d-block f24 color-999999 mb-4" selectable="false" space="false" decode="false">
                                         {{item.details}}
                                     </p>
-                                    <p class="d-block f28 f-bold line-clamp-2 color-384359" style="width:260rpx;white-space:normal;" selectable="false" space="false" decode="false">
+                                    <p class="d-block f24 line-clamp-2 color-999999" style="width:260rpx;white-space:normal;" selectable="false" space="false" decode="false">
                                         {{item.details1}}
                                     </p>
                                 </view>
                                 <view class="d-flex justify-content-between " style="width:200rpx;align-items: center;" hover-class="none" hover-stop-propagation="false">
-                                    <p class="f28 f-bold">{{item.price}}</p>
+                                    <p class="f28 f-bold color-384359">{{item.price}}</p>
                                 </view>
                                 <view class="position-absolute addSelet bg-E2F6FF " bind:tap='selectMeal' data-item="{{item}}">
                                     <image class="position-absolute" src="{{activeMeal===item.id?'../../assets/images/yes.png':'../../assets/images/jia.png'}}"></image>
@@ -135,23 +138,31 @@
                 </view>
                 <scroll-view scroll-x>
                     <view style="width: 100%;white-space:nowrap;" class="py-20 px-24 flex-center">
-                        <view class="text-center mx-22" hover-class="none" hover-stop-propagation="false">
+                        <view class="text-center mx-22" bind:tap="goAddPet" hover-class="none" hover-stop-propagation="false">
                             <image class="" src="../../assets/images/addPet.png" style="width:94rpx;height:94rpx;"></image>
                             <view class="mt-20" hover-class="none" hover-stop-propagation="false">
                                 <p class="f32 f-bold color-384359">添加宠物</p>
                             </view>
                         </view>
+                        <block wx:for="{{}}" wx:key="index">
+                            <view class="text-center mx-22" hover-class="none" hover-stop-propagation="false">
+                                <image class="" src="../../assets/images/addPet.png" style="width:94rpx;height:94rpx;"></image>
+                                <view class="mt-20" hover-class="none" hover-stop-propagation="false">
+                                    <p class="f32 f-bold color-384359">添加宠物</p>
+                                </view>
+                            </view>
+                        </block>
                     </view>
                 </scroll-view>
             </view>
             <view class="" hover-class="none" hover-stop-propagation="false">
                 <view class="flex-center" hover-class="none" hover-stop-propagation="false">
-                            <block wx:for="{{items}}" wx:key="index">
-                                <button use-icon-slot class="flex-center {{radio == index?'active':''}}" data-text="{{item.text}}"  data-index="{{index}}" bind:tap='getPetList' style="width:33%;" >
-                                     <image slot="icon" style="width:32rpx;height:32rpx;" src="{{ radio == index ? '../../assets/images/yes.png' : '../../assets/images/jia.png' }}" />
-                                     <p class="f32 mx-10">{{item.text}}</p> 
-                                </button>
-                            </block>
+                    <block wx:for="{{items}}" wx:key="index">
+                        <button use-icon-slot class="flex-center {{radio == index?'active':''}}" data-text="{{item.text}}" data-index="{{index}}" bind:tap='getPetList' style="width:33%;">
+                            <image slot="icon" style="width:32rpx;height:32rpx;" src="{{ radio == index ? '../../assets/images/yes.png' : '../../assets/images/jia.png' }}" />
+                            <p class="f32 mx-10">{{item.text}}</p>
+                        </button>
+                    </block>
                 </view>
                 <van-tree-select items="{{ whichPet }}" height="calc(80vh - 356rpx)" data-items="{{whichPet}}" main-active-index="{{ mainActiveIndex }}" bind:click-nav="onClickNav" bind:click-item="onClickItem"></van-tree-select>
             </view>

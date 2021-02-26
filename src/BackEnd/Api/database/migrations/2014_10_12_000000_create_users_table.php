@@ -21,7 +21,7 @@ class CreateUsersTable extends Migration
             $table->integer('age')->comment('年龄');       
             $table->string('postId')->comment('职位');
             $table->string('post')->comment('职位');
-            $table->integer('isWorker')->default(0)->comment('0:不是技师,1：技师');
+            $table->integer('isBeautician')->default(0)->comment('0:不是技师,1：技师');
             $table->string('phone')->comment('手机')->unique();
             $table->string('storeId')->nullable()->comment('所属门店编号');
             $table->string('store')->nullable()->comment('所属门店名称'); 

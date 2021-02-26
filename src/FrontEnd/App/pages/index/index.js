@@ -183,6 +183,7 @@ Page({
                 // 名称
                 text: '泰迪狗1',
                 // id，作为匹配选中状态的标识
+                src:'../../assets/images/shan.png',
                 id: 1,
 
               },
@@ -299,7 +300,18 @@ Page({
       },
     ],
     radio:0,
-    whichPet: []
+    whichPet: [],
+    shopName:''
+  },
+  goMap:function(){
+    wx.navigateTo({
+      url: '../map/map',
+    });
+  },
+  goAddPet(){
+    wx.navigateTo({
+      url:'../add-pet/add-pet'
+    })
   },
   initPet: function (e) {
     if (e) {

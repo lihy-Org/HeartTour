@@ -21,7 +21,7 @@ class ConfigController extends Controller
      * @OA\Get(
      *     path="/api/admin/config/{type}/{key?}",
      *     tags={"总台管理系统-配置管理"},
-     *     summary="获取单个配置",  
+     *     summary="获取配置",  
      *     @OA\Parameter(name="token", in="header", @OA\Schema(type="string"), required=true, description="token"),
      *     @OA\Parameter(name="type", in="query", @OA\Schema(type="string"), required=true, description="类型"),
      *     @OA\Parameter(name="key", in="query", @OA\Schema(type="string"), required=false, description="键"),
@@ -265,7 +265,7 @@ class ConfigController extends Controller
      *     )
      * )
      */
-    public function delete(Request $request)
+    public function Remove(Request $request)
     {
         $Config = Config::where('id', $request->configId)->first();
         if ($Config) {

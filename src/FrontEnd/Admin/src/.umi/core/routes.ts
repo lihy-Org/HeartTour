@@ -27,8 +27,23 @@ export function getRoutes() {
         "exact": true
       },
       {
-        "path": "/appointment",
-        "component": dynamic({ loader: () => import(/* webpackChunkName: 'p__Appointment' */'@/pages/Appointment'), loading: LoadingComponent}),
+        "path": "/orders/appointment",
+        "component": dynamic({ loader: () => import(/* webpackChunkName: 'p__Orders__Appointment' */'@/pages/Orders/Appointment'), loading: LoadingComponent}),
+        "exact": true
+      },
+      {
+        "path": "/orders/living",
+        "component": dynamic({ loader: () => import(/* webpackChunkName: 'p__Orders__Living' */'@/pages/Orders/Living'), loading: LoadingComponent}),
+        "exact": true
+      },
+      {
+        "path": "/orders/product",
+        "component": dynamic({ loader: () => import(/* webpackChunkName: 'p__Orders__Product' */'@/pages/Orders/Product'), loading: LoadingComponent}),
+        "exact": true
+      },
+      {
+        "path": "/orders/ambitus",
+        "component": dynamic({ loader: () => import(/* webpackChunkName: 'p__Orders__Ambitus' */'@/pages/Orders/Ambitus'), loading: LoadingComponent}),
         "exact": true
       },
       {
@@ -42,13 +57,13 @@ export function getRoutes() {
         "exact": true
       },
       {
-        "path": "/shop/ambitus",
-        "component": dynamic({ loader: () => import(/* webpackChunkName: 'p__Shop__Ambitus' */'@/pages/Shop/Ambitus'), loading: LoadingComponent}),
+        "path": "/shop/product",
+        "component": dynamic({ loader: () => import(/* webpackChunkName: 'p__Shop__Product' */'@/pages/Shop/Product'), loading: LoadingComponent}),
         "exact": true
       },
       {
-        "path": "/shop/product",
-        "component": dynamic({ loader: () => import(/* webpackChunkName: 'p__Shop__Product' */'@/pages/Shop/Product'), loading: LoadingComponent}),
+        "path": "/shop/ambitus",
+        "component": dynamic({ loader: () => import(/* webpackChunkName: 'p__Shop__Ambitus' */'@/pages/Shop/Ambitus'), loading: LoadingComponent}),
         "exact": true
       },
       {
@@ -77,8 +92,8 @@ export function getRoutes() {
         "exact": true
       },
       {
-        "path": "/configs/banner",
-        "component": dynamic({ loader: () => import(/* webpackChunkName: 'p__Configs__Banner' */'@/pages/Configs/Banner'), loading: LoadingComponent}),
+        "path": "/configs",
+        "component": dynamic({ loader: () => import(/* webpackChunkName: 'p__Configs' */'@/pages/Configs'), loading: LoadingComponent}),
         "exact": true
       },
       {

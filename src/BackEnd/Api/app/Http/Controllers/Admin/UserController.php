@@ -20,8 +20,8 @@ class UserController extends Controller
     /**
      * @OA\Post(
      *     path="/api/admin/user/list",
-     *     tags={"总台管理系统-用户管理"},
-     *     summary="用户列表",
+     *     tags={"总台管理系统-人员管理"},
+     *     summary="人员列表",
      *     @OA\Parameter(name="token", in="header", @OA\Schema(type="string"), required=true, description="token"),
      *     @OA\RequestBody(
      *     @OA\MediaType(
@@ -100,15 +100,15 @@ class UserController extends Controller
         if ($validator->fails()) {
             return json_encode(array(
                 'status' => 500,
-                'msg' => '登录失败!',
+                'msg' => '验证失败!',
                 'data' => $validator->errors(),
             ));
         } else {
-            $data = $request->all();
+            $data = (object) $request->all();
             $takeNum = isset($data->pageSize) ? $data->pageSize : 10;
             $page = isset($data->page) ? $data->page : 1;
             $skipNum = ($page - 1) * $takeNum;
-            $users = $this->userRepository->GetList((object) $data);
+            $users = $this->userRepository->GetList($data);
             $total = $users->count();
             $list = $users->skip($skipNum)->take($takeNum)->get();
             $pageTotal = $total / $takeNum;
@@ -129,8 +129,8 @@ class UserController extends Controller
     /**
      * @OA\Post(
      *     path="/api/admin/user/addOrUpdate",
-     *     tags={"总台管理系统-用户管理"},
-     *     summary="新增或修改用户信息",
+     *     tags={"总台管理系统-人员管理"},
+     *     summary="新增或修改人员信息",
      *     @OA\Parameter(name="token", in="header", @OA\Schema(type="string"), required=true, description="token"),
      *     @OA\RequestBody(
      *     @OA\MediaType(
@@ -144,7 +144,7 @@ class UserController extends Controller
      *           @OA\Property(description="年龄", property="age", type="string", default="dd"),
      *           @OA\Property(description="职位编号", property="postId", type="string", default="dd"),
      *           @OA\Property(description="头衔编号", property="titleIds", type="string", default="dd"),
-     *           @OA\Property(description="是否技师", property="isWorker", type="number", default="dd"),
+     *           @OA\Property(description="是否技师", property="isBeautician", type="number", default="dd"),
      *           required={"name","avatar","gender","age","post","phone"})
      *       )
      *     ),
@@ -200,7 +200,7 @@ class UserController extends Controller
             'age' => ['required', 'string'],
             'postId' => ['required', 'string'],
             'titleIds' => ['nullable', 'array'],
-            'isWorker' => ['nullable', Rule::in(['0', '1'])],
+            'isBeautician' => ['nullable', Rule::in(['0', '1'])],
         ];
         $messages = [
             'name.required' => '请输入用户名称!',
@@ -215,7 +215,7 @@ class UserController extends Controller
         if ($validator->fails()) {
             return json_encode(array(
                 'status' => 500,
-                'msg' => '添加信息失败!',
+                'msg' => '验证失败!',
                 'data' => $validator->errors(),
             ));
         }
@@ -225,8 +225,8 @@ class UserController extends Controller
     /**
      * @OA\Post(
      *     path="/api/admin/user/remove",
-     *     tags={"总台管理系统-用户管理"},
-     *     summary="删除用户",
+     *     tags={"总台管理系统-人员管理"},
+     *     summary="删除人员",
      *     @OA\Parameter(name="token", in="header", @OA\Schema(type="string"), required=true, description="token"),
      *     @OA\RequestBody(
      *     @OA\MediaType(
@@ -280,11 +280,10 @@ class UserController extends Controller
         return json_encode($this->userRepository->Remove($request->userId));
     }
 
-
     /**
      * @OA\Post(
      *     path="/api/admin/user/SetStore",
-     *     tags={"总台管理系统-用户管理"},
+     *     tags={"总台管理系统-人员管理"},
      *     summary="分配门店",
      *     @OA\Parameter(name="token", in="header", @OA\Schema(type="string"), required=true, description="token"),
      *     @OA\RequestBody(
@@ -363,9 +362,9 @@ class UserController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/api/admin/user/SetStoreManage",
-     *     tags={"总台管理系统-用户管理"},
-     *     summary="分配店长",
+     *     path="/api/admin/user/SetManage",
+     *     tags={"总台管理系统-人员管理"},
+     *     summary="设置店长",
      *     @OA\Parameter(name="token", in="header", @OA\Schema(type="string"), required=true, description="token"),
      *     @OA\RequestBody(
      *     @OA\MediaType(
@@ -414,11 +413,11 @@ class UserController extends Controller
      *       ),
      * )
      */
-    public function SetStoreManage(Request $request)
+    public function SetManage(Request $request)
     {
         $rules = [
             'userId' => ['required', Rule::exists('users', 'id')->where(function ($query) {
-                $query->where('state', 0)->whereNotIn('type', [0, 1])->where('storeId','!=', '')->whereNotNull('storeId');
+                $query->where('state', 0)->whereNotIn('type', [0, 1])->where('storeId', '!=', '')->whereNotNull('storeId');
             })],
         ];
         $messages = [

@@ -1,7 +1,7 @@
 /*
  * @Author: Li-HONGYAO
  * @Date: 2021-01-18 11:15:25
- * @LastEditTime: 2021-01-25 22:19:11
+ * @LastEditTime: 2021-02-15 17:36:27
  * @LastEditors: Li-HONGYAO
  * @Description:
  * @FilePath: /Admin/src/pages/Combo/index.tsx
@@ -20,56 +20,69 @@ import {
   Checkbox,
   Row,
   Col,
+  Radio,
+  Select,
 } from 'antd';
-import {
-  SearchOutlined,
-  DeleteOutlined,
-  RightOutlined,
-} from '@ant-design/icons';
+import { SearchOutlined, DeleteOutlined } from '@ant-design/icons';
 import { ColumnProps } from 'antd/es/table';
 import UploadFile from '@/components/UploadFile';
+import VarietiesCascader from '@/components/VarietiesCascader';
 
 const { TextArea } = Input;
 
 // 筛选条件
 type FilterParamsType = {
   searchKey?: string;
+  comboType?: number /** 套餐类型：0-主套餐  1-增项套餐 */;
+  status?: number /** 上架状态 0-待上架 1-已上架 2-已下架 */;
 };
 
 // 列表数据类型
 type ColumnsType = {
   id: number /** 套餐id */;
+  comboType: number /** 套餐类型：0-主套餐  1-增项套餐 */;
+  varieties: string /** 适用品种 */;
   name: string /** 套餐名称 */;
   desc: string /** 套餐描述 */;
-  price: number /** 套餐价格 */;
+  originPrice: number /** 原价 */;
+  salePrice: number /** 售价 */;
+  nursingTime: number /** 护理时长 */;
   bgImg: string /** 背景图 */;
-  headImgs: string[] /** 头图 */;
+  bannerImgs: string[] /** 轮播图 */;
   detailImgs: string[] /** 详情图 */;
-  sales: number /** 销量 */;
+  sales: number /** 累计销量 */;
+  status: number /** 上架状态 0-待上架 1-已上架 2-已下架 */;
 };
 
-// 门店
-type StoreType =  {
-  id: number; /** 门店id */
-  name: string; /** 门店名称 */
-}
+// 表单提交类型
+type ComboFormType = {
+  comboType: number /** 套餐类型：0-主套餐  1-增项套餐 */;
+  varieties: string /** 适用品种 */;
+  name: string /** 套餐名称 */;
+  desc: string /** 套餐描述 */;
+  originPrice: number /** 原价 */;
+  salePrice: number /** 售价 */;
+  nursingTime: number /** 护理时长 */;
+  bgImg: string /** 背景图 */;
+  bannerImgs: string[] /** 轮播图 */;
+  detailImgs: string[] /** 详情图 */;
+};
+
 const layout = {
-  labelCol: { span: 4 },
-  wrapperCol: { span: 20 },
+  labelCol: { span: 6 },
+  wrapperCol: { span: 18 },
 };
 
 const stores = [
-  { id: 1, store: '九里晴川店' },
-  { id: 2, store: '名著司南店' },
-  { id: 3, store: '蒂凡尼店' },
-  { id: 4, store: '怡馨家园店' },
-  { id: 5, store: '大城际店' },
-  { id: 6, store: '未来方舟店' },
-  { id: 7, store: '中德英伦·联邦店' },
-  { id: 8, store: '孵化园店' },
-  { id: 9, store: '环球中心店' },
+  { id: 1, store: '李鸿耀' },
+  { id: 2, store: '郑云龙' },
+  { id: 3, store: '苟玉梅' },
+  { id: 4, store: '陈林浩' },
+  { id: 5, store: '王剑锋' },
+  { id: 6, store: '余惠勤' }
 ];
 
+const { Option } = Select;
 const Combo: FC = () => {
   // state
   const [addModalVisible, setAddModalVisible] = useState(false);
@@ -96,14 +109,19 @@ const Combo: FC = () => {
     for (let i = 0; i < 88; i++) {
       tempArr.push({
         id: i,
+        comboType: i % 5 === 0 ? 0 : 1,
+        varieties: '雪纳瑞',
         name: '洗护套餐A' + i,
-        desc: '非常不错的套餐哦',
-        price: 149,
+        desc: '很棒的套餐',
+        originPrice: 149,
+        salePrice: 99,
+        nursingTime: 80,
         bgImg:
           'https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=1253584741,538851489&fm=26&gp=0.jpg',
         sales: 8888,
-        headImgs: [],
-        detailImgs: []
+        bannerImgs: [],
+        detailImgs: [],
+        status: Math.floor(i % 3),
       });
     }
 
@@ -130,9 +148,6 @@ const Combo: FC = () => {
     setCheckedStores([]);
     setStoreModalVisible(false);
   };
-  const onDeleteCombo = (id: number) => {
-    message.success('已删除');
-  }
 
   // effects
   useEffect(() => {
@@ -140,49 +155,83 @@ const Combo: FC = () => {
   }, [page]);
   // columns
   const columns: ColumnProps<ColumnsType>[] = [
+    { title: '名称', dataIndex: 'name' },
+    { title: '描述', dataIndex: 'desc' },
     {
-      title: '序号',
-      key: 'No.',
-      render: (record, row, index) => index + 1,
-      width: 60,
+      title: '状态',
+      dataIndex: 'status',
+      render: (record: number) => {
+        switch (record) {
+          case 0:
+            return '待上架';
+          case 1:
+            return '已上架';
+          case 2:
+            return '已下架';
+        }
+      },
     },
-    { title: '套餐名称', dataIndex: 'name' },
-    { title: '套餐描述', dataIndex: 'desc' },
-    { title: '套餐价格（元）', dataIndex: 'price' },
-    { title: '累计销量', dataIndex: 'sales' },
     {
-      title: '累计销售额（元）',
-      key: 'allSales',
-      render: (record: ColumnsType) => (record.price * record.sales).toFixed(2),
+      title: '类型',
+      dataIndex: 'comboType',
+      render: (record: number) => {
+        switch (record) {
+          case 0:
+            return '主套餐';
+          case 1:
+            return '增项套餐';
+          default:
+            return '-';
+        }
+      },
     },
-    {
-      title: '背景图',
-      dataIndex: 'bgImg',
-      render: (bgImg) => (
-        <Image style={{ width: 'auto', height: 50 }} src={bgImg} />
-      ),
-    },
+    { title: '适用品种', dataIndex: 'varieties' },
 
     {
-      width: 250,
+      title: '原价',
+      dataIndex: 'originPrice',
+      render: (record: number) => record.toFixed(2),
+    },
+    {
+      title: '售价',
+      dataIndex: 'salePrice',
+      render: (record: number) => record.toFixed(2),
+    },
+    { title: '累计销量', dataIndex: 'sales' },
+    {
+      title: '护理时长',
+      dataIndex: 'nursingTime',
+      render: (record) => record + '分钟',
+    },
+    {
+      width: 185,
       title: '操作',
       key: 'action',
       render: (record: ColumnsType) => (
-        <Space size="small">
-          <Button type="primary" size="small" onClick={showDetails}>
-            详情/编辑
-          </Button>
-          <Button
-            type="primary"
-            size="small"
-            onClick={() => setStoreModalVisible(true)}
-          >
-            分配门店
-          </Button>
-          <Button type="primary" size="small" icon={<DeleteOutlined />} danger onClick={() => onDeleteCombo(record.id)}>
-            删除
-          </Button>
-        </Space>
+        <>
+          <Space size="small" style={{ marginBottom: 8 }}>
+            <Button disabled={record.status === 2} type="primary" size="small" onClick={showDetails}>
+              详情/编辑
+            </Button>
+            <Button
+              type="primary"
+              size="small"
+              onClick={() => setStoreModalVisible(true)}
+              style={{width: 80}}
+              disabled={record.status !== 1}
+            >
+              分配技师
+            </Button>
+          </Space>
+          <Space size="small">
+            <Button disabled={record.status !== 0} type="primary" size="small" style={{width: 80}}>
+              上架
+            </Button>
+            <Button disabled={record.status !== 1} type="primary" size="small" style={{width: 80}}>
+              下架
+            </Button>
+          </Space>
+        </>
       ),
     },
   ];
@@ -216,6 +265,21 @@ const Combo: FC = () => {
             }))
           }
         >
+          {/* 套餐类型 */}
+          <Form.Item label="套餐类型" name="comboType">
+            <Select placeholder="全部" allowClear style={{ width: 100 }}>
+              <Option value={0}>主套餐</Option>
+              <Option value={1}>增项套餐</Option>
+            </Select>
+          </Form.Item>
+          {/* 上架状态 */}
+          <Form.Item label="上架状态" name="status">
+            <Select placeholder="全部" allowClear style={{ width: 100 }}>
+              <Option value={0}>待上架</Option>
+              <Option value={1}>已上架</Option>
+              <Option value={1}>已下架</Option>
+            </Select>
+          </Form.Item>
           {/* 搜索 */}
           <Form.Item name="searchKey">
             <Input
@@ -240,7 +304,7 @@ const Combo: FC = () => {
         dataSource={dataSource}
         bordered
         size="middle"
-        scroll={{ y: 'calc(100vh - 280px)' }}
+        scroll={{ y: 'calc(100vh - 275px)' }}
         rowKey="id"
         pagination={{
           current: page.page /** 当前页数 */,
@@ -272,22 +336,37 @@ const Combo: FC = () => {
         onOk={onAdd}
       >
         <Form {...layout} form={comboForm} autoComplete="off">
-          <Form.Item label="名称：" required>
+          <Form.Item label="套餐类型" required name="comboType">
+            <Radio.Group>
+              <Radio value={0}>主套餐</Radio>
+              <Radio value={1}>增项套餐</Radio>
+            </Radio.Group>
+          </Form.Item>
+          <Form.Item label="适用品种" required name="varieties">
+            <VarietiesCascader />
+          </Form.Item>
+          <Form.Item label="名称" required name="name">
             <Input allowClear />
           </Form.Item>
-          <Form.Item label="描述" required>
+          <Form.Item label="描述" required name="desc">
             <TextArea allowClear />
           </Form.Item>
-          <Form.Item label="价格：" required>
+          <Form.Item label="原价" required name="originPrice">
             <InputNumber />
           </Form.Item>
-          <Form.Item label="背景图：" required>
+          <Form.Item label="现价" required name="salePrice">
+            <InputNumber />
+          </Form.Item>
+          <Form.Item label="护理时长" required name="nursingTime">
+            <InputNumber /> 分钟
+          </Form.Item>
+          <Form.Item label="背景图" required name="bgImgs">
             <UploadFile />
           </Form.Item>
-          <Form.Item label="轮播图：" required>
+          <Form.Item label="轮播图" required name="bannerImgs">
             <UploadFile max={5} />
           </Form.Item>
-          <Form.Item label="详情图：" required>
+          <Form.Item label="详情图" required name="detailImgs">
             <UploadFile max={10} />
           </Form.Item>
         </Form>

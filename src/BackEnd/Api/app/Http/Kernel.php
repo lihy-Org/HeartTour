@@ -63,5 +63,7 @@ class Kernel extends HttpKernel
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'adminapi'=>\App\Http\Middleware\AdminApi::class,
+        'wechatapi'=>\App\Http\Middleware\WechatAppApi::class,        
+        'storeapi'=>\App\Http\Middleware\StoreSystemApi::class,
     ];
 }

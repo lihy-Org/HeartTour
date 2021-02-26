@@ -1,7 +1,7 @@
 /*
  * @Author: Li-HONGYAO
  * @Date: 2021-01-18 11:15:25
- * @LastEditTime: 2021-01-26 15:57:47
+ * @LastEditTime: 2021-01-29 11:27:21
  * @LastEditors: Li-HONGYAO
  * @Description:
  * @FilePath: /Admin/src/pages/Store/index.tsx
@@ -93,7 +93,7 @@ const Store: FC = () => {
       tempArr.push({
         id: i,
         name: '九里晴川店',
-        shopManager: '李鸿耀',
+        shopManager: i % 7 === 0 ? '' : '李鸿耀',
         phone: '17398888669',
         lat: '104.01043703125',
         lng: '30.503119612406724',
@@ -119,12 +119,23 @@ const Store: FC = () => {
     } catch (err) {}
   };
   const onDeleteStore = (id: number) => {
-    message.success('删除成功');
+    Modal.info({
+      content: '您确定删除该门店么？',
+      okText: '确定',
+      closable: true,
+      onOk: () => {
+        message.success('删除成功');
+      },
+    });
   };
   const onSetShopManager = (id: number) => {
     message.success('设置成功');
   };
   const onQueryShopAssistant = (id: number) => {
+    if(id % 5 === 0) {
+      message.info('该门店暂未分配店员');
+      return;
+    }
     setShopAssistant([
       {
         id: 1,
@@ -222,7 +233,7 @@ const Store: FC = () => {
       width: 60,
     },
     { title: '门店名称', dataIndex: 'name' },
-    { title: '店长', dataIndex: 'shopManager' },
+    { title: '店长', dataIndex: 'shopManager', render: (record) => record || <span className="color-C5C5C5">暂未设置</span> },
     {
       title: '店员',
       key: 'query_shopAssistant',
@@ -470,6 +481,7 @@ const Store: FC = () => {
             name="phone"
             rules={[
               {
+                required: true,
                 validator: (ruls: RuleObject, value: any) => {
                   if (!value) {
                     return Promise.reject('请填写联系电话');

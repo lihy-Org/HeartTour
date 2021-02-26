@@ -10,16 +10,33 @@ Page({
         longitude: 104.06476,
         iconPath: '../../assets/images/1.png',
         width: 20,
-        height: 20
+        height: 20,
+        name: '金域蓝湾店',
+        des: '新店开展',
+        time: '10:00-22:00',
+        ass: '成都市成华区建设路68号金域蓝湾店附88号正16879号安逸店',
+        kilo: ''
       },
       {
         latitude: 30.616867,
         longitude: 104.09948,
         iconPath: '../../assets/images/1.png',
         width: 20,
-        height: 20
+        height: 20,
+        name: '路大可店',
+        des: '新店开展',
+        time: '10:00-22:00',
+        ass: '成都市成华区建设路68号金域蓝湾店附88号正16879号安逸店',
+        kilo: ''
       }
-    ]
+    ],
+    myLatitude: null,
+    myLongitude: null,
+    activeId: null,
+    items: [{
+      text: '成都',
+    }, ],
+    shopName:''
   },
   /**
    * 计算两点间直线距离
@@ -38,21 +55,54 @@ Page({
     var b = rad(lngFrom) - rad(lngTo);
     var distance = 2 * Math.asin(Math.sqrt(Math.pow(Math.sin(a / 2), 2) + Math.cos(radLatFrom) * Math.cos(radLatTo) * Math.pow(Math.sin(b / 2), 2)));
     distance = distance * EARTH_RADIUS;
-    distance = Math.round(distance * 10000) / 10000;
-    distance = distance.toFixed(1) + 'km'
+    distance = Math.round(distance * 10000) / 10000000;
+    distance = distance.toFixed(1)
     return distance
   },
 
+  tapPet(e) {
+    let name = e.currentTarget.dataset.text;
+    let pages = getCurrentPages();
+    let prevPages = pages[pages.length - 2];
+
+    prevPages.setData({
+      shopName:name
+    });
+
+    wx.navigateBack({
+      delta: 1
+    });
+  },
+  compare(key) {
+    return function (obj1, obj2) {
+      if (Number(obj1[key]) < Number(obj2[key])) {
+        return -1
+      } else if (obj1[key] === obj2[key]) {
+        return 0
+      } else {
+        return 1
+      }
+    }
+  },
+  
   onLoad: function () {
-    let latitude, longitude;
+    let that = this;
     wx.getLocation({
       success: function (res) {
-        latitude = res.latitude;
-        longitude = res.longitude;
-        console.log(latitude, longitude)
+        that.setData({
+          myLatitude: res.latitude,
+          myLongitude: res.longitude
+        })
+       let shops =  that.data.makers.map(item=>{
+          item.kilo = that.getDistance(that.data.myLatitude, that.data.myLongitude, item.latitude, item.longitude)
+          return item
+        })
+        shops.sort(that.compare('kilo'))
+        that.setData({
+          makers:shops
+        })
       }
     });
-    console.log(this.getDistance(30.5702, 104.06476, 30.616867,104.09948));
   },
   /**
    * 生命周期函数--监听页面初次渲染完成

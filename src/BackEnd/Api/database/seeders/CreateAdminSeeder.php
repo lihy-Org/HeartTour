@@ -23,5 +23,7 @@ class CreateAdminSeeder extends Seeder
          'nickname' =>'星轨' ,'gender'=>1,'state'=>0, 
          'avatar' => 'https://thirdwx.qlogo.cn/mmopen/vi_32/DYAIOgq83eqYLIk6CAiaQQAmywjREtoMXEMcCIbB4k188DKcc2AibPcsgURwCoSmjDgnGrLyXSsOs4ZWI7eh2rlQ/0', 
          'phone' => '15828242712']);
+
+         DB::table('wechatUser')->insert(['id'=>Uuid::generate(),'type' => 'TimeSlot', 'key' => 'TimeSlot', 'value'=>'30']);
     }
 }
