@@ -17,7 +17,7 @@ class CreateUsersTable extends Migration
             $table->uuid('id')->primary;
             $table->string('name')->comment('姓名'); 
             $table->string('avatar')->comment('头像');
-            $table->string('gender')->comment('性别 0未知，1男，2女');            
+            $table->integer('gender')->comment('性别 0未知，1男，2女');            
             $table->integer('age')->comment('年龄');       
             $table->string('postId')->comment('职位');
             $table->string('post')->comment('职位');
@@ -29,6 +29,7 @@ class CreateUsersTable extends Migration
             $table->tinyInteger('state')->default(0)->comment('状态0正常，1离职'); 
             $table->timestamps();
             $table->softDeletes();
+            $table->primary('id');
         });
     }
 

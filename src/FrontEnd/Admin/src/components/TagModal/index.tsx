@@ -1,40 +1,81 @@
 /*
  * @Author: Li-HONGYAO
  * @Date: 2021-01-28 18:18:09
- * @LastEditTime: 2021-01-29 14:22:45
+ * @LastEditTime: 2021-02-25 16:22:52
  * @LastEditors: Li-HONGYAO
  * @Description:
  * @FilePath: /Admin/src/components/TagModal/index.tsx
  */
 
-import React, { FC, useRef, useState, memo } from 'react';
-import { Tag, Input, Button, Modal } from 'antd';
-import { TweenOneGroup } from 'rc-tween-one';
+import React, { FC, useRef, useState, memo, useEffect } from 'react';
+import { Tag, Input, Button, Modal, message } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
+import Api from '@/Api';
 
 interface IProps {
   visible: boolean;
-  tags: any[];
   title: string;
+  type: string;
   onCancel: () => void;
-  onOk: (values: any[]) => void;
 }
+
+type TagType = {
+  id: string;
+  key: string;
+  sort: number;
+  type: string;
+  value: string | number;
+};
+
 const TagModal: FC<IProps> = (props) => {
   // ref
   const inputRef = useRef<Input | null>(null);
   // state
+  const [tags, setTags] = useState<TagType[] | undefined>();
   const [tagInputVisible, setTagInputVisible] = useState(false);
   const [tagInputValue, setTagInputValue] = useState('');
-  const [tags, setTags] = useState(() => [...props.tags]);
+
   // methods
-  const insertTags = (e: any) => {
+  const insertTag = (e: any) => {
     const value = e.target.value;
-    if (value && tags.indexOf(value) === -1) {
-      setTags((prev) => [...prev, value]);
-    }
+    if (!value) return;
+    message.loading('添加中...');
+    Api.config
+      .addOrUpdate<HT.BaseResponse<any>>({
+        type: props.type,
+        key: value,
+        value,
+      })
+      .then((res) => {
+        if (res && res.status === 200) {
+          getTags(false);
+        }
+      });
     setTagInputValue('');
     setTagInputVisible(false);
   };
+  const removeTag = (id: string) => {
+    message.loading('删除中...');
+    Api.config.remove<HT.BaseResponse<any>>(id).then((res) => {
+      if (res && res.status === 200) {
+        getTags(false);
+      }
+    });
+  };
+  const getTags = (loading: boolean) => {
+    loading && message.loading('数据加载中...');
+    Api.config.get<HT.BaseResponse<TagType[]>>(props.type).then((res) => {
+      if (res && res.status === 200) {
+        setTags(res.data);
+      }
+    });
+  };
+  // effects
+  useEffect(() => {
+    if (props.visible) {
+      getTags(true);
+    }
+  }, [props.visible]);
   // render
   return (
     <Modal
@@ -42,53 +83,45 @@ const TagModal: FC<IProps> = (props) => {
       title={props.title}
       onCancel={props.onCancel}
       destroyOnClose
-      onOk={() => {
-        props.onOk(tags);
-      }}
+      footer={null}
     >
-      <div style={{ marginBottom: 16 }}>
-        <TweenOneGroup
-          enter={{
-            scale: 0.8,
-            opacity: 0,
-            type: 'from',
-            duration: 100,
-            onComplete: (e: any) => {
-              e.target.style = '';
-            },
-          }}
-          leave={{ opacity: 0, width: 0, scale: 0, duration: 200 }}
-          appear={false}
-        >
-          {tags.map((tag, i) => (
-            <Tag
-              key={`tag__${i}`}
-              closable
-              onClose={() => {
-                const f = tags.filter((t) => t !== tag);
-                setTags(f);
-              }}
-              style={{ display: 'inline-block' }}
-            >
-              {tag}
-            </Tag>
-          ))}
-        </TweenOneGroup>
-      </div>
+      {tags && (
+        <div style={{ marginBottom: 16 }}>
+          {tags.length > 0 ? (
+            tags.map((tag, i) => (
+              <Tag
+                key={`tag__${i}`}
+                closable
+                onClose={() => {
+                  removeTag(tag.id);
+                }}
+                style={{ display: 'inline-block' }}
+              >
+                {tag.value}
+              </Tag>
+            ))
+          ) : (
+            <span className="color-C5C5C5">
+              当前还未设置，点击下方按钮添加吧~
+            </span>
+          )}
+        </div>
+      )}
       {tagInputVisible ? (
         <Input
           type="text"
           ref={inputRef}
+          placeholder="输入并回车添加"
           autoFocus={true}
-          style={{ width: 120 }}
+          style={{ width: 130 }}
           value={tagInputValue}
           onChange={(e) => setTagInputValue(e.target.value)}
-          onBlur={insertTags}
-          onPressEnter={insertTags}
+          onBlur={insertTag}
+          onPressEnter={insertTag}
         />
       ) : (
         <Button
-          style={{ width: 120 }}
+          style={{ width: 130 }}
           onClick={() => setTagInputVisible(true)}
           icon={<PlusOutlined />}
         >

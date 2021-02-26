@@ -7,6 +7,7 @@ use App\Repositories\PetRepository;
 use App\Repositories\WechatUserRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class WechatUserController extends Controller
 {
@@ -91,8 +92,8 @@ class WechatUserController extends Controller
     public function GetList(Request $request)
     {
         $rules = [
-            'gender' => ['string'],
-            'searchKey' => ['string'],
+            'gender' => [Rule::in([0,1,2])],
+            'searchKey' => ['nullable','string'],
             'pageSize' => ['integer', 'gt:0'],
             'page' => ['integer', 'gt:0'],
         ];
@@ -114,14 +115,17 @@ class WechatUserController extends Controller
             $list = $users->skip($skipNum)->take($takeNum)
                 ->selectRaw("*")->get();
             $pageTotal = $total / $takeNum;
-            $result['pages']['total'] = is_int($pageTotal) ? ($pageTotal) : (floor($pageTotal) + 1);
-            $result['pages']['pageNo'] = $page;
-            $result['data'] = $list;
+            $pageRes=(object)[];
+            $pageRes->total = $total;
+            $pageRes->pageNo = $page;
+            $pageRes->pageSize = $takeNum;
+            $pageRes->pages = is_int($pageTotal) ? ($pageTotal) : (floor($pageTotal) + 1);
             return json_encode(
                 array(
                     'status' => 200,
                     'msg' => '获取列表成功!',
-                    'data' => $result,
+                    'data' => $list,
+                    'page' => $pageRes,
                 )
             );
 
@@ -192,6 +196,7 @@ class WechatUserController extends Controller
      *     tags={"总台管理系统-用户管理"},
      *     summary="获取宠物列表",
      *     @OA\Parameter(name="token", in="header", @OA\Schema(type="string"), required=true, description="token"),
+     *     @OA\Parameter(name="wcId", in="query", @OA\Schema(type="string"), required=false, description="用户id"),
      *     @OA\Response(
      *         response=200,
      *         description="成功",

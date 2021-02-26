@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { createBrowserHistory, History } from '/Users/lihongyao/Desktop/外包项目/心之旅/HeartTour/src/FrontEnd/Admin/node_modules/@umijs/preset-built-in/node_modules/@umijs/runtime';
+import { createBrowserHistory, History } from '/Users/lihongyao/Desktop/外包项目/心之旅/HeartTour/src/FrontEnd/Admin/node_modules/umi/node_modules/@umijs/runtime';
 
 let options = {
   "basename": "/"

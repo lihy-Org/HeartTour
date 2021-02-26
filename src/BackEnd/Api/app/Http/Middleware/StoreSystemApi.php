@@ -9,8 +9,9 @@ class StoreSystemApi
 {
     public function handle($request, Closure $next)
     {
-
+        
         $request->user = $request->user();
+      
         $user = User::where('id', $request->user->id)->where(function ($query) {
             $query->where('type', 2);
         })->where('state', 0)->first();

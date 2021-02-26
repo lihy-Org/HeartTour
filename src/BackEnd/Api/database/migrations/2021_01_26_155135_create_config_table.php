@@ -21,7 +21,8 @@ class CreateConfigTable extends Migration
             $table->integer('sort')->default(1)->comment('排序');     
             $table->string('parentId')->nullable()->comment('父id');             
             $table->timestamps();
-            $table->softDeletes();          
+            $table->softDeletes();   
+            $table->primary('id');       
         });
     }
 

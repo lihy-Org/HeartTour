@@ -1,18 +1,21 @@
 /*
  * @Author: Li-HONGYAO
  * @Date: 2021-01-19 17:48:53
- * @LastEditTime: 2021-01-29 10:32:56
+ * @LastEditTime: 2021-02-24 16:26:40
  * @LastEditors: Li-HONGYAO
  * @Description:
  * @FilePath: /Admin/src/components/StoreSelect/index.tsx
  */
 import React, { FC, memo, useEffect, useState } from 'react';
+
 import { Select } from 'antd';
+import Api from '@/Api';
 
 interface IProps {
   value?: number | string;
   onChange?: (value: any) => void;
 }
+
 type StoreType = {
   id: number;
   name: string;
@@ -24,20 +27,17 @@ const StoreSelect: FC<IProps> = (props) => {
   const [stores, setStores] = useState<StoreType[]>([]);
   // effects
   useEffect(() => {
-    setStores([
-      {name: '九里晴川店', id: 1},
-      {name: '名著司南店', id: 2},
-      {name: '蒂凡尼店', id: 3},
-      {name: '领馆国际店', id: 4},
-      {name: '怡馨家园店', id: 5},
-      {name: '中德英伦店', id: 6},
-    ])
+    Api.store.getSelectList<HT.BaseResponse<StoreType[]>>().then((res) => {
+      if (res && res.status === 200) {
+        setStores(res.data);
+      }
+    });
   }, []);
   // render
   return (
     <Select
       allowClear
-      style={{width: 120}}
+      style={{ width: 120 }}
       placeholder="全部"
       defaultValue={props.value}
       onChange={props.onChange}

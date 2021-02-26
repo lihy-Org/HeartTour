@@ -72,7 +72,7 @@ class ConfigController extends Controller
      *     )
      * )
      */
-    public function getConfig($type, $key = '')
+    public function GetConfig($type, $key = '')
     {
         $rules = [
             'type' => ['required', 'string'],
@@ -102,7 +102,7 @@ class ConfigController extends Controller
                     array(
                         'status' => 200,
                         'msg' => '获取成功!',
-                        'data' => $this->configRepository->GetOneByType($type)->select('id', 'type', 'key', 'value', 'sort')->get(),
+                        'data' => $this->configRepository->GetByType($type)->select('id', 'type', 'key', 'value', 'sort')->get(),
                     )
                 );
             }
@@ -178,7 +178,7 @@ class ConfigController extends Controller
      *     )
      * )
      */
-    public function addOrUpdate(Request $request)
+    public function AddOrUpdate(Request $request)
     {
         $rules = [
             'type' => ['required', 'string'],
@@ -204,7 +204,7 @@ class ConfigController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/api/admin/config/delete",
+     *     path="/api/admin/config/remove",
      *     tags={"总台管理系统-配置管理"},
      *     summary="删除配置",
      *     @OA\Parameter(name="token", in="header", @OA\Schema(type="string"), required=true, description="token"),
@@ -267,22 +267,24 @@ class ConfigController extends Controller
      */
     public function Remove(Request $request)
     {
-        $Config = Config::where('id', $request->configId)->first();
-        if ($Config) {
-            $Config->delete();
-            return json_encode(
-                array(
-                    'status' => 200,
-                    'msg' => '删除成功!',
-                    'data' => '')
-            );
-        }
-        return json_encode(
-            array(
-                'status' => 500,
-                'msg' => '删除失败,找不到该配置!',
-                'data' => '')
-        );
+
+        return json_encode($this->configRepository->Remove($request->configId));
+        // $Config = Config::where('id', $request->configId)->first();
+        // if ($Config) {
+        //     $Config->delete();
+        //     return json_encode(
+        //         array(
+        //             'status' => 200,
+        //             'msg' => '删除成功!',
+        //             'data' => '')
+        //     );
+        // }
+        // return json_encode(
+        //     array(
+        //         'status' => 500,
+        //         'msg' => '删除失败,找不到该配置!',
+        //         'data' => '')
+        // );
     }
 
 }

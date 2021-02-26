@@ -19,6 +19,7 @@ class CreateGoodsBannerTable extends Migration
             $table->string('url')->comment('banner图地址');
             $table->timestamps();
             $table->softDeletes();
+            $table->primary('id');
         });
     }
 

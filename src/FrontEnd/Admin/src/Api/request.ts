@@ -1,3 +1,11 @@
+/*
+ * @Author: Li-HONGYAO
+ * @Date: 2021-01-17 23:30:37
+ * @LastEditTime: 2021-02-24 09:36:42
+ * @LastEditors: Li-HONGYAO
+ * @Description:
+ * @FilePath: /Admin/src/Api/request.ts
+ */
 import Utils from '@/utils/utils';
 import { extend, RequestOptionsInit } from 'umi-request';
 import { message } from 'antd';
@@ -7,7 +15,7 @@ import Tools from 'lg-tools';
 const service = extend({
   prefix: process.env.HOST,
   timeout: 20000,
-  errorHandler: error => {
+  errorHandler: (error) => {
     console.log('____error', JSON.stringify(error));
     if (/timeout/.test(error.message)) {
       message.error('请求超时');
@@ -32,7 +40,7 @@ service.interceptors.request.use((url: string, options: RequestOptionsInit) => {
       ...options,
       headers: {
         'Content-Type': 'application/json',
-        Authorization: Cookie.get('D_POINT_ADMIN_TOKEN') || '',
+        'Authorization': `Bearer ${Cookie.get('HT_TOKEN') || ''}`,
       },
     },
   };
@@ -41,9 +49,9 @@ service.interceptors.request.use((url: string, options: RequestOptionsInit) => {
 // 响应拦截
 service.interceptors.response.use(async (response, options) => {
   const res = await response.clone().json();
-
-  switch (res.code) {
-    case 0:
+  message.destroy();
+  switch (res.status) {
+    case 200:
       return res;
     case -10:
       Utils.push('/login');

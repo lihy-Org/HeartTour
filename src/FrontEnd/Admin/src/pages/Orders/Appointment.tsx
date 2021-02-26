@@ -10,16 +10,19 @@ import {
   DatePicker,
   Select,
   Radio,
+  Descriptions
 } from 'antd';
 import { SearchOutlined, CloseCircleOutlined } from '@ant-design/icons';
 import { ColumnProps } from 'antd/es/table';
 import StoreSelect from '@/components/StoreSelect';
 import moment from 'moment';
+import Api from '@/Api';
+import HT from '@/constants/interface';
 
 // 过滤条件
 type FilterParamsType = {
   status: number /** 0-已预约 1-进行中 2-待接取 3-已完成 */;
-  time?: any[] /** 预约时间 */;
+  date?: any[] /** 预约时间 */;
   storeId?: string /** 门店id */;
   technicianId?: string /** 技师id */;
   searchKey?: string /** 搜索关键字 */;
@@ -27,16 +30,20 @@ type FilterParamsType = {
 
 // 列表数据类型
 type ColumnsType = {
-  id: string /** 预约id */;
-  store: string /** 预约门店 */;
-  time: string /** 预约时间 */;
-  status: number /** 预约状态  0-已预约 1-进行中 2-待接取 3-已完成 */;
-  technician: string /** 预约技师  */;
-  userName: string /** 预约用户名称 */;
+  orderNo: string /** 订单编号 */;
+  storeName: string /** 预约门店 */;
+  apptTime: string /** 预约时间 */;
+  state: number ;
+  userName: string /** 预约技师  */;
+  wcName: string /** 预约用户名称 */;
   phone: string /** 预约用户手机号码 */;
-  comboName: string /** 预约套餐名称 */;
+  mainComboName: string /** 预约套餐名称 */;
   comboId: string /** 预约套餐id */;
   petType: number /** 宠物类型 0-猫猫  1-狗狗 */;
+  totalMoney: string; /** 订单金额 */
+  payMoney: string; /** 支付金额 */
+  payTime: string; /** 支付时间 */
+  storeId: string; /** 预约门店id */
 };
 
 // 解构组件
@@ -79,48 +86,68 @@ const times = [
 const Appointment: FC = () => {
   // state
   const [modalVisible, setModalVisible] = useState(false);
+  const [detailsVisible, setDetailsVisible] = useState(false);
+  const [details, setDetails] = useState<ColumnsType>();
   const [form] = Form.useForm();
   const [aptTimeForm] = Form.useForm();
   const [dataSource, setDataSource] = useState<ColumnsType[]>([]);
   const [total, setTotal] = useState(0);
-  const [page, setPage] = useState<DP.TablePageDataType<FilterParamsType>>(
+  const [page, setPage] = useState<HT.TablePageDataType<FilterParamsType>>(
     () => ({
       pageSize: 20,
       page: 1,
       filters: {
-        status: 0,
+        status: 200,
       },
     }),
   );
 
   // methods
   const getDataSource = () => {
-    console.log(page);
     message.loading('数据加载中...');
-    const tempArr: ColumnsType[] = [];
-    for (let i = 0; i < 88; i++) {
-      tempArr.push({
-        id: i + '',
-        status: page.filters.status,
-        store: '九里晴川店',
-        time: '2021/01/23 15:30',
-        technician: '李鸿耀',
-        userName: '郑云龙',
-        phone: '17398888669',
-        petType: i % 5 === 0 ? 0 : 1,
-        comboName: '洗护套餐A',
-        comboId: i + '',
+    // 处理参数
+    const options = { ...page.filters };
+    const date = options.date;
+    delete options.date;
+    // 发送请求
+    Api.appt
+      .list<HT.BaseResponse<ColumnsType[]>>({
+        ...options,
+        startDate: date && date[0].format('YYYY-MM-DD'),
+        endDate: date && date[1].format('YYYY-MM-DD'),
+        page: page.page,
+        pageSize: page.pageSize,
+      })
+      .then((res) => {
+        if (res && res.status === 200) {
+          setDataSource(res.data);
+          setTotal(res.page.total);
+          console.log(res);
+        }
       });
-    }
-    setTimeout(() => {
-      setDataSource(tempArr);
-      setTotal(tempArr.length);
-      message.destroy();
-    }, 500);
   };
+  const statusDesc = (status?: number) => {
+    switch(status) {
+      case 100: return '待支付';
+      case 200: return '已预约';
+      case 300: return '进行中';
+      case 400: return '待接取';
+      case 500: return '已完成';
+      default: return '-';
+    }
+  }
 
   // events
   // 修改预约时间
+  const onModifyAppt = (storeId: string) => {
+    console.log(storeId);
+    Api.appt.getWorkTime<HT.BaseResponse<any>>(storeId).then(res => {
+      if(res && res.status === 200) {
+        console.log(res);
+      }
+    })
+    // setModalVisible(true);
+  }
   const onChangeTime = () => {
     setModalVisible(false);
   };
@@ -141,34 +168,17 @@ const Appointment: FC = () => {
   }, [page]);
   // 数据源
   const columns: ColumnProps<ColumnsType>[] = [
-    {
-      title: '序号',
-      key: 'No.',
-      render: (record, row, index) => index + 1,
-      width: 60,
-    },
-    { title: '预约门店', dataIndex: 'store' },
+    { title: '预约门店', dataIndex: 'storeName' },
     {
       title: '预约状态',
-      dataIndex: 'status',
-      render: (status: number) => {
-        switch (status) {
-          case 0:
-            return '已预约';
-          case 1:
-            return '进行中';
-          case 2:
-            return '待接取';
-          case 3:
-            return '已完成';
-        }
-      },
+      dataIndex: 'state',
+      render: (record: number) => statusDesc(record)
     },
-    { title: '预约时间', dataIndex: 'time' },
-    { title: '预约技师', dataIndex: 'technician' },
-    { title: '预约用户', dataIndex: 'userName' },
+    { title: '预约时间', dataIndex: 'apptTime' },
+    { title: '预约技师', dataIndex: 'userName' },
+    { title: '预约用户', dataIndex: 'wcName' },
     { title: '联系方式', dataIndex: 'phone' },
-    { title: '套餐名称', dataIndex: 'comboName' },
+    { title: '套餐名称', dataIndex: 'mainComboName' },
     {
       title: '宠物类型',
       dataIndex: 'petType',
@@ -184,16 +194,22 @@ const Appointment: FC = () => {
       },
     },
     {
-      width: 190,
+      width: 270,
       title: '操作',
       key: 'action',
-      render: () => (
+      render: (record: ColumnsType) => (
         <Space size="small">
+          <Button type="primary" size="small" onClick={() =>　{
+            setDetails(record);
+            setDetailsVisible(true);
+          }}>
+            查看详情
+          </Button>
           <Button
             disabled={page.filters.status === 2}
             type="primary"
             size="small"
-            onClick={() => setModalVisible(true)}
+            onClick={() => onModifyAppt(record.storeId)}
           >
             修改预约时间
           </Button>
@@ -236,10 +252,11 @@ const Appointment: FC = () => {
         >
           <Form.Item label="状态：" name="status">
             <Select style={{ width: 100 }}>
-              <Option value={0}>已预约</Option>
-              <Option value={1}>进行中</Option>
-              <Option value={2}>待接取</Option>
-              <Option value={3}>已完成</Option>
+              <Option value={100}>待支付</Option>
+              <Option value={200}>已预约</Option>
+              <Option value={300}>进行中</Option>
+              <Option value={400}>待接取</Option>
+              <Option value={500}>已完成</Option>
             </Select>
           </Form.Item>
           <Form.Item label="预约时间：" name="date">
@@ -247,7 +264,7 @@ const Appointment: FC = () => {
             <RangePicker />
           </Form.Item>
           {/* 门店 */}
-          <Form.Item label="门店：" name="store">
+          <Form.Item label="门店：" name="storeId">
             <StoreSelect />
           </Form.Item>
           {/* 搜索 */}
@@ -344,6 +361,28 @@ const Appointment: FC = () => {
             </Radio.Group>
           </Form.Item>
         </Form>
+      </Modal>
+      {/* 详情 */}
+      <Modal
+        title="预约详情"
+        visible={detailsVisible}
+        onCancel={() => setDetailsVisible(false)}
+        footer={null}
+        width={1000}
+      >
+        <Descriptions className="descriptions-wrapper" >
+          <Descriptions.Item label="预约编号">{details?.orderNo}</Descriptions.Item>
+          <Descriptions.Item label="预约状态">{statusDesc(details?.state)}</Descriptions.Item>
+          <Descriptions.Item label="预约时间">{details?.apptTime}</Descriptions.Item>
+          <Descriptions.Item label="预约用户">{details?.wcName}</Descriptions.Item>
+          <Descriptions.Item label="联系方式">{details?.phone}</Descriptions.Item>
+          <Descriptions.Item label="预约技师">{details?.userName}</Descriptions.Item>
+          <Descriptions.Item label="预约套餐">{details?.mainComboName}</Descriptions.Item>
+          <Descriptions.Item label="订单金额">{details?.totalMoney}元</Descriptions.Item>
+          <Descriptions.Item label="支付金额">{details?.payMoney}元</Descriptions.Item>
+          <Descriptions.Item label="宠物类型">{details?.petType === 1 ? '狗狗' : '猫猫'}</Descriptions.Item>
+          <Descriptions.Item label="支付时间">{details?.payTime || '-'}</Descriptions.Item>
+        </Descriptions>
       </Modal>
     </div>
   );

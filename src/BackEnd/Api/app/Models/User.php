@@ -14,6 +14,10 @@ class User extends Authenticatable
     use \App\Http\Traits\UseUuid;
     protected $primaryKey = 'id';
     protected $fillable = [
-        'id','name', 'phone', 'avatar','gender','age','title','postId','post','type','storeId','store','state'
+        'id','name', 'phone', 'avatar','gender','age','title','postId','post','type','storeId','store','state','isBeautician'
     ];  
+    public function Titles()
+    {
+        return $this->hasMany(UserTitle::class, 'uid', 'id');
+    }
 }

@@ -168,7 +168,7 @@ class ComboController extends Controller
      * @OA\Post(
      *     path="/api/admin/combo/SetBeautician",
      *     tags={"总台管理系统-套餐管理"},
-     *     summary="分配门店",
+     *     summary="分配人员",
      *     @OA\Parameter(name="token", in="header", @OA\Schema(type="string"), required=true, description="token"),
      *     @OA\RequestBody(
      *     @OA\MediaType(
@@ -316,7 +316,7 @@ class ComboController extends Controller
             'varietyId' => ['nullable'],
             'comboType' => [Rule::in(['0', '1'])],
             'state' => [Rule::in(['0', '1', '2'])],
-            'searchKey' => ['string'],
+            'searchKey' => ['nullable','string'],
             'pageSize' => ['integer', 'gt:0'],
             'page' => ['integer', 'gt:0'],
         ];
@@ -337,14 +337,17 @@ class ComboController extends Controller
             $total = $combos->count();
             $list = $combos->skip($skipNum)->take($takeNum)->get();
             $pageTotal = $total / $takeNum;
-            $result['pages']['total'] = is_int($pageTotal) ? ($pageTotal) : (floor($pageTotal) + 1);
-            $result['pages']['pageNo'] = $page;
-            $result['data'] = $list;
+            $pageRes=(object)[];
+            $pageRes->total = $total;
+            $pageRes->pageNo = $page;
+            $pageRes->pageSize = $takeNum;
+            $pageRes->pages = is_int($pageTotal) ? ($pageTotal) : (floor($pageTotal) + 1);
             return json_encode(
                 array(
                     'status' => 200,
                     'msg' => '获取列表成功!',
-                    'data' => $result,
+                    'data' => $list,
+                    'page' => $pageRes,
                 )
             );
 

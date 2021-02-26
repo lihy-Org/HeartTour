@@ -5,6 +5,7 @@ namespace App\Http\Controllers\StoreSystem;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Repositories\UserRepository;
+use App\Repositories\AppointmentRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
@@ -12,10 +13,12 @@ use Illuminate\Validation\Rule;
 class UserController extends Controller
 {
     protected $userRepository;
-
-    public function __construct(UserRepository $_userRepository)
+    protected $appointmentRepository;
+   
+    public function __construct(UserRepository $_userRepository,AppointmentRepository $_appointmentRepository)
     {
         $this->userRepository = $_userRepository;
+        $this->appointmentRepository = $_appointmentRepository;
     }
     /**
      * @OA\Post(
@@ -91,7 +94,7 @@ class UserController extends Controller
             'storeId' => ['uuid'],
             'post' => ['string'],
             'gender' => ['string'],
-            'searchKey' => ['string'],
+            'searchKey' => ['nullable','string'],
             'pageSize' => ['integer', 'gt:0'],
             'page' => ['integer', 'gt:0'],
         ];
@@ -113,14 +116,17 @@ class UserController extends Controller
             $total = $users->count();
             $list = $users->skip($skipNum)->take($takeNum)->get();
             $pageTotal = $total / $takeNum;
-            $result['pages']['total'] = is_int($pageTotal) ? ($pageTotal) : (floor($pageTotal) + 1);
-            $result['pages']['pageNo'] = $page;
-            $result['data'] = $list;
+            $pageRes=(object)[];
+            $pageRes->total = $total;
+            $pageRes->pageNo = $page;
+            $pageRes->pageSize = $takeNum;
+            $pageRes->pages = is_int($pageTotal) ? ($pageTotal) : (floor($pageTotal) + 1);
             return json_encode(
                 array(
                     'status' => 200,
                     'msg' => '获取列表成功!',
-                    'data' => $result,
+                    'data' => $list,
+                    'page' => $pageRes,
                 )
             );
 
@@ -185,14 +191,14 @@ class UserController extends Controller
      * )
      */
     public function SetWorktime(Request $request)
-    {
+    {        
         $rules = [
             'days' => ['required', 'array'],
             'days.*'=>['date_format:"Y-m-d"','after_or_equal:today'],
             'startTime' => ['nullable', 'date_format:"H:i"'],
             'endTime' => ['nullable', 'date_format:"H:i"'],
             'userId' => ['required', Rule::exists('users', 'id')->where(function ($query)use($request) {
-                $query->where('state', 0)->whereNotIn('type', [0, 1])->where('storeId', $request->user->storeId);
+                $query->where('state', 0)->whereNotIn('type', [0, 1])->where('isBeautician', 1)->where('storeId', $request->user->storeId);
             })],
         ];
         $messages = [
@@ -207,6 +213,6 @@ class UserController extends Controller
                 'data' => $validator->errors(),
             ));
         }
-        return json_encode($this->userRepository->SetWorktime((object) $request->all()));
+        return json_encode($this->appointmentRepository->SetWorktime((object) $request->all()));
     }
 }

@@ -13,5 +13,5 @@ class UserWorktime extends Model
     use \App\Http\Traits\UseUuid;
     protected $table = 'userWorktimes';
     protected $primaryKey = 'id';
-    protected $fillable = ['workDay', 'workTime', 'uid', 'uname', 'orderId', 'orderPrice'];
+    protected $fillable = ['workDay', 'workTime', 'uid','storeId', 'uname', 'orderId', 'orderPrice'];
 }

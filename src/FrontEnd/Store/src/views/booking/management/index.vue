@@ -1,5 +1,6 @@
+<!-- 预约管理 -->
 <template>
-  <div class="booking-container">
+  <div class="bookingManage-container">
     <!-- 搜索区域 -->
     <div class="search-wrap">
       <Form class="search-form" :inline="true" :form="searchForm" :form-items="searchFormItems" />
@@ -306,7 +307,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.booking-container {
+.bookingManage-container {
   padding: 20px;
   .search-wrap {
     display: flex;

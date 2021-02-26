@@ -1,33 +1,75 @@
-import React, { FC, useState } from 'react';
+import React, { FC, useCallback, useState } from 'react';
 import { Row, Col, Form, Input, Button } from 'antd';
 import { history, connect, UserModelState } from 'umi';
 import Particles from 'react-particles-js';
-import { UserOutlined, LockOutlined } from '@ant-design/icons';
+import { PhoneOutlined, SafetyOutlined } from '@ant-design/icons';
 import Cookie from 'lg-cookie';
 import './index.less';
+import Tools from 'lg-tools';
+import { RuleObject } from 'rc-field-form/lib/interface';
+import Validator from 'lg-validator';
+import Api from '@/Api';
+import HT from '@/constants/interface';
 
 interface IProps {
   updateUserModel: (values: UserModelState) => void;
 }
 
-const Login: FC<IProps> = props => {
+const Time_MAX = 10;
+const Login: FC<IProps> = (props) => {
   // state
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
+  const [time, setTime] = useState(Time_MAX);
+
+  // methods
+  const validator = (rule: RuleObject, value: any, callback: any) => {
+    if (value === undefined) {
+      return Promise.reject('请输入手机号码');
+    } else if (!Validator.tel(value)) {
+      return Promise.reject('手机号码不合法');
+    } else {
+      return Promise.resolve();
+    }
+  };
   // events
-  const onLogin = (values: { username: string; password: string }) => {
-    console.log(values);
+  const onLogin = (values: { phone: string; code: string }) => {
     setLoading(true);
-    // 模拟接口登录
-    setTimeout(() => {
-      setLoading(false);
-      Cookie.set('XXX_ADMIN_TOKEN', '此处为服务器返回的token');
-      props.updateUserModel({
-        token: '此处为服务器返回的token',
-        username: '____耀哥',
+    // 登录
+    Api.account
+      .login<HT.BaseResponse<string>>({
+        phone: values.phone,
+        code: values.code,
+      })
+      .then((res) => {
+        setLoading(false);
+        if (res && res.status === 200) {
+          Cookie.set('HT_TOKEN', res.data);
+          props.updateUserModel({
+            token: res.data,
+            username: '____耀哥',
+          });
+          history.push('/');
+        }
       });
-      history.push('/');
-    }, 1000);
+  };
+  const onGetCode = async () => {
+    const { phone } = await form.validateFields(['phone']);
+    if (phone) {
+      Api.account.verifCode<HT.BaseResponse<any>>(phone).then((res) => {
+        console.log(res);
+      });
+      Tools.timeDown({
+        timeStamp: Time_MAX * 1000,
+        format: 'ss',
+        pending: (time: any) => {
+          setTime(time);
+        },
+        complete: () => {
+          setTime(Time_MAX);
+        },
+      });
+    }
   };
   // render
   return (
@@ -145,26 +187,37 @@ const Login: FC<IProps> = props => {
             <h2 className="title">心之旅·后台管理系统</h2>
           </Col>
         </Row>
-        <Form form={form} name="basic" onFinish={onLogin} autoComplete="off">
-          <Form.Item
-            name="username"
-            rules={[{ required: true, message: '账号不能为空' }]}
-          >
+        <Form
+          form={form}
+          initialValues={{ phone: '15828242712' }}
+          name="basic"
+          onFinish={onLogin}
+          autoComplete="off"
+        >
+          <Form.Item name="phone" rules={[{ validator }]}>
             <Input
-              placeholder="请输入账号"
+              type="tel"
+              placeholder="请输入手机账号"
               allowClear
-              prefix={<UserOutlined />}
+              prefix={<PhoneOutlined />}
             />
           </Form.Item>
 
           <Form.Item
-            name="password"
-            rules={[{ required: true, message: '密码不能为空' }]}
+            name="code"
+            rules={[{ required: true, message: '验证码不能为空' }]}
           >
-            <Input.Password
-              placeholder="请输入密码"
+            <Input
+              placeholder="请输入手机验证码"
               allowClear
-              prefix={<LockOutlined />}
+              prefix={<SafetyOutlined />}
+              suffix={
+                time === Time_MAX ? (
+                  <a onClick={onGetCode}>获取验证码</a>
+                ) : (
+                  <span style={{ color: 'red' }}>{time}秒后重新获取</span>
+                )
+              }
             />
           </Form.Item>
 
@@ -172,7 +225,6 @@ const Login: FC<IProps> = props => {
             <Button
               type="primary"
               htmlType="submit"
-              size="large"
               loading={loading}
               style={{ marginTop: 10 }}
             >

@@ -148,7 +148,7 @@ class AccountController extends Controller
     /**
      * @OA\Post(
      *     path="/api/storesys/verifCode",
-     *     tags={"总台管理系统-授权"},
+     *     tags={"门店管理系统-授权"},
      *     summary="获取登录验证码",
      *     @OA\RequestBody(
      *     @OA\MediaType(

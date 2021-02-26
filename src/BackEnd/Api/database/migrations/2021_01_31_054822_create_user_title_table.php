@@ -20,6 +20,7 @@ class CreateUserTitleTable extends Migration
             $table->string('title')->comment('头衔');
             $table->timestamps();
             $table->softDeletes();
+            $table->primary('id');
         });
     }
 

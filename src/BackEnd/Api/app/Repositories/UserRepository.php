@@ -28,7 +28,7 @@ class UserRepository
                         'status' => 500,
                         'msg' => '无该职位信息!',
                         'data' => '');
-                }
+                }             
                 $user = User::create([
                     'name' => $data->name,
                     'phone' => $data->phone,
@@ -118,7 +118,9 @@ class UserRepository
 
     public function GetList($data)
     {
-        $users = User::where('state', 0)->whereNotIn('type', [0, 1])->orderBy('created_at');
+        $users = User::where('state', 0)->with(array('Titles' => function ($query) {
+            $query->select('id', 'uid','titleId', 'title');
+        }))->whereNotIn('type', [0, 1])->orderBy('created_at');
         if (isset($data->searchKey)) {
             $users = $users->where(function ($query) use ($data) {
                 $query->where('name', 'like', '%' . $data->searchKey . '%')
@@ -208,51 +210,6 @@ class UserRepository
                 'msg' => '失败!' . $ex->getMessage(),
                 'data' => '');
         }
-    }
-
-    public function SetWorktime($data)
-    {
-        try {
-            DB::beginTransaction(); // 开启事务
-            $user = User::find($data->userId);
-            $store = Store::find($user->storeId);
-            $ConfigRepository = new ConfigRepository();
-            $config = $ConfigRepository->GetOne('TimeSlot', 'TimeSlot')->first();
-            $startTime = $store->businessHourStart;
-            $endTime = $store->businessHourEnd;
-            foreach ($data->days as $v) {
-                if (UserWorktime::where('workDay', $v)->where('uid', $user->id)->whereNotNull('orderId')->count() > 0) {
-                    Db::rollback(); // 回滚事务
-                    return array(
-                        'status' => 500,
-                        'msg' => '设置失败，' . $v . '日该人员已被预约不可再进行排期!',
-                        'data' => '');
-                }
-                UserWorktime::where('workDay', $v)->where('uid', $user->id)->delete();
-                if (isset($data->startTime) && isset($data->endTime)) {
-                    $startTime = $data->startTime;
-                    $endTime = $data->endTime;
-                }
-                $st = Carbon::parse($v . ' ' . $startTime . ':00');
-                $et = Carbon::parse($v . ' ' . $endTime . ':00');
-                while ($et->gt($st)) {
-                    UserWorktime::create(['workDay' => $st->format('Y-m-d'), 'workTime' => $st->format('H:i'), 'uid' => $user->id, 'uname' => $user->name]);
-                    $st = $st->addMinutes($config->value);
-                }
-            }
-            Db::commit(); // 提交事务
-            return array(
-                'status' => 200,
-                'msg' => '设置成功!',
-                'data' => '');
-        } catch (\Exception $ex) {
-            Db::rollback(); // 回滚事务
-            return array(
-                'status' => 500,
-                'msg' => '失败!' . $ex->getMessage(),
-                'data' => '');
-        }
-    }
-
+    }  
     
 }

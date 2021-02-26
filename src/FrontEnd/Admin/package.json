@@ -22,10 +22,12 @@
   },
   "dependencies": {
     "@ant-design/pro-layout": "^6.9.5",
+    "@types/antd": "^1.0.0",
     "@types/echarts": "^4.9.3",
     "@umijs/hooks": "^1.9.3",
     "@umijs/preset-react": "1.7.9",
     "@umijs/test": "^3.3.3",
+    "ali-oss": "^6.13.2",
     "antd": "^4.11.2",
     "crypto-js": "^4.0.0",
     "echarts": "5.0.0",
@@ -40,10 +42,12 @@
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "react-particles-js": "^3.4.1",
-    "umi": "^3.3.3",
+    "umi": "^3.3.9",
     "yorkie": "^2.0.0"
   },
   "devDependencies": {
+    "@types/ali-oss": "^6.0.7",
+    "@types/react": "^17.0.2",
     "cross-env": "^7.0.3"
   }
 }

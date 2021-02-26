@@ -9,9 +9,8 @@
         <!-- 日期显示 -->
         <DateTime id="header-dateTime" class="right-menu-item" />
 
-        <Weather id="header-weather" class="right-menu-item" />
-
         <!-- 天气 -->
+        <Weather id="header-weather" class="right-menu-item" />
 
         <!-- 搜索 -->
         <search v-if="false" id="header-search" class="right-menu-item" />
@@ -40,11 +39,11 @@
         <el-dropdown-menu slot="dropdown">
 
           <!-- 个人中心 -->
-          <router-link to="/profile/index">
+          <!-- <router-link to="/profile/index">
             <el-dropdown-item>
               {{ $t('navbar.profile') }}
             </el-dropdown-item>
-          </router-link>
+          </router-link> -->
 
           <!-- 数据统计 -->
           <router-link to="/">

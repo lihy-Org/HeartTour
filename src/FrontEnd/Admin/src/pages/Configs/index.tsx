@@ -1,7 +1,7 @@
 /*
  * @Author: Li-HONGYAO
  * @Date: 2021-01-22 12:36:49
- * @LastEditTime: 2021-01-31 00:54:01
+ * @LastEditTime: 2021-02-25 15:48:09
  * @LastEditors: Li-HONGYAO
  * @Description:
  * @FilePath: /Admin/src/pages/Configs/index.tsx
@@ -10,11 +10,16 @@ import React, { FC, useState } from 'react';
 import { Card, Button } from 'antd';
 import { EditOutlined } from '@ant-design/icons';
 import TagModal from '@/components/TagModal';
+import { kPOST, kTITLE } from '@/constants';
+import Varieties from './Varieties';
 
 const { Meta } = Card;
 
 const Banner: FC = () => {
   // state
+  const [postVisible, setPostVisible] = useState(false);
+  const [titleVisible, setTitleVisible] = useState(false);
+  const [varietiesVisible, setVarietiesVisible] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
 
   // list datas
@@ -37,7 +42,7 @@ const Banner: FC = () => {
     },
     {
       cover:
-        'https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png',
+        'https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=3062556219,1093566700&fm=26&gp=0.jpg',
       title: '职位管理',
       description: '职位相关管理',
       actions: [
@@ -45,7 +50,23 @@ const Banner: FC = () => {
           type="primary"
           size="small"
           icon={<EditOutlined key="edit" />}
-          onClick={() => setModalVisible(true)}
+          onClick={() => setPostVisible(true)}
+        >
+          查看编辑
+        </Button>,
+      ],
+    },
+    {
+      cover:
+        'https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=967197514,2532988482&fm=26&gp=0.jpg',
+      title: '头衔管理',
+      description: '头衔相关管理',
+      actions: [
+        <Button
+          type="primary"
+          size="small"
+          icon={<EditOutlined key="edit" />}
+          onClick={() => setTitleVisible(true)}
         >
           查看编辑
         </Button>,
@@ -61,44 +82,13 @@ const Banner: FC = () => {
           type="primary"
           size="small"
           icon={<EditOutlined key="edit" />}
-          onClick={() => setModalVisible(true)}
+          onClick={() => setVarietiesVisible(true)}
         >
           查看编辑
         </Button>,
       ],
     },
-    {
-      cover:
-        'https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png',
-      title: '职位管理',
-      description: '职位相关管理',
-      actions: [
-        <Button
-          type="primary"
-          size="small"
-          icon={<EditOutlined key="edit" />}
-          onClick={() => setModalVisible(true)}
-        >
-          查看编辑
-        </Button>,
-      ],
-    },
-    {
-      cover:
-        'https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png',
-      title: '头衔管理',
-      description: '头衔相关管理',
-      actions: [
-        <Button
-          type="primary"
-          size="small"
-          icon={<EditOutlined key="edit" />}
-          onClick={() => setModalVisible(true)}
-        >
-          查看编辑
-        </Button>,
-      ],
-    },
+
     {
       cover:
         'https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png',
@@ -141,15 +131,28 @@ const Banner: FC = () => {
         </div>
       </div>
       {/* modals */}
+      {/* 职位管理 */}
       <TagModal
-        visible={modalVisible}
-        title="头衔管理"
-        tags={['高级技师', '资深保洁', '王牌店长']}
-        onCancel={() => setModalVisible(false)}
-        onOk={(values) => {
-          console.log(values);
-          setModalVisible(false);
+        title="职位管理"
+        visible={postVisible}
+        type={kPOST}
+        onCancel={() => {
+          setPostVisible(false);
         }}
+      />
+      {/* 头衔管理 */}
+      <TagModal
+        title="头衔管理"
+        visible={titleVisible}
+        type={kTITLE}
+        onCancel={() => {
+          setTitleVisible(false);
+        }}
+      />
+      {/* 宠物种类配置 */}
+      <Varieties
+        visible={varietiesVisible}
+        onCancel={() => setVarietiesVisible(false)}
       />
     </div>
   );
