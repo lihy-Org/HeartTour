@@ -15,4 +15,9 @@ class Order extends Model
     protected $primaryKey = 'id';
     protected $fillable = ['orderNo','wcId','wcName','petId','petType','userId','userName','storeId','storeName','mainComboName','phone','apptTime','addId','address','expId','expName'
     ,'expNumber','totalMoney','freight','payMoney','payType','type','payTime','shippingTime','finishTime','cancelTime','state'];
+
+    public function Details()
+    {
+        return $this->hasMany(OrderDetail::class, 'orderId', 'id');
+    }
 }
