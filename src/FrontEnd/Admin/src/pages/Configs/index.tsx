@@ -1,7 +1,7 @@
 /*
  * @Author: Li-HONGYAO
  * @Date: 2021-01-22 12:36:49
- * @LastEditTime: 2021-02-25 15:48:09
+ * @LastEditTime: 2021-02-25 21:20:12
  * @LastEditors: Li-HONGYAO
  * @Description:
  * @FilePath: /Admin/src/pages/Configs/index.tsx
@@ -26,7 +26,7 @@ const Banner: FC = () => {
   const datas = [
     {
       cover:
-        'https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png',
+        'https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=3062556219,1093566700&fm=26&gp=0.jpg',
       title: '预约须知',
       description: '商品详情预约须知',
       actions: [
@@ -58,7 +58,7 @@ const Banner: FC = () => {
     },
     {
       cover:
-        'https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=967197514,2532988482&fm=26&gp=0.jpg',
+        'https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=3062556219,1093566700&fm=26&gp=0.jpg',
       title: '头衔管理',
       description: '头衔相关管理',
       actions: [
@@ -74,7 +74,7 @@ const Banner: FC = () => {
     },
     {
       cover:
-        'https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png',
+        'https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=3062556219,1093566700&fm=26&gp=0.jpg',
       title: '宠物种类',
       description: '宠物种类相关分类管理',
       actions: [
@@ -91,7 +91,7 @@ const Banner: FC = () => {
 
     {
       cover:
-        'https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png',
+        'https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=3062556219,1093566700&fm=26&gp=0.jpg',
       title: 'banner配置',
       description: '头衔相关管理',
       actions: [

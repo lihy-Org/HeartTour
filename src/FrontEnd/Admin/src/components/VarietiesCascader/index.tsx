@@ -1,20 +1,23 @@
 /*
  * @Author: Li-HONGYAO
  * @Date: 2021-01-17 23:30:37
- * @LastEditTime: 2021-01-30 23:53:30
+ * @LastEditTime: 2021-02-26 14:08:24
  * @LastEditors: Li-HONGYAO
- * @Description: 
+ * @Description:
  * @FilePath: /Admin/src/components/VarietiesCascader/index.tsx
  */
 import React, { FC, memo, useEffect, useState } from 'react';
-import { CascaderOptionType, CascaderValueType } from 'antd/es/cascader';
+import { CascaderValueType } from 'antd/es/cascader';
 import { Cascader } from 'antd';
+import Api from '@/Api';
+import { kVARIETIES } from '@/constants';
+import HT from '@/constants/interface';
 
 type OptionsType = {
   value: string;
   label: string;
-  isLeaf: boolean
-}
+  isLeaf: boolean;
+};
 
 interface IProps {
   onChange?: (value: CascaderValueType) => void;
@@ -26,61 +29,34 @@ const CityCascader: FC<IProps> = (props) => {
   const onCascaderChange = (value: CascaderValueType) => {
     props.onChange && props.onChange(value);
   };
-  const onLoadData = (selectedOptions?: CascaderOptionType[]) => {
-    if (selectedOptions) {
-      const targetOption = selectedOptions[selectedOptions.length - 1];
-      console.log(targetOption)
-      targetOption.loading = true;
-      setTimeout(() => {
-        targetOption.loading = false;
-        targetOption.children = [
-          {
-            label: `武侯区`,
-            value: '武侯区',
-          },
-          {
-            label: `高新区`,
-            value: '高新区',
-          },
-          {
-            label: `锦江区`,
-            value: '锦江区',
-          },
-        ];
-        setOptions([...options]);
-      }, 1000);
-    }
+  const recursive = (arr: HT.ConfigType[]): any => {
+    return arr.map((item) => {
+      return item.children.length > 0
+        ? {
+            label: item.value,
+            value: item.id,
+            children: recursive(item.children),
+          }
+        : {
+            label: item.value,
+            value: item.id,
+          };
+    });
   };
 
   // effects
   useEffect(() => {
-    setOptions([
-      {
-        value: '猫猫',
-        label: '猫猫',
-        isLeaf: false,
-      },
-      {
-        value: '狗狗',
-        label: '狗狗',
-        isLeaf: false,
-      },
-      {
-        value: '其他',
-        label: '其他',
-        isLeaf: false,
+    Api.config.get<HT.BaseResponse<HT.ConfigType[]>>(kVARIETIES).then((res) => {
+      if (res && res.status === 200) {
+        const datas = recursive(res.data);
+        setOptions(datas);
       }
-    ]);
+    });
   }, []);
 
   // render
   return (
-    <Cascader
-      options={options}
-      loadData={onLoadData}
-      onChange={onCascaderChange}
-      changeOnSelect
-    />
+    <Cascader options={options} onChange={onCascaderChange}  />
   );
 };
 

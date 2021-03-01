@@ -10,7 +10,7 @@ import {
   DatePicker,
   Select,
   Radio,
-  Descriptions
+  Descriptions,
 } from 'antd';
 import { SearchOutlined, CloseCircleOutlined } from '@ant-design/icons';
 import { ColumnProps } from 'antd/es/table';
@@ -21,70 +21,56 @@ import HT from '@/constants/interface';
 
 // 过滤条件
 type FilterParamsType = {
-  status: number /** 0-已预约 1-进行中 2-待接取 3-已完成 */;
+  state: number /** 0-已预约 1-进行中 2-待接取 3-已完成 */;
   date?: any[] /** 预约时间 */;
   storeId?: string /** 门店id */;
-  technicianId?: string /** 技师id */;
   searchKey?: string /** 搜索关键字 */;
 };
 
 // 列表数据类型
 type ColumnsType = {
+  id: string /** 预约订单id */;
   orderNo: string /** 订单编号 */;
   storeName: string /** 预约门店 */;
   apptTime: string /** 预约时间 */;
-  state: number ;
+  state: number;
   userName: string /** 预约技师  */;
+  userId: string /** 预约技师id */;
   wcName: string /** 预约用户名称 */;
   phone: string /** 预约用户手机号码 */;
   mainComboName: string /** 预约套餐名称 */;
   comboId: string /** 预约套餐id */;
   petType: number /** 宠物类型 0-猫猫  1-狗狗 */;
-  totalMoney: string; /** 订单金额 */
-  payMoney: string; /** 支付金额 */
-  payTime: string; /** 支付时间 */
-  storeId: string; /** 预约门店id */
+  totalMoney: string /** 订单金额 */;
+  payMoney: string /** 支付金额 */;
+  payTime: string /** 支付时间 */;
+  storeId: string /** 预约门店id */;
+};
+
+type WorkTimeType = {
+  orderId: string;
+  storeId: string;
+  uid: string;
+  uname: string;
+  workDay: string;
+  workTime: string;
 };
 
 // 解构组件
 const { RangePicker } = DatePicker;
 const { Option } = Select;
 
-// 临时数据 --- 技师
-type AptRadioType = {
-  id: string /** 预约时间 or 预约技师id */;
-  name: string /** 预约时间文案 or 预约技师文案 */;
-  disabled: number /** 是否禁用 0-不禁用 1-禁用 */;
-};
-type UpdateAptTimeType = {
-  aptId: string /** 预约id */;
-  time: string /** 预约时间 */;
-  date: string /** 预约日期 */;
-  teachean: string /** 预约技师 */;
-};
-
-const teacheans = [
-  { id: '1', name: '李鸿耀', disabled: 0 },
-  { id: '2', name: '郑云龙', disabled: 1 },
-  { id: '3', name: '陈林浩', disabled: 0 },
-  { id: '4', name: '余惠勤', disabled: 0 },
-  { id: '5', name: '苟玉梅', disabled: 0 },
-  { id: '6', name: '张学友', disabled: 0 },
-  { id: '7', name: '周杰伦', disabled: 1 },
-];
-const times = [
-  { id: '1', name: '9:00', disabled: 0 },
-  { id: '2', name: '9:30', disabled: 1 },
-  { id: '3', name: '10:00', disabled: 1 },
-  { id: '4', name: '10:30', disabled: 0 },
-  { id: '5', name: '11:00', disabled: 0 },
-  { id: '6', name: '11:00', disabled: 0 },
-  { id: '7', name: '11:00', disabled: 0 },
-  { id: '8', name: '11:00', disabled: 1 },
-];
+let aptUsrId = '';
+let aptStoreId = '';
+let aptOrderId = '';
 
 const Appointment: FC = () => {
   // state
+  // 修改预约时间相关
+  const [times, setTimes] = useState<WorkTimeType[]>([]);
+  const [usrs, setUsrs] = useState<WorkTimeType[]>([]);
+  const [workTimes, setWorkTimes] = useState<WorkTimeType[]>([]);
+
   const [modalVisible, setModalVisible] = useState(false);
   const [detailsVisible, setDetailsVisible] = useState(false);
   const [details, setDetails] = useState<ColumnsType>();
@@ -97,7 +83,7 @@ const Appointment: FC = () => {
       pageSize: 20,
       page: 1,
       filters: {
-        status: 200,
+        state: 200,
       },
     }),
   );
@@ -122,34 +108,91 @@ const Appointment: FC = () => {
         if (res && res.status === 200) {
           setDataSource(res.data);
           setTotal(res.page.total);
-          console.log(res);
         }
       });
   };
   const statusDesc = (status?: number) => {
-    switch(status) {
-      case 100: return '待支付';
-      case 200: return '已预约';
-      case 300: return '进行中';
-      case 400: return '待接取';
-      case 500: return '已完成';
-      default: return '-';
+    switch (status) {
+      case 100:
+        return '待支付';
+      case 200:
+        return '已预约';
+      case 300:
+        return '进行中';
+      case 400:
+        return '待接取';
+      case 500:
+        return '已完成';
+      default:
+        return '-';
     }
-  }
+  };
 
   // events
   // 修改预约时间
-  const onModifyAppt = (storeId: string) => {
-    console.log(storeId);
-    Api.appt.getWorkTime<HT.BaseResponse<any>>(storeId).then(res => {
-      if(res && res.status === 200) {
-        console.log(res);
+  const onModifyAppt = (workDay?: string) => {
+    console.log('----', workDay);
+    message.loading('加载中...');
+    Api.appt
+      .getWorkTime<HT.BaseResponse<WorkTimeType[]>>({
+        storeId: aptStoreId,
+        workDay,
+      })
+      .then((res) => {
+        if (res && res.status === 200) {
+          // 筛选技师
+          const obj: Record<string, any> = {};
+          // 技师去重
+          const usrs = res.data.reduce(
+            (current: WorkTimeType[], next: WorkTimeType) => {
+              if (!obj[next.uname]) {
+                obj[next.uname] = true;
+                current.push({ ...next, orderId: '' });
+              }
+              return current;
+            },
+            [],
+          );
+          setUsrs(usrs);
+          // 筛选时间
+          const times = res.data.filter((item: WorkTimeType) => {
+            return item.uid === aptUsrId;
+          });
+          setTimes(times);
+          // 排班数据
+          setWorkTimes(res.data);
+          // 默认数据
+          aptTimeForm.setFieldsValue({
+            uid: aptUsrId,
+            date: moment(workDay),
+          });
+          setModalVisible(true);
+        }
+      });
+  };
+  const onChangeTime = async () => {
+    try {
+      const values = await aptTimeForm.validateFields();
+      if (!values.time) {
+        message.info('请选择预约时间！');
+      } else {
+        Api.appt
+          .trans<HT.BaseResponse<any>>({
+            orderId: aptOrderId,
+            workTime: values.time,
+            workDay: values.date.format('YYYY-MM-DD'),
+            userId: aptUsrId,
+          })
+          .then((res) => {
+            if (res && res.status === 200) {
+              message.success('已修改！');
+              aptTimeForm.resetFields();
+              getDataSource();
+              setModalVisible(false);
+            }
+          });
       }
-    })
-    // setModalVisible(true);
-  }
-  const onChangeTime = () => {
-    setModalVisible(false);
+    } catch (err) {}
   };
   // 删除预约记录
   const onDeleteAppointment = () => {
@@ -162,6 +205,14 @@ const Appointment: FC = () => {
       },
     });
   };
+  // 选择技师
+  const onTechnicianChange = (e: any) => {
+    let v = e.target.value;
+    const res = workTimes.filter((item) => {
+      return item.uid === v;
+    });
+    setTimes(res);
+  };
   // effects
   useEffect(() => {
     getDataSource();
@@ -172,7 +223,7 @@ const Appointment: FC = () => {
     {
       title: '预约状态',
       dataIndex: 'state',
-      render: (record: number) => statusDesc(record)
+      render: (record: number) => statusDesc(record),
     },
     { title: '预约时间', dataIndex: 'apptTime' },
     { title: '预约技师', dataIndex: 'userName' },
@@ -199,22 +250,31 @@ const Appointment: FC = () => {
       key: 'action',
       render: (record: ColumnsType) => (
         <Space size="small">
-          <Button type="primary" size="small" onClick={() =>　{
-            setDetails(record);
-            setDetailsVisible(true);
-          }}>
+          <Button
+            type="primary"
+            size="small"
+            onClick={() => {
+              setDetails(record);
+              setDetailsVisible(true);
+            }}
+          >
             查看详情
           </Button>
           <Button
-            disabled={page.filters.status === 2}
+            disabled={page.filters.state === 2}
             type="primary"
             size="small"
-            onClick={() => onModifyAppt(record.storeId)}
+            onClick={() => {
+              aptUsrId = record.userId;
+              aptStoreId = record.storeId;
+              aptOrderId = record.id;
+              onModifyAppt();
+            }}
           >
             修改预约时间
           </Button>
           <Button
-            disabled={page.filters.status === 2}
+            disabled={page.filters.state === 2}
             type="primary"
             size="small"
             danger
@@ -250,7 +310,7 @@ const Appointment: FC = () => {
             }))
           }
         >
-          <Form.Item label="状态：" name="status">
+          <Form.Item label="状态：" name="state">
             <Select style={{ width: 100 }}>
               <Option value={100}>待支付</Option>
               <Option value={200}>已预约</Option>
@@ -321,45 +381,61 @@ const Appointment: FC = () => {
       <Modal
         visible={modalVisible}
         title="修改预约时间"
-        onCancel={() => setModalVisible(false)}
+        onCancel={() => {
+          aptTimeForm.resetFields();
+          setModalVisible(false);
+        }}
         onOk={onChangeTime}
+        okButtonProps={{
+          htmlType: 'submit',
+        }}
+        destroyOnClose={true}
       >
         <Form form={aptTimeForm} autoComplete="off">
           <Form.Item label="预约日期" name="date">
             <DatePicker
+              allowClear={false}
+              onChange={(e) => {
+                onModifyAppt(e?.format('YYYY-MM-DD'));
+              }}
               disabledDate={(current) =>
                 current && current <= moment().subtract(1, 'days')
               }
             />
           </Form.Item>
-          <Form.Item label="预约时间" name="time" style={{ marginTop: -8 }}>
-            <Radio.Group>
-              {times.map((item, i) => (
-                <Radio.Button
-                  disabled={!!item.disabled}
-                  value={item.id}
-                  key={item.id}
-                  style={{ width: 70, marginRight: 8, marginBottom: 8 }}
-                >
-                  {item.name}
-                </Radio.Button>
-              ))}
-            </Radio.Group>
-          </Form.Item>
-          <Form.Item label="服务技师" name="technicianId">
-            <Radio.Group>
-              {teacheans.map((item, i) => (
-                <Radio.Button
-                  disabled={!!item.disabled}
-                  value={item.id}
-                  key={item.id}
-                  style={{ marginRight: 8, marginBottom: 8 }}
-                >
-                  {item.name}
-                </Radio.Button>
-              ))}
-            </Radio.Group>
-          </Form.Item>
+          {workTimes.length > 0 ? (
+            <>
+              <Form.Item label="服务技师" name="uid">
+                <Radio.Group onChange={onTechnicianChange}>
+                  {usrs.map((item, i) => (
+                    <Radio.Button
+                      value={item.uid}
+                      key={item.uid}
+                      style={{ marginRight: 8, marginBottom: 8 }}
+                    >
+                      {item.uname}
+                    </Radio.Button>
+                  ))}
+                </Radio.Group>
+              </Form.Item>
+              <Form.Item label="预约时间" name="time" style={{ marginTop: -8 }}>
+                <Radio.Group>
+                  {times.map((item, i) => (
+                    <Radio.Button
+                      disabled={!!item.orderId}
+                      value={item.workTime}
+                      key={item.workTime}
+                      style={{ width: 70, marginRight: 8, marginBottom: 8 }}
+                    >
+                      {item.workTime}
+                    </Radio.Button>
+                  ))}
+                </Radio.Group>
+              </Form.Item>
+            </>
+          ) : (
+            <div className="color-C5C5C5">当天没有排班哟，试试其他日期吧~</div>
+          )}
         </Form>
       </Modal>
       {/* 详情 */}
@@ -370,18 +446,40 @@ const Appointment: FC = () => {
         footer={null}
         width={1000}
       >
-        <Descriptions className="descriptions-wrapper" >
-          <Descriptions.Item label="预约编号">{details?.orderNo}</Descriptions.Item>
-          <Descriptions.Item label="预约状态">{statusDesc(details?.state)}</Descriptions.Item>
-          <Descriptions.Item label="预约时间">{details?.apptTime}</Descriptions.Item>
-          <Descriptions.Item label="预约用户">{details?.wcName}</Descriptions.Item>
-          <Descriptions.Item label="联系方式">{details?.phone}</Descriptions.Item>
-          <Descriptions.Item label="预约技师">{details?.userName}</Descriptions.Item>
-          <Descriptions.Item label="预约套餐">{details?.mainComboName}</Descriptions.Item>
-          <Descriptions.Item label="订单金额">{details?.totalMoney}元</Descriptions.Item>
-          <Descriptions.Item label="支付金额">{details?.payMoney}元</Descriptions.Item>
-          <Descriptions.Item label="宠物类型">{details?.petType === 1 ? '狗狗' : '猫猫'}</Descriptions.Item>
-          <Descriptions.Item label="支付时间">{details?.payTime || '-'}</Descriptions.Item>
+        <Descriptions className="descriptions-wrapper">
+          <Descriptions.Item label="预约编号">
+            {details?.orderNo}
+          </Descriptions.Item>
+          <Descriptions.Item label="预约状态">
+            {statusDesc(details?.state)}
+          </Descriptions.Item>
+          <Descriptions.Item label="预约时间">
+            {details?.apptTime}
+          </Descriptions.Item>
+          <Descriptions.Item label="预约用户">
+            {details?.wcName}
+          </Descriptions.Item>
+          <Descriptions.Item label="联系方式">
+            {details?.phone}
+          </Descriptions.Item>
+          <Descriptions.Item label="预约技师">
+            {details?.userName}
+          </Descriptions.Item>
+          <Descriptions.Item label="预约套餐">
+            {details?.mainComboName}
+          </Descriptions.Item>
+          <Descriptions.Item label="订单金额">
+            {details?.totalMoney}元
+          </Descriptions.Item>
+          <Descriptions.Item label="支付金额">
+            {details?.payMoney}元
+          </Descriptions.Item>
+          <Descriptions.Item label="宠物类型">
+            {details?.petType === 1 ? '狗狗' : '猫猫'}
+          </Descriptions.Item>
+          <Descriptions.Item label="支付时间">
+            {details?.payTime || '-'}
+          </Descriptions.Item>
         </Descriptions>
       </Modal>
     </div>
