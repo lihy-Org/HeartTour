@@ -33,7 +33,7 @@ class AppointmentController extends Controller
      *           @OA\Property(description="条数", property="pageSize", type="number", default="10"),
      *           @OA\Property(description="页数", property="page", type="number", default="1"),
      *           @OA\Property(description="关键字", property="searchKey", type="string", default=""),
-     *           required={"state"})
+     *           required={})
      *       )
      *     ),
      *     @OA\Response(
@@ -91,7 +91,7 @@ class AppointmentController extends Controller
             'storeId' => [Rule::exists('stores', 'id')],
             'startDate' => ['date_format:"Y-m-d H:i:s"'],
             'endDate' => ['date_format:"Y-m-d H:i:s"'],
-            'state' => [Rule::in(['0', '1', '2', '3'])],
+            'state' => [Rule::in([100, 200, 300, 400,500,501,502,600,601])],
             'searchKey' => ['nullable','string'],
             'pageSize' => ['integer', 'gt:0'],
             'page' => ['integer', 'gt:0'],
@@ -217,14 +217,20 @@ class AppointmentController extends Controller
             ));
         }
         $data = (object) $request->all();
-        return json_encode($this->appointmentRepository->GetWorktime($data)->get());
+        return json_encode(
+            array(
+                'status' => 200,
+                'msg' => '获取列表成功!',
+                'data' => $this->appointmentRepository->GetWorktime($data)->get(),
+            )
+        );
     }
 
     
     /**
      * @OA\Post(
      *     path="/api/admin/appt/trans",
-     *     tags={"门店管理系统-预约管理"},
+     *     tags={"总台管理系统-预约管理"},
      *     summary="修改预约信息",
      *     @OA\Parameter(name="token", in="header", @OA\Schema(type="string"), required=true, description="token"),
      *     @OA\RequestBody(
@@ -282,7 +288,7 @@ class AppointmentController extends Controller
             'workDay' => ['required', 'date_format:"Y-m-d"', 'after_or_equal:today'],
             'workTime' => ['required', 'date_format:"H:i"'],
             'userId' => ['required', Rule::exists('users', 'id')->where(function ($query) use ($request) {
-                $query->where('state', 0)->whereNotIn('type', [0, 1])->where('isBeautician', 1)->where('storeId', $request->user->storeId);
+                $query->where('state', 0)->whereNotIn('type', [0, 1])->where('isBeautician', 1);
             })],
             'orderId' => ['required', Rule::exists('orders', 'id')->where(function ($query) use ($request) {
                 $query->where('state', 200);
@@ -297,9 +303,81 @@ class AppointmentController extends Controller
                 'data' => $validator->errors(),
             ));
         }
-        $data = (object) $request->all();
+        $data = (object) $request->all();        
         return json_encode($this->appointmentRepository->TransferAppt($data));
     }
 
+    /**
+     * @OA\Post(
+     *     path="/api/admin/appt/changeState",
+     *     tags={"总台管理系统-预约管理"},
+     *     summary="待接取订单客户不点击完成时门店点击完成",
+     *     @OA\Parameter(name="token", in="header", @OA\Schema(type="string"), required=true, description="token"),
+     *     @OA\RequestBody(
+     *     @OA\MediaType(
+     *       mediaType="multipart/form-data",
+     *         @OA\Schema(
+     *           @OA\Property(description="套餐编号", property="orderId", type="string", default="dd"),
+     *           required={"orderId","state"})
+     *       )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="成功",
+     *         @OA\JsonContent(
+     *            type="object",
+     *            @OA\Property(
+     *                   example="200",
+     *                   property="status",
+     *                   description="状态码",
+     *                   type="number",
+     *               ),
+     *            @OA\Property(
+     *                  type="string",
+     *                  property="msg",
+     *                  example="成功!",
+     *              )
+     *         ),
+     *     ),
+     *      @OA\Response(
+     *         response=500,
+     *         description="失败",
+     *         @OA\JsonContent(
+     *            type="object",
+     *            @OA\Property(
+     *                   example="500",
+     *                   property="status",
+     *                   description="状态码",
+     *                   type="number",
+     *               ),
+     *           @OA\Property(
+     *                  type="string",
+     *                  property="msg",
+     *                  example="失败!",
+     *               )
+     *           )
+     *       ),
+     * )
+     */
+    public function ChangeState(Request $request)
+    {
+        $rules = [
+            'orderId' => ['required', Rule::exists('orders', 'id')->where(function ($query) use ($request) {
+                $query->where('state', '400');
+            })],
+        ];
+        $messages = [];
+        $validator = Validator::make($request->all(), $rules, $messages);
+        if ($validator->fails()) {
+            return json_encode(array(
+                'status' => 500,
+                'msg' => '验证失败!',
+                'data' => $validator->errors(),
+            ));
+        }
+        $data = (object) $request->all();
+        $data->state = 500;
+        return json_encode($this->appointmentRepository->ChangeState($data));
+    }
 
 }

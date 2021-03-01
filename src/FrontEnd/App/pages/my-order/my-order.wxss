@@ -1,0 +1,26 @@
+/* pages/my-order/my-order.wxss */
+.tab-style1{
+    background-color: #F7F8FA !important;
+}
+
+.index-tabs .van-tab--active .van-ellipsis {
+    color: #F63D24;
+  }
+  .businessCard{
+
+}
+.technicianHead{
+    width:120rpx;
+    height: 120rpx;
+    overflow: hidden;
+    border-radius: 60rpx;
+}
+.technicianHead image{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.pay-btn>button{
+    width: 100rpx !important;
+    border-radius: 16rpx;
+}

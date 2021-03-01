@@ -1,0 +1,12 @@
+/* pages/confirm-order/confirm-order.wxss */
+.van-cell1{
+    padding: 30rpx 12rpx 30rpx 12rpx !important;
+}
+.van-cell2{
+    padding-left: 12rpx !important;
+    padding-right: 12rpx !important;
+}
+.van-title1{
+    font-size: 32rpx;
+    color: #384359 ;
+}

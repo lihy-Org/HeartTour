@@ -208,9 +208,7 @@
                     "content": {
                         "multipart/form-data": {
                             "schema": {
-                                "required": [
-                                    "state"
-                                ],
+                                "required": [],
                                 "properties": {
                                     "storeId": {
                                         "description": "门店编号",
@@ -420,7 +418,7 @@
         "/api/admin/appt/trans": {
             "post": {
                 "tags": [
-                    "门店管理系统-预约管理"
+                    "总台管理系统-预约管理"
                 ],
                 "summary": "修改预约信息",
                 "operationId": "App\\Http\\Controllers\\Admin\\AppointmentController::TransferAppt",
@@ -520,6 +518,90 @@
                 }
             }
         },
+        "/api/admin/appt/changeState": {
+            "post": {
+                "tags": [
+                    "总台管理系统-预约管理"
+                ],
+                "summary": "待接取订单客户不点击完成时门店点击完成",
+                "operationId": "App\\Http\\Controllers\\Admin\\AppointmentController::ChangeState",
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "header",
+                        "description": "token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "orderId",
+                                    "state"
+                                ],
+                                "properties": {
+                                    "orderId": {
+                                        "description": "套餐编号",
+                                        "type": "string",
+                                        "default": "dd"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "状态码",
+                                            "type": "number",
+                                            "example": "200"
+                                        },
+                                        "msg": {
+                                            "type": "string",
+                                            "example": "成功!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "失败",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "状态码",
+                                            "type": "number",
+                                            "example": "500"
+                                        },
+                                        "msg": {
+                                            "type": "string",
+                                            "example": "失败!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/admin/combo/addOrUpdate": {
             "post": {
                 "tags": [
@@ -561,6 +643,11 @@
                                     },
                                     "comboType": {
                                         "description": "套餐类型：0-主套餐  1-增项套餐",
+                                        "type": "string",
+                                        "default": "dd"
+                                    },
+                                    "desc": {
+                                        "description": "套餐描述",
                                         "type": "string",
                                         "default": "dd"
                                     },
@@ -748,7 +835,7 @@
                 "tags": [
                     "总台管理系统-套餐管理"
                 ],
-                "summary": "分配门店",
+                "summary": "分配人员",
                 "operationId": "App\\Http\\Controllers\\Admin\\ComboController::SetBeautician",
                 "parameters": [
                     {
@@ -2154,6 +2241,78 @@
                 }
             }
         },
+        "/api/admin/user/getSelectList": {
+            "get": {
+                "tags": [
+                    "总台管理系统-人员管理"
+                ],
+                "summary": "人员选择列表",
+                "operationId": "App\\Http\\Controllers\\Admin\\UserController::GetSelectList",
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "header",
+                        "description": "token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "状态码",
+                                            "type": "number",
+                                            "example": "200"
+                                        },
+                                        "msg": {
+                                            "type": "string",
+                                            "example": "获取成功!"
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "example": "{'status':200,'msg':'\\u83b7\\u53d6\\u6210\\u529f!','data':[{'id':'855a4b22-ae76-404b-915b-9b3dcbdc9908','type':'15828242712','key':'1','value':'1','sort':1,'children':[{'id':'9638c2f2-4042-4748-8bbf-42ebdd835b9d','type':'15828242712','key':'44','value':'33','sort':1,'parentId':'855a4b22-ae76-404b-915b-9b3dcbdc9908','children':[]}]},{'id':'a58d75e9-e95f-4eb2-afa5-0f765d8f2a21','type':'15828242712','key':'2','value':'2','sort':1,'children':[]},{'id':'ae9b506b-51d0-4d6a-8ba7-861bf0e06e11','type':'15828242712','key':'11','value':'11','sort':1,'children':[]},{'id':'80270597-e8e9-4f03-9f49-f256063fb5fc','type':'15828242712','key':'22','value':'22','sort':1,'children':[]},{'id':'43287466-0b1b-46de-803d-efa3219814e7','type':'15828242712','key':'33','value':'22','sort':1,'children':[]}]}"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "失败",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "状态码",
+                                            "type": "number",
+                                            "example": "500"
+                                        },
+                                        "msg": {
+                                            "type": "string",
+                                            "example": "获取失败!"
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "example": "错误信息"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/admin/wechat/list": {
             "post": {
                 "tags": [
@@ -2420,7 +2579,7 @@
                     "技师公众号系统-授权"
                 ],
                 "summary": "登录",
-                "operationId": "App\\Http\\Controllers\\StoreSystem\\AccountController::Login",
+                "operationId": "App\\Http\\Controllers\\Beautician\\AccountController::Login",
                 "parameters": [
                     {
                         "name": "token",
@@ -2618,6 +2777,21 @@
                             "schema": {
                                 "required": [],
                                 "properties": {
+                                    "state": {
+                                        "description": "状态",
+                                        "type": "string",
+                                        "default": ""
+                                    },
+                                    "startDate": {
+                                        "description": "预约开始时间",
+                                        "type": "string",
+                                        "default": ""
+                                    },
+                                    "endDate": {
+                                        "description": "预约结束时间",
+                                        "type": "string",
+                                        "default": ""
+                                    },
                                     "pageSize": {
                                         "description": "条数",
                                         "type": "number",
@@ -2685,6 +2859,95 @@
                                         "data": {
                                             "type": "object",
                                             "example": "{'page':['\\u8bf7\\u8f93\\u5165\\u5355\\u4f4d\\u540d\\u79f0\\uff01']}"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/beaut/appt/changeState": {
+            "post": {
+                "tags": [
+                    "技师公众号系统-预约管理"
+                ],
+                "summary": "预约订单开始服务/预约订单待接取",
+                "operationId": "App\\Http\\Controllers\\Beautician\\AppointmentController::ChangeState",
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "header",
+                        "description": "token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "orderId",
+                                    "state"
+                                ],
+                                "properties": {
+                                    "orderId": {
+                                        "description": "套餐编号",
+                                        "type": "string",
+                                        "default": "dd"
+                                    },
+                                    "state": {
+                                        "description": "状态 300开始服务 400待接取",
+                                        "type": "string",
+                                        "default": "dd"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "状态码",
+                                            "type": "number",
+                                            "example": "200"
+                                        },
+                                        "msg": {
+                                            "type": "string",
+                                            "example": "成功!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "失败",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "状态码",
+                                            "type": "number",
+                                            "example": "500"
+                                        },
+                                        "msg": {
+                                            "type": "string",
+                                            "example": "失败!"
                                         }
                                     },
                                     "type": "object"
@@ -3141,6 +3404,90 @@
                                     },
                                     "userId": {
                                         "description": "技师ID",
+                                        "type": "string",
+                                        "default": "dd"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "状态码",
+                                            "type": "number",
+                                            "example": "200"
+                                        },
+                                        "msg": {
+                                            "type": "string",
+                                            "example": "成功!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "失败",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "状态码",
+                                            "type": "number",
+                                            "example": "500"
+                                        },
+                                        "msg": {
+                                            "type": "string",
+                                            "example": "失败!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/storesys/appt/changeState": {
+            "post": {
+                "tags": [
+                    "门店管理系统-预约管理"
+                ],
+                "summary": "待接取订单客户不点击完成时门店点击完成",
+                "operationId": "App\\Http\\Controllers\\StoreSystem\\AppointmentController::ChangeState",
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "header",
+                        "description": "token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "orderId",
+                                    "state"
+                                ],
+                                "properties": {
+                                    "orderId": {
+                                        "description": "套餐编号",
                                         "type": "string",
                                         "default": "dd"
                                     }

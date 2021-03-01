@@ -1,4 +1,4 @@
-<view class="container bg-F7F8FA" hover-class="none" hover-stop-propagation="false">
+<view class="bg-F7F8FA" hover-class="none" hover-stop-propagation="false">
   <!-- 导航栏 -->
   <lg-app-header title="个人中心" backgroundColor="linear-gradient(30deg, #FF6565, #F51358)" tintColor="#FFFFFF" />
   <view class="user-info d-flex position-relative" hover-class="none" hover-stop-propagation="false">
@@ -10,7 +10,7 @@
       <p class="color-FFFFFF f28 d-inline-block">心之旅已陪伴你520天~</p>
     </view>
     <view class="user-info-card position-absolute l-25 bg-FFFFFF flex-center " style="z-index:90;" hover-class="none" hover-stop-propagation="false">
-      <view class="flex-center flex-vertical">
+      <view class="flex-center flex-vertical" bind:tap="goMyOrder">
         <image class="mb-10" style="width:70rpx;height:70rpx;" src="../../assets/images/Myappointment.png"></image>
         <p class="color-999999 f32">我的预约</p>
       </view>
@@ -25,13 +25,13 @@
   </view>
   <view class="" style="margin-top: 125rpx;" hover-class="none" hover-stop-propagation="false">
       <block wx:for="{{functionalArea}}" wx:key="index">
-        <van-cell class="aaa" is-link border="{{ true }}" >
+        <van-cell class="aaa" is-link border="{{ true }}" bind:tap='goSelfPage' data-text='{{item.name}}' data-to='{{item.to}}'>
           <view slot="title" class="functional-area">
             <image class="mr-20" src="{{item.src}}" style="width:32rpx;height:32rpx;object-fit: cover;"></image>
             <view class="van-cell-text ">{{item.name}}</view>
           </view>
         </van-cell>
       </block>
-
   </view>
+  <van-button type="primary" color="#E7F3FC" round hairline block custom-style="width:550rpx;height:100rpx; color:#F63D24;margin-top:90rpx; margin-bottom:60rpx;font-size:32rpx;">退出登录</van-button>
 </view>

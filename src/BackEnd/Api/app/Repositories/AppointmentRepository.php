@@ -42,6 +42,12 @@ class AppointmentRepository
                 $allTime = bcadd($allTime, $combo->nursingTime);
                 $totalMoney = bcadd($totalMoney, $combo->salePrice, 2);
             }
+            if (bccomp($totalMoney, $data->totalMoney, 10) !== 0) {
+                return array(
+                    'status' => 500,
+                    'msg' => '预约失败，订单金额有误!',
+                    'data' => '');
+            }
             if ($mainCombo == null) {
                 return array(
                     'status' => 500,
@@ -102,7 +108,7 @@ class AppointmentRepository
                 'storeName' => $store->name,
                 'phone' => $wc->phone,
                 'mainComboName' => $mainCombo->name,
-                'apptTime' => $data->workDay . $apptUserWorktimes[0]->workTime,
+                'apptTime' => $data->workDay . ' ' . $apptUserWorktimes[0]->workTime,
                 'totalMoney' => $totalMoney,
                 'freight' => 0,
                 'payMoney' => $totalMoney,
@@ -177,7 +183,7 @@ class AppointmentRepository
         if (isset($data->workDay)) {
             $worktimes = $worktimes->where('workDay', $data->workDay);
         } else {
-            $worktimes = $worktimes->where('workDay', Carbon::now()->format('y-m-d'));
+            $worktimes = $worktimes->where('workDay', Carbon::now()->format('Y-m-d'));
         }
         if (isset($data->workTime)) {
             $worktimes = $worktimes->where('workTime', $data->workTime);
@@ -185,7 +191,7 @@ class AppointmentRepository
         if (isset($data->userId)) {
             $worktimes = $worktimes->where('uid', $data->userId);
         }
-        return $worktimes->select('storeId', 'uid', 'uname', 'workDay', 'workTime', 'orderId');
+        return $worktimes->orderBy('workTime')->select('storeId', 'uid', 'uname', 'workDay', 'workTime', 'orderId');
     }
 
     public function SetWorktime($data)
@@ -340,5 +346,11 @@ class AppointmentRepository
                 'msg' => '失败，订单状态不正确!',
                 'data' => '');
         }
+    }
+
+    public function Pay($data)
+    {
+        $payRepository = new PayRepository();
+        return $payRepository->Pay();
     }
 }

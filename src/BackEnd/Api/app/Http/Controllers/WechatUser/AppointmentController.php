@@ -33,6 +33,7 @@ class AppointmentController extends Controller
      *           @OA\Property(description="预约时间 9:00 必须是规定的整点", property="workTime", type="string", default="dd"),
      *           @OA\Property(description="预约宠物id", property="petId", type="string", default="dd"),
      *           @OA\Property(description="技师ID", property="userId", type="string", default="dd"),
+     *           @OA\Property(description="套餐总额", property="totalMoney", type="number", default="dd"),
      *           @OA\Property(description="门店ID", property="storeId", type="string", default="dd"),
      *           required={"comboIds","workDay","workTime","petId","userId","storeId"})
      *       )
@@ -78,6 +79,7 @@ class AppointmentController extends Controller
     public function Appointment(Request $request)
     {
         $rules = [
+            'totalMoney' => ['required', 'numeric'],
             'workDay' => ['required', 'date_format:"Y-m-d"', 'after_or_equal:today'],
             'workTime' => ['required', 'date_format:"H:i"'],
             'petId' => ['required', Rule::exists('pets', 'id')->where(function ($query) use ($request) {
@@ -189,5 +191,78 @@ class AppointmentController extends Controller
         }
         $data = (object) $request->all();
         return json_encode($this->appointmentRepository->GetWorktime($data)->get());
+    }
+
+    /**
+     * @OA\Post(
+     *     path="/api/appt/add",
+     *     tags={"小程序-预约"},
+     *     summary="预约",
+     *     @OA\Parameter(name="token", in="header", @OA\Schema(type="string"), required=true, description="token"),
+     *     @OA\RequestBody(
+     *     @OA\MediaType(
+     *       mediaType="multipart/form-data",
+     *         @OA\Schema(
+     *           @OA\Property(description="订单编号", property="orderId", type="string", default="dd"),     *
+     *           required={"orderId"})
+     *       )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="成功",
+     *         @OA\JsonContent(
+     *            type="object",
+     *            @OA\Property(
+     *                   example="200",
+     *                   property="status",
+     *                   description="状态码",
+     *                   type="number",
+     *               ),
+     *            @OA\Property(
+     *                  type="string",
+     *                  property="msg",
+     *                  example="成功!",
+     *              )
+     *         ),
+     *     ),
+     *      @OA\Response(
+     *         response=500,
+     *         description="失败",
+     *         @OA\JsonContent(
+     *            type="object",
+     *            @OA\Property(
+     *                   example="500",
+     *                   property="status",
+     *                   description="状态码",
+     *                   type="number",
+     *               ),
+     *           @OA\Property(
+     *                  type="string",
+     *                  property="msg",
+     *                  example="失败!",
+     *               )
+     *           )
+     *       ),
+     * )
+     */
+    public function Pay(Request $request)
+    {
+        $rules = [
+            'orderId' => ['required', Rule::exists('stores', 'id')->where(function ($query) {
+                $query->where('state', 0);
+            })],
+        ];
+        $messages = [];
+        $validator = Validator::make($request->all(), $rules, $messages);
+        if ($validator->fails()) {
+            return json_encode(array(
+                'status' => 500,
+                'msg' => '验证失败!',
+                'data' => $validator->errors(),
+            ));
+        }
+        $data = (object) $request->all();
+        $data->wcId = $request->user->id;
+        return json_encode($this->appointmentRepository->Appointment($data));
     }
 }

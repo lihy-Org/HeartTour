@@ -50,7 +50,7 @@ Route::prefix('api/admin')->middleware(['auth:sanctum', 'adminapi'])->group(func
     Route::post('/user/remove', [AdminUserController::class, 'Remove']);
     Route::post('/user/setStore', [AdminUserController::class, 'SetStore']);
     Route::post('/user/setManage', [AdminUserController::class, 'SetManage']);
-
+    Route::get('/user/getSelectList', [AdminUserController::class, 'GetSelectList']);
     //用户
     Route::post('/wechat/list', [AdminWechatUserController::class, 'GetList']);
     Route::post('/wechat/remove', [AdminWechatUserController::class, 'Remove']);
@@ -65,7 +65,7 @@ Route::prefix('api/admin')->middleware(['auth:sanctum', 'adminapi'])->group(func
     //预约管理
     Route::post('/appt/list', [AdminAppointmentController::class, 'GetList']);
     Route::post('/appt/getWorkTime', [AdminAppointmentController::class, 'GetWorkTime']);
-    Route::post('/appt/trans', [StoreSysAppointmentController::class, 'TransferAppt']);
+    Route::post('/appt/trans', [AdminAppointmentController::class, 'TransferAppt']);
 });
 
 // ---------------------------------门店---------------------------------------------

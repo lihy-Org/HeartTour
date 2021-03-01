@@ -15,7 +15,7 @@ class CreateComboTable extends Migration
     {
         Schema::create('combos', function (Blueprint $table) {
             $table->uuid('id')->primary;
-            $table->string('comboType')->comment('套餐类型：0-主套餐  1-增项套餐');
+            $table->integer('comboType')->comment('套餐类型：0-主套餐  1-增项套餐');
             $table->string('name')->comment('套餐名称');
             $table->string('desc')->comment('套餐描述');
             $table->decimal('originPrice',8,2)->comment('原价');
