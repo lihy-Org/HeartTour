@@ -20,7 +20,7 @@ class CreatePetTable extends Migration
             $table->string('wcId')->comment('小程序用户id');
             $table->string('avatar')->comment('宠物头像');
             $table->string('nickname')->comment('宠物昵称');
-            $table->string('gender')->comment('宠物性别');
+            $table->integer('gender')->comment('性别 0未知，1男，2女');     
             $table->integer('typeId')->comment('宠物种类编号');
             $table->integer('type')->comment('宠物种类');
             $table->string('varietyId')->comment('品种Id(配置id)');

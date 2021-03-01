@@ -21,7 +21,7 @@ class ComboController extends Controller
      * @OA\Post(
      *     path="/api/admin/combo/addOrUpdate",
      *     tags={"总台管理系统-套餐管理"},
-     *     summary="新增或修改套餐管理",
+     *     summary="新增或修改套餐",
      *     @OA\Parameter(name="token", in="header", @OA\Schema(type="string"), required=true, description="token"),
      *     @OA\RequestBody(
      *     @OA\MediaType(
