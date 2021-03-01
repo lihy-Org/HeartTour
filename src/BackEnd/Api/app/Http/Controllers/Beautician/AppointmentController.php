@@ -27,6 +27,7 @@ class AppointmentController extends Controller
      *       mediaType="multipart/form-data",
      *         @OA\Schema(
      *           @OA\Property(description="状态", property="state", type="string", default=""),
+     *           @OA\Property(description="小程序用户编号", property="wcId", type="string", default=""),
      *           @OA\Property(description="预约开始时间", property="startDate", type="string", default=""),
      *           @OA\Property(description="预约结束时间", property="endDate", type="string", default=""),
      *           @OA\Property(description="条数", property="pageSize", type="number", default="10"),

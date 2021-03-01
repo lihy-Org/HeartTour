@@ -17,7 +17,7 @@ class CreatePetTable extends Migration
             $table->uuid('id')->primary;
             $table->timestamps();
             $table->softDeletes();
-            $table->string('wcid')->comment('小程序用户id');
+            $table->string('wcId')->comment('小程序用户id');
             $table->string('avatar')->comment('宠物头像');
             $table->string('nickname')->comment('宠物昵称');
             $table->string('gender')->comment('宠物性别');

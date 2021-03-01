@@ -17,7 +17,7 @@ class CreateOrderDetailTable extends Migration
             $table->uuid('id')->primary;
             $table->uuid('orderId')->comment('订单ID');
             $table->string('orderNo')->comment('订单编号');
-            $table->uuid('goodId')->comment('套餐ID/商品ID/活体ID');
+            $table->uuid('goodsId')->comment('套餐ID/商品ID/活体ID');
             $table->Integer('num')->comment('商品数量');
             $table->unsignedDecimal('unitPrice', 11, 2)->comment('单价');
             $table->unsignedDecimal('totalMoney', 11, 2)->comment('总价');

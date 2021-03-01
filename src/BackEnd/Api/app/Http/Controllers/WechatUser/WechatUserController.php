@@ -68,8 +68,15 @@ class WechatUserController extends Controller
      * )
      */
     public function WeAppLogin(Request $request)
-    {
+    {      
         $code = $request->code;
+        if(!$code)
+        {
+            return json_encode(array(
+                'status' => 500,
+                'msg' => 'code错误',
+            ));
+        }
         // 根据 code 获取微信 openid 和 session_key
         $miniProgram = \EasyWeChat::miniProgram();
         $data = $miniProgram->auth->session($code);

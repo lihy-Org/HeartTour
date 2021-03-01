@@ -220,6 +220,16 @@
                                         "type": "string",
                                         "default": ""
                                     },
+                                    "userId": {
+                                        "description": "人员编号",
+                                        "type": "string",
+                                        "default": ""
+                                    },
+                                    "wcId": {
+                                        "description": "小程序用户编号",
+                                        "type": "string",
+                                        "default": ""
+                                    },
                                     "startDate": {
                                         "description": "预约开始时间",
                                         "type": "string",
@@ -3543,6 +3553,100 @@
                 }
             }
         },
+        "/api/appt/refund": {
+            "post": {
+                "tags": [
+                    "门店管理系统-预约管理"
+                ],
+                "summary": "退款",
+                "operationId": "App\\Http\\Controllers\\StoreSystem\\AppointmentController::Refund",
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "header",
+                        "description": "token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "orderId",
+                                    "reason"
+                                ],
+                                "properties": {
+                                    "orderId": {
+                                        "description": "订单编号",
+                                        "type": "string",
+                                        "default": "dd"
+                                    },
+                                    "reason": {
+                                        "description": "退款理由",
+                                        "type": "string",
+                                        "default": "dd"
+                                    },
+                                    "images": {
+                                        "description": "图片凭证",
+                                        "type": "string",
+                                        "default": "dd"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "状态码",
+                                            "type": "number",
+                                            "example": "200"
+                                        },
+                                        "msg": {
+                                            "type": "string",
+                                            "example": "成功!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "失败",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "状态码",
+                                            "type": "number",
+                                            "example": "500"
+                                        },
+                                        "msg": {
+                                            "type": "string",
+                                            "example": "失败!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/storesys/user/list": {
             "post": {
                 "tags": [
@@ -4029,6 +4133,11 @@
                                         "type": "string",
                                         "default": "dd"
                                     },
+                                    "totalMoney": {
+                                        "description": "套餐总额",
+                                        "type": "number",
+                                        "default": "dd"
+                                    },
                                     "storeId": {
                                         "description": "门店ID",
                                         "type": "string",
@@ -4169,6 +4278,172 @@
                                         "data": {
                                             "type": "object",
                                             "example": "{'page':['\\u8bf7\\u8f93\\u5165\\u5355\\u4f4d\\u540d\\u79f0\\uff01']}"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/appt/pay": {
+            "post": {
+                "tags": [
+                    "小程序-预约"
+                ],
+                "summary": "准备付款",
+                "operationId": "App\\Http\\Controllers\\WechatUser\\AppointmentController::Pay",
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "header",
+                        "description": "token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "orderId"
+                                ],
+                                "properties": {
+                                    "orderId": {
+                                        "description": "订单编号",
+                                        "type": "string",
+                                        "default": "dd"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "状态码",
+                                            "type": "number",
+                                            "example": "200"
+                                        },
+                                        "msg": {
+                                            "type": "string",
+                                            "example": "成功!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "失败",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "状态码",
+                                            "type": "number",
+                                            "example": "500"
+                                        },
+                                        "msg": {
+                                            "type": "string",
+                                            "example": "失败!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/appt/paid": {
+            "post": {
+                "tags": [
+                    "小程序-预约"
+                ],
+                "summary": "付款后更新状态",
+                "operationId": "App\\Http\\Controllers\\WechatUser\\AppointmentController::Paid",
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "header",
+                        "description": "token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "orderId"
+                                ],
+                                "properties": {
+                                    "orderId": {
+                                        "description": "订单编号",
+                                        "type": "string",
+                                        "default": "dd"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "状态码",
+                                            "type": "number",
+                                            "example": "200"
+                                        },
+                                        "msg": {
+                                            "type": "string",
+                                            "example": "成功!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "失败",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "状态码",
+                                            "type": "number",
+                                            "example": "500"
+                                        },
+                                        "msg": {
+                                            "type": "string",
+                                            "example": "失败!"
                                         }
                                     },
                                     "type": "object"

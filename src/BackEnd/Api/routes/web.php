@@ -88,6 +88,7 @@ Route::prefix('api/storesys')->middleware(['auth:sanctum', 'storeapi'])->group(f
     Route::post('/appt/list', [StoreSysAppointmentController::class, 'GetList']);
     Route::post('/appt/getWorkTime', [StoreSysAppointmentController::class, 'GetWorkTime']);
     Route::post('/appt/trans', [StoreSysAppointmentController::class, 'TransferAppt']);
+    Route::post('/appt/refund', [StoreSysAppointmentController::class, 'Refund']);
 });
 // --------------------------------小程序---------------------------------------------
 Route::post('api/user/login', [WechatUserController::class, 'WeAppLogin']);
@@ -111,13 +112,15 @@ Route::prefix('api')->middleware(['web', 'wechatapi'])->group(function () {
     Route::post('/combo/list', [ComboController::class, 'GetList']);
 
     //收货地址
-    Route::post('/address/update', [AddressController::class, 'AddOrUpdate']);
+    Route::post('/address/addOrUpdate', [AddressController::class, 'AddOrUpdate']);
     Route::get('/address/list', [AddressController::class, 'GetList']);
     Route::post('/address/remove', [AddressController::class, 'Remove']);
 
     //预约
     Route::post('/appt/add', [AppointmentController::class, 'Appointment']);
     Route::post('/appt/getWorktime', [AppointmentController::class, 'GetWorktime']);
+    Route::post('/appt/pay', [AppointmentController::class, 'Pay']);
+    Route::post('/appt/paid', [AppointmentController::class, 'Paid']);
 });
 
 // --------------------------------技师---------------------------------------------

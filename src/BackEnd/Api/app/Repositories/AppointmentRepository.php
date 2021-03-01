@@ -12,6 +12,7 @@ use App\Models\WechatUser;
 use App\Repositories\ConfigRepository;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class AppointmentRepository
 {
@@ -120,7 +121,7 @@ class AppointmentRepository
                 OrderDetail::create([
                     'orderId' => $order->id,
                     'orderNo' => $order->orderNo,
-                    'goodId' => $combo->id,
+                    'goodsId' => $combo->id,
                     'num' => 1,
                     'unitPrice' => $combo->salePrice,
                     'totalMoney' => $combo->salePrice,
@@ -164,6 +165,9 @@ class AppointmentRepository
         }
         if (isset($data->userId)) {
             $orders = $orders->where('userId', $data->userId);
+        }
+        if (isset($data->wcId)) {
+            $orders = $orders->where('wcId', $data->wcId);
         }
         if (isset($data->storeId)) {
             $orders = $orders->where('storeId', $data->storeId);
@@ -348,9 +352,80 @@ class AppointmentRepository
         }
     }
 
-    public function Pay($data)
+    //支付后更新状态
+    public function Paid($data)
     {
         $payRepository = new PayRepository();
-        return $payRepository->Pay();
+        $result = $payRepository->Paid($data);
+        //成功
+        if ($result->status == 200) {
+            try {
+                $orderDetails = OrderDetail::where('orderId', $data->orderId);
+                foreach ($orderDetails as $v) {
+                    $combo = Combo::find($v->goodsId);
+                    $combo->increment('sales');
+                }
+                return array(
+                    'status' => 200,
+                    'msg' => '支付成功!',
+                    'data' => '');
+            } catch (\Exception $exception) {
+                // dd($exception);
+                Db::rollback(); // 回滚事务
+                Log::warning($data->orderId . '订单商品销量增加错误出现' . $exception->getMessage());
+            }
+        } else {
+            return $result;
+        }
+
+    }
+
+    //退款
+    public function Refund($data)
+    {
+        //预约无需审核，操作创建退款记录 直接退款
+        $order = Order::find($data->orderId);
+        $refund = OrderRefund::where('orderId', $data->orderId)->first();
+        if (!$refund) {
+            $refund = OrderRefund::create([
+                'orderId' => $order->id,
+                'refundNo' => app('snowflake')->id(),
+                'wcId' => $order->wcId,
+                'wcName' => $order->wcName,
+                'type' => 1, //售后类型1仅退款2退货退款
+                'money' => $order->payMoney,
+                'reason' => $data->reason,
+                'images' => isset($data->images) ? $data->images : '',
+                'state' => 0,
+                'userId' => $data->userId,
+                'userName' => $data->userName,
+                'examineDate' => Carbon::now(),
+            ]);
+        }
+
+        $result = $payRepository->Refund($data);
+        if ($result->status == 200) {
+            try {
+                $refund->state = 300;
+                $refund->save();
+                $order->state = 502;
+                $order->save();
+                $orderDetails = OrderDetail::where('orderId', $data->orderId);
+                foreach ($orderDetails as $v) {
+                    $combo = Combo::find($v->goodsId);
+                    $combo->decrement('sales');
+                }
+                return array(
+                    'status' => 200,
+                    'msg' => '退款成功!',
+                    'data' => '');
+            } catch (\Exception $exception) {
+                // dd($exception);
+                Db::rollback(); // 回滚事务
+                Log::warning($data->orderId . '订单商品扣减销量错误出现' . $exception->getMessage());
+            }
+        } else {
+            return $result;
+        }
     }
 }

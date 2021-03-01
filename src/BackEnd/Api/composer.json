@@ -19,6 +19,7 @@
         "laravel/sanctum": "^2.8",
         "laravel/tinker": "^2.5",
         "overtrue/laravel-wechat": "^6.0",
+        "overtrue/wechat": "~5.0",
         "webpatser/laravel-uuid": "^3.0"
     },
     "require-dev": {
