@@ -1,7 +1,7 @@
 /*
  * @Author: Li-HONGYAO
  * @Date: 2021-01-18 11:15:25
- * @LastEditTime: 2021-02-23 14:46:37
+ * @LastEditTime: 2021-02-26 17:42:06
  * @LastEditors: Li-HONGYAO
  * @Description:
  * @FilePath: /Admin/src/pages/Combo/index.tsx
@@ -23,41 +23,53 @@ import {
   Radio,
   Select,
 } from 'antd';
-import { SearchOutlined, DeleteOutlined } from '@ant-design/icons';
+import { SearchOutlined } from '@ant-design/icons';
 import { ColumnProps } from 'antd/es/table';
 import UploadFile from '@/components/UploadFile';
-import VarietiesCascader from '@/components/VarietiesCascader';
-
-const { TextArea } = Input;
+import VarietiesTreeSelect from '@/components/VarietiesTreeSelect';
+import Api from '@/Api';
+import HT from '@/constants/interface';
 
 // 筛选条件
 type FilterParamsType = {
   searchKey?: string;
   comboType?: number /** 套餐类型：0-主套餐  1-增项套餐 */;
-  status?: number /** 上架状态 0-待上架 1-已上架 2-已下架 */;
+  state?: number /** 上架状态 0-已上架 1-已下架 2-已下架 */;
 };
 
 // 列表数据类型
 type ColumnsType = {
-  id: number /** 套餐id */;
+  id: string /** 套餐id */;
   comboType: number /** 套餐类型：0-主套餐  1-增项套餐 */;
-  varieties: string /** 适用品种 */;
+  varietys: {
+    varietyId: string;
+    variety: string;
+  }[] /** 适用品种 */;
+  users: {
+    userId: string;
+  }[] /** 分配技师 */;
   name: string /** 套餐名称 */;
   desc: string /** 套餐描述 */;
-  originPrice: number /** 原价 */;
-  salePrice: number /** 售价 */;
-  nursingTime: number /** 护理时长 */;
+  originPrice: string /** 原价 */;
+  salePrice: string /** 售价 */;
+  nursingTime: string /** 护理时长 */;
   bgImg: string /** 背景图 */;
   bannerImgs: string[] /** 轮播图 */;
   detailImgs: string[] /** 详情图 */;
   sales: number /** 累计销量 */;
-  status: number /** 上架状态 0-待上架 1-已上架 2-已下架 */;
+  state: number /** 上架状态 0-待上架 1-已上架 2-已下架 */;
+};
+
+// 人员（技师）选择列表项类型
+type UsrType = {
+  id: string;
+  name: string;
 };
 
 // 表单提交类型
 type ComboFormType = {
   comboType: number /** 套餐类型：0-主套餐  1-增项套餐 */;
-  varieties: string /** 适用品种 */;
+  varietyIds: string /** 适用品种 */;
   name: string /** 套餐名称 */;
   desc: string /** 套餐描述 */;
   originPrice: number /** 原价 */;
@@ -73,25 +85,23 @@ const layout = {
   wrapperCol: { span: 18 },
 };
 
-const stores = [
-  { id: 1, store: '李鸿耀' },
-  { id: 2, store: '郑云龙' },
-  { id: 3, store: '苟玉梅' },
-  { id: 4, store: '陈林浩' },
-  { id: 5, store: '王剑锋' },
-  { id: 6, store: '余惠勤' }
-];
-
 const { Option } = Select;
+const { TextArea } = Input;
+
+let comboId = '';
+
 const Combo: FC = () => {
   // state
   const [addModalVisible, setAddModalVisible] = useState(false);
   const [storeModalVisible, setStoreModalVisible] = useState(false);
+
+  const [usrs, setUsrs] = useState<UsrType[]>([]);
+
   const [form] = Form.useForm();
   const [comboForm] = Form.useForm();
   const [dataSource, setDataSource] = useState<ColumnsType[]>([]);
   const [total, setTotal] = useState(0);
-  const [checkedStores, setCheckedStores] = useState<number[]>([]);
+  const [checkedUsrs, setCheckedUsrs] = useState<string[]>([]);
   const [page, setPage] = useState<HT.TablePageDataType<FilterParamsType>>(
     () => ({
       pageSize: 20,
@@ -101,65 +111,100 @@ const Combo: FC = () => {
   );
 
   // methods
-  const getDataSource = () => {
+  const getDataSource = (loading: boolean) => {
     // console.log(filterParams);
-
-    message.loading('数据加载中...');
-    const tempArr: ColumnsType[] = [];
-    for (let i = 0; i < 88; i++) {
-      tempArr.push({
-        id: i,
-        comboType: i % 5 === 0 ? 0 : 1,
-        varieties: '雪纳瑞',
-        name: '洗护套餐A' + i,
-        desc: '很棒的套餐',
-        originPrice: 149,
-        salePrice: 99,
-        nursingTime: 80,
-        bgImg:
-          'https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=1253584741,538851489&fm=26&gp=0.jpg',
-        sales: 8888,
-        bannerImgs: [],
-        detailImgs: [],
-        status: Math.floor(i % 3),
+    loading && message.loading('数据加载中...');
+    Api.combo
+      .list<HT.BaseResponse<ColumnsType[]>>({
+        ...page.filters,
+        page: page.page,
+        pageSize: page.pageSize,
+      })
+      .then((res) => {
+        if (res && res.status === 200) {
+          setDataSource(res.data);
+          setTotal(res.page.total);
+        }
       });
-    }
-
-    setTimeout(() => {
-      setDataSource(tempArr);
-      setTotal(tempArr.length);
-      message.destroy();
-    }, 500);
   };
   // events
-  const showDetails = () => {
-    setAddModalVisible(true);
+  // 上架或下架 1-上架  2-下架
+  const onShelvesToggle = (comboId: string, flag: number) => {
+    Api.combo.shelvesToggle<HT.BaseResponse<any>>(comboId).then((res) => {
+      if (res && res.status === 200) {
+        message.info(flag === 1 ? '已上架' : '已下架');
+        getDataSource(false);
+      }
+    });
   };
-  const onAdd = () => {
-    message.success('操作成功');
-    setAddModalVisible(false);
+  // 添加或编辑
+  const addOrUpdate = async () => {
+    try {
+      const values = await comboForm.validateFields();
+      if (values) {
+        Api.combo
+          .addOrUpdate<HT.BaseResponse<any>>({
+            comboId: comboId || undefined,
+            ...values,
+            bannerImgs: [
+              'https://ss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=300654176,59887417&fm=15&gp=0.jpg',
+            ],
+            bgImg:
+              'https://ss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=300654176,59887417&fm=15&gp=0.jpg',
+            detailImgs: [
+              'https://ss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=300654176,59887417&fm=15&gp=0.jpg',
+            ],
+          })
+          .then((res) => {
+            if (res && res.status === 200) {
+              message.info(comboId ? '编辑成功' : '添加成功');
+              setAddModalVisible(false);
+              getDataSource(false);
+            }
+          });
+      }
+    } catch (err) {}
   };
   const onDistributeStore = () => {
-    if (checkedStores.length <= 0) {
+    if (checkedUsrs.length <= 0) {
       message.info('请选择您要分配的技师');
       return;
     }
-    message.success('已分配');
-    setCheckedStores([]);
-    setStoreModalVisible(false);
+    Api.combo
+      .setBeautician<HT.BaseResponse<any>>({
+        comboId,
+        userIds: checkedUsrs,
+      })
+      .then((res) => {
+        if (res && res.status === 200) {
+          message.success('已分配');
+          setCheckedUsrs([]);
+          setStoreModalVisible(false);
+          getDataSource(false);
+        }
+      });
+    console.log(checkedUsrs);
   };
 
   // effects
   useEffect(() => {
-    getDataSource();
+    getDataSource(true);
   }, [page]);
+  // 获取人员（技师）选择列表
+  useEffect(() => {
+    Api.personnel.getSelectList<HT.BaseResponse<UsrType[]>>().then((res) => {
+      if (res && res.status === 200) {
+        setUsrs(res.data);
+      }
+    });
+  }, []);
   // columns
   const columns: ColumnProps<ColumnsType>[] = [
     { title: '名称', dataIndex: 'name' },
     { title: '描述', dataIndex: 'desc' },
     {
       title: '状态',
-      dataIndex: 'status',
+      dataIndex: 'state',
       render: (record: number) => {
         switch (record) {
           case 0:
@@ -185,17 +230,13 @@ const Combo: FC = () => {
         }
       },
     },
-    { title: '适用品种', dataIndex: 'varieties' },
-
     {
       title: '原价',
       dataIndex: 'originPrice',
-      render: (record: number) => record.toFixed(2),
     },
     {
       title: '售价',
       dataIndex: 'salePrice',
-      render: (record: number) => record.toFixed(2),
     },
     { title: '累计销量', dataIndex: 'sales' },
     {
@@ -210,24 +251,56 @@ const Combo: FC = () => {
       render: (record: ColumnsType) => (
         <>
           <Space size="small" style={{ marginBottom: 8 }}>
-            <Button disabled={record.status === 2} type="primary" size="small" onClick={showDetails}>
+            <Button
+              type="primary"
+              size="small"
+              onClick={() => {
+                comboId = record.id;
+                comboForm.setFieldsValue({
+                  ...record,
+                  varietyIds: record.varietys.map((item) => item.varietyId),
+                });
+                setAddModalVisible(true);
+              }}
+            >
               详情/编辑
             </Button>
             <Button
               type="primary"
               size="small"
-              onClick={() => setStoreModalVisible(true)}
-              style={{width: 80}}
-              disabled={record.status !== 1}
+              onClick={() => {
+                comboId = record.id;
+                setCheckedUsrs(record.users.map((item) => item.userId));
+                setStoreModalVisible(true);
+              }}
+              style={{ width: 80 }}
             >
               分配技师
             </Button>
           </Space>
           <Space size="small">
-            <Button disabled={record.status !== 0} type="primary" size="small" style={{width: 80}}>
+            <Button
+              disabled={[1, 3].indexOf(record.state) !== -1}
+              type="primary"
+              size="small"
+              style={{ width: 80 }}
+              onClick={() => {
+                if (record.users.length === 0) {
+                  message.info('当前套餐还没有分配技师哟~');
+                  return;
+                }
+                onShelvesToggle(record.id, 1);
+              }}
+            >
               上架
             </Button>
-            <Button disabled={record.status !== 1} type="primary" size="small" style={{width: 80}}>
+            <Button
+              disabled={[0, 2].indexOf(record.state) !== -1}
+              type="primary"
+              size="small"
+              style={{ width: 80 }}
+              onClick={() => onShelvesToggle(record.id, 2)}
+            >
               下架
             </Button>
           </Space>
@@ -247,7 +320,11 @@ const Combo: FC = () => {
           type="primary"
           size="small"
           shape="round"
-          onClick={() => setAddModalVisible(true)}
+          onClick={() => {
+            comboId = '';
+            comboForm.resetFields();
+            setAddModalVisible(true);
+          }}
         >
           添加套餐
         </Button>
@@ -258,6 +335,7 @@ const Combo: FC = () => {
         <Form
           form={form}
           autoComplete="off"
+          initialValues={page.filters}
           onFinish={(value: FilterParamsType) =>
             setPage((prev) => ({
               ...prev,
@@ -273,11 +351,11 @@ const Combo: FC = () => {
             </Select>
           </Form.Item>
           {/* 上架状态 */}
-          <Form.Item label="上架状态" name="status">
+          <Form.Item label="上架状态" name="state">
             <Select placeholder="全部" allowClear style={{ width: 100 }}>
               <Option value={0}>待上架</Option>
               <Option value={1}>已上架</Option>
-              <Option value={1}>已下架</Option>
+              <Option value={2}>已下架</Option>
             </Select>
           </Form.Item>
           {/* 搜索 */}
@@ -333,40 +411,97 @@ const Combo: FC = () => {
         title="添加套餐"
         visible={addModalVisible}
         onCancel={() => setAddModalVisible(false)}
-        onOk={onAdd}
+        onOk={addOrUpdate}
+        okButtonProps={{
+          htmlType: 'submit',
+        }}
+        // destroyOnClose={true}
       >
         <Form {...layout} form={comboForm} autoComplete="off">
-          <Form.Item label="套餐类型" required name="comboType">
+          <Form.Item
+            label="套餐类型"
+            required
+            name="comboType"
+            rules={[{ required: true }]}
+          >
             <Radio.Group>
               <Radio value={0}>主套餐</Radio>
               <Radio value={1}>增项套餐</Radio>
             </Radio.Group>
           </Form.Item>
-          <Form.Item label="适用品种" required name="varieties">
-            <VarietiesCascader />
+          <Form.Item
+            label="适用品种"
+            required
+            name="varietyIds"
+            rules={[{ required: true }]}
+          >
+            <VarietiesTreeSelect />
           </Form.Item>
-          <Form.Item label="名称" required name="name">
+          <Form.Item
+            label="名称"
+            required
+            name="name"
+            rules={[{ required: true }]}
+          >
             <Input allowClear />
           </Form.Item>
-          <Form.Item label="描述" required name="desc">
+          <Form.Item
+            label="描述"
+            required
+            name="desc"
+            rules={[{ required: true }]}
+          >
             <TextArea allowClear />
           </Form.Item>
-          <Form.Item label="原价" required name="originPrice">
+          <Form.Item
+            label="原价"
+            required
+            name="originPrice"
+            rules={[{ required: true }]}
+          >
             <InputNumber />
           </Form.Item>
-          <Form.Item label="现价" required name="salePrice">
+          <Form.Item
+            label="现价"
+            required
+            name="salePrice"
+            rules={[{ required: true }]}
+          >
             <InputNumber />
           </Form.Item>
-          <Form.Item label="护理时长" required name="nursingTime">
-            <InputNumber /> 分钟
+          <Form.Item label="护理时长" required>
+            <Form.Item
+              noStyle
+              label="护理时长"
+              name="nursingTime"
+              rules={[{ required: true }]}
+            >
+              <InputNumber />
+            </Form.Item>
+            <span className="ml-10">分钟</span>
           </Form.Item>
-          <Form.Item label="背景图" required name="bgImgs">
+          <Form.Item
+            label="背景图"
+            required
+            name="bgImgs"
+            rules={[{ required: false }]}
+          >
             <UploadFile />
           </Form.Item>
-          <Form.Item label="轮播图" required name="bannerImgs">
+          <Form.Item
+            label="轮播图"
+            required
+            name="bannerImgs"
+            rules={[{ required: false }]}
+          >
             <UploadFile max={5} />
           </Form.Item>
-          <Form.Item label="详情图" required name="detailImgs">
+          <Form.Item
+            label="详情图"
+            required
+            name="detailImgs"
+            rules={[{ required: false }]}
+          >
             <UploadFile max={10} />
           </Form.Item>
         </Form>
@@ -377,21 +512,21 @@ const Combo: FC = () => {
         title="分配技师"
         onCancel={() => {
           setStoreModalVisible(false);
-          setCheckedStores([]);
+          setCheckedUsrs([]);
         }}
         footer={
           <Space>
             <Button
               type="primary"
               size="small"
-              onClick={() => setCheckedStores(stores.map((item) => item.id))}
+              onClick={() => setCheckedUsrs(usrs.map((item) => item.id))}
             >
               全选
             </Button>
             <Button
               type="primary"
               size="small"
-              onClick={() => setCheckedStores([])}
+              onClick={() => setCheckedUsrs([])}
             >
               重选
             </Button>
@@ -401,18 +536,19 @@ const Combo: FC = () => {
           </Space>
         }
         visible={storeModalVisible}
+        destroyOnClose={true}
       >
         <Checkbox.Group
           style={{ width: '100%' }}
-          value={checkedStores}
+          value={checkedUsrs}
           onChange={(values: any) => {
-            setCheckedStores(values);
+            setCheckedUsrs(values);
           }}
         >
           <Row>
-            {stores.map((item, i) => (
-              <Col span={6} key={`__check_store_${i}`}>
-                <Checkbox value={item.id}>{item.store}</Checkbox>
+            {usrs.map((item, i) => (
+              <Col span={4} key={`__check_store_${i}`}>
+                <Checkbox value={item.id}>{item.name}</Checkbox>
               </Col>
             ))}
           </Row>
