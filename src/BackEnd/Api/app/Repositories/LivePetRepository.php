@@ -3,7 +3,7 @@ namespace App\Repositories;
 
 use App\Models\GoodsDetail;
 use App\Models\LivePet;
-use App\Models\User;
+use App\Models\LivePetCertificate;
 use App\Repositories\ConfigRepository;
 use Illuminate\Support\Facades\DB;
 
@@ -13,16 +13,16 @@ class LivePetRepository
     public function AddOrUpdate($data)
     {
         $ConfigRepository = new ConfigRepository();
-        $lpet = null;
-        if (isset($data->lpetId)) {
-            $lpet = LivePet::find($data->lpetId);
+        $live = null;
+        if (isset($data->liveId)) {
+            $live = LivePet::find($data->liveId);
         }
-        if (!$lpet) {
+        if (!$live) {
             try {
                 $type = $ConfigRepository->GetOneById($data->typeId);
                 $variety = $ConfigRepository->GetOneById($data->varietyId);
                 DB::beginTransaction(); // 开启事务
-                $lpet = LivePet::create([
+                $live = LivePet::create([
                     'typeId' => $type->id,
                     'typeName' => $type->value,
                     'gender' => $data->gender,
@@ -42,11 +42,11 @@ class LivePetRepository
 
                 //保存证书
                 foreach ($data->certificates as $v) {
-                    LivePetCertificate::create(['gid' => $combo->id, 'url' => $v]);
+                    LivePetCertificate::create(['gid' => $live->id, 'url' => $v]);
                 }
                 //保存套餐详细图
                 foreach ($data->detailImgs as $v) {
-                    GoodsDetail::create(['gid' => $combo->id, 'url' => $v]);
+                    GoodsDetail::create(['gid' => $live->id, 'url' => $v]);
                 }
                 Db::commit(); // 提交事务
                 return array(
@@ -67,30 +67,30 @@ class LivePetRepository
                 $type = $ConfigRepository->GetOneById($data->typeId);
                 $variety = $ConfigRepository->GetOneById($data->varietyId);
                 DB::beginTransaction(); // 开启事务
-                $lpet->typeId = $type->id;
-                $lpet->typeName = $type->value;
-                $lpet->gender = $data->gender;
-                $lpet->vaccine = $data->vaccine;
-                $lpet->number = $data->number;
-                $lpet->color = $data->color;
-                $lpet->varietyId = $variety->id;
-                $lpet->variety = $variety->value;
-                $lpet->originPrice = $data->originPrice;
-                $lpet->salePrice = $data->salePrice;
-                $lpet->age = $data->age;
-                $lpet->shoulderHeight = $data->shoulderHeight;
-                $lpet->note = $data->note;
-                $lpet->avatar = $data->avatar;
-                $lpet->save();
-                LivePetCertificate::where('gid', $lpet->id)->delete();
-                GoodsDetail::where('gid', $lpet->id)->delete();
+                $live->typeId = $type->id;
+                $live->typeName = $type->value;
+                $live->gender = $data->gender;
+                $live->vaccine = $data->vaccine;
+                $live->number = $data->number;
+                $live->color = $data->color;
+                $live->varietyId = $variety->id;
+                $live->variety = $variety->value;
+                $live->originPrice = $data->originPrice;
+                $live->salePrice = $data->salePrice;
+                $live->age = $data->age;
+                $live->shoulderHeight = $data->shoulderHeight;
+                $live->note = $data->note;
+                $live->avatar = $data->avatar;
+                $live->save();
+                LivePetCertificate::where('gid', $live->id)->delete();
+                GoodsDetail::where('gid', $live->id)->delete();
                 //保存证书
                 foreach ($data->certificates as $v) {
-                    LivePetCertificate::create(['gid' => $lpet->id, 'url' => $v]);
+                    LivePetCertificate::create(['gid' => $live->id, 'url' => $v]);
                 }
                 //保存套餐详细图
                 foreach ($data->detailImgs as $v) {
-                    GoodsDetail::create(['gid' => $lpet->id, 'url' => $v]);
+                    GoodsDetail::create(['gid' => $live->id, 'url' => $v]);
                 }
                 Db::commit(); // 提交事务
                 return array(
@@ -109,63 +109,45 @@ class LivePetRepository
 
     public function GetList($data)
     {
-        $combo = Combo::with(array('Varietys' => function ($query) {
-            $query->select('id', 'cid', 'varietyId', 'variety');
-        }, 'Users' => function ($query) {
-            $query->select('id', 'cid', 'userId', 'userName');
-        }))->orderBy('created_at');
+        $live = LivePet::orderBy('created_at');
         if (isset($data->searchKey)) {
-            $combo = $combo->where(function ($query) use ($data) {
-                $query->where('name', 'like', '%' . $data->searchKey . '%')
-                    ->orWhere('desc', 'like', '%' . $data->searchKey . '%');
+            $live = $live->where(function ($query) use ($data) {
+                $query->where('number', 'like', '%' . $data->searchKey . '%')
+                    ->orWhere('variety', 'like', '%' . $data->searchKey . '%')
+                    ->orWhere('note', 'like', '%' . $data->searchKey . '%');
             });
         }
         if (isset($data->state)) {
-            $combo = $combo->where('state', $data->state);
+            $live = $live->where('state', $data->state);
         }
-        if (isset($data->comboType)) {
-            $combo = $combo->where('comboType', $data->comboType);
-        }
-        if (isset($data->storeId)) {
-            $combo = $combo->whereIn('id', function ($query) use ($data) {
-                $query->select('cid')
-                    ->from('comboBeauticians')
-                    ->whereIn('userId', function ($query) use ($data) {
-                        $query->select('id')
-                            ->from('users')
-                            ->where('storeId', $data->storeId);
-                    });
-            });
+        if (isset($data->typeId)) {
+            $live = $live->where('typeId', $data->typeId);
         }
         if (isset($data->varietyId)) {
-            $combo = $combo->whereIn('id', function ($query) use ($data) {
-                $query->select('cid')
-                    ->from('comboVarieties')
-                    ->where('varietyId', $data->varietyId);
-            });
+            $live = $live->where('varietyId', $data->varietyId);
         }
-        return $combo;
+        return $live;
     }
 
-    public function Remove($comboId)
+    public function Remove($liveId)
     {
-        $combo = Combo::find($comboId);
+        $live = LivePet::find($liveId);
         $state = 2;
-        if ($combo) {
-            if ($combo->state == 0) {
+        if ($live) {
+            if ($live->state == 0) {
                 $state = 1;
             }
 
-            if ($combo->state == 1) {
+            if ($live->state == 1) {
                 $state = 2;
             }
 
-            if ($combo->state == 2) {
+            if ($live->state == 2) {
                 $state = 1;
             }
 
-            $combo->state = $state;
-            $combo->save();
+            $live->state = $state;
+            $live->save();
             return array(
                 'status' => 200,
                 'msg' => '操作成功!',
@@ -173,35 +155,8 @@ class LivePetRepository
         }
         return array(
             'status' => 500,
-            'msg' => '操作失败,找不到该套餐!',
+            'msg' => '操作失败,找不到该活体!',
             'data' => '');
 
-    }
-
-    public function SetBeautician($data)
-    {
-        try {
-            $combo = Combo::find($data->comboId);
-            DB::beginTransaction(); // 开启事务
-            ComboBeautician::where('cid', $data->comboId)->delete();
-            if (isset($data->userIds)) {
-                foreach (array_unique($data->userIds) as $v) {
-                    $user = User::find($v);
-                    ComboBeautician::create(['cid' => $combo->id, 'cname' => $combo->name, 'userId' => $user->id, 'userName' => $user->name]);
-                }
-            }
-            Db::commit(); // 提交事务
-            return array(
-                'status' => 200,
-                'msg' => '设置成功!',
-                'data' => '');
-        } catch (\Exception $ex) {
-            dd($ex);
-            Db::rollback(); // 回滚事务
-            return array(
-                'status' => 500,
-                'msg' => '失败!' . $ex->getMessage(),
-                'data' => '');
-        }
     }
 }

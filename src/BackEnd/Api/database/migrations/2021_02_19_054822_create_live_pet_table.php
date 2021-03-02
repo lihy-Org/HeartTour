@@ -30,7 +30,7 @@ class CreateLivePetTable extends Migration
             $table->string('note')->comment('备注');
             $table->string('avatar')->comment('头像');
             $table->integer('sales')->default(0)->comment('累计销量');
-            $table->unsignedTinyInteger('state')->default(0)->comment('状态，0：待上架，1：已上架，1：已下架 ');
+            $table->unsignedTinyInteger('state')->default(0)->comment('状态，0：待上架，1：已上架，2：已下架 ，3：已下架');
             $table->timestamps();
             $table->softDeletes();
             $table->primary('id');

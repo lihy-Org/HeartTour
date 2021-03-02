@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Combo extends Model
+class LivePetCertificate extends Model
 {
     use HasFactory;
     use SoftDeletes;

@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\AccountController as AdminAccountController;
 use App\Http\Controllers\Admin\AppointmentController as AdminAppointmentController;
 use App\Http\Controllers\Admin\ComboController as AdminComboController;
 use App\Http\Controllers\Admin\ConfigController as AdminConfigController;
+use App\Http\Controllers\Admin\LivePetController as AdminLivePetController;
 use App\Http\Controllers\Admin\StoreController as AdminStoreController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Admin\WechatUserController as AdminWechatUserController;
@@ -58,7 +59,7 @@ Route::prefix('api/admin')->middleware(['auth:sanctum', 'adminapi'])->group(func
 
     //套餐管理
     Route::post('/combo/list', [AdminComboController::class, 'GetList']);
-    Route::post('/combo/addOrUpdate', [AdminComboController::class, 'addOrUpdate']);
+    Route::post('/combo/addOrUpdate', [AdminComboController::class, 'AddOrUpdate']);
     Route::post('/combo/remove', [AdminComboController::class, 'Remove']);
     Route::post('/combo/setBeautician', [AdminComboController::class, 'SetBeautician']);
 
@@ -66,6 +67,11 @@ Route::prefix('api/admin')->middleware(['auth:sanctum', 'adminapi'])->group(func
     Route::post('/appt/list', [AdminAppointmentController::class, 'GetList']);
     Route::post('/appt/getWorkTime', [AdminAppointmentController::class, 'GetWorkTime']);
     Route::post('/appt/trans', [AdminAppointmentController::class, 'TransferAppt']);
+
+    //活体
+    Route::post('/live/addOrUpdate', [AdminLivePetController::class, 'AddOrUpdate']);
+    Route::post('/live/remove', [AdminLivePetController::class, 'Remove']);
+    Route::post('/live/list', [AdminLivePetController::class, 'GetList']);
 });
 
 // ---------------------------------门店---------------------------------------------
