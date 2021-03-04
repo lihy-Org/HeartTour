@@ -89,7 +89,6 @@ class AppointmentController extends Controller
     public function GetList(Request $request)
     {
         $rules = [
-            'storeId' => ['required', Rule::exists('stores', 'id')],
             'startDate' => ['date_format:"Y-m-d H:i:s"'],
             'endDate' => ['date_format:"Y-m-d H:i:s"'],
             'state' => [Rule::in([100, 200, 300, 400, 500, 501, 502, 600, 601])],
@@ -142,6 +141,8 @@ class AppointmentController extends Controller
      *       mediaType="multipart/form-data",
      *         @OA\Schema(
      *           @OA\Property(description="日期", property="workDay", type="string", default=""),
+     *           @OA\Property(description="开始时间", property="startDate", type="string", default=""),
+     *           @OA\Property(description="结束时间", property="endDate", type="string", default=""),
      *           @OA\Property(description="时间", property="workTime", type="string", default=""),
      *           @OA\Property(description="用户编号", property="userId", type="string", default="")
      *          )
@@ -199,6 +200,8 @@ class AppointmentController extends Controller
     public function GetWorktime(Request $request)
     {
         $rules = [
+            'startDate' => ['nullable', 'date_format:"Y-m-d"'],
+            'endDate' => ['nullable', 'date_format:"Y-m-d"'],
             'workDay' => ['nullable', 'date_format:"Y-m-d"', 'after_or_equal:today'],
             'workTime' => ['nullable', 'date_format:"H:i"'],
             'userId' => ['nullable', Rule::exists('users', 'id')->where(function ($query) use ($request) {
@@ -216,7 +219,13 @@ class AppointmentController extends Controller
         }
         $data = (object) $request->all();
         $data->storeId = $request->user->storeId;
-        return json_encode($this->appointmentRepository->GetWorktime($data)->get());
+        return json_encode(
+            array(
+                'status' => 200,
+                'msg' => '获取列表成功!',
+                'data' => $this->appointmentRepository->GetWorktime($data)->get(),
+            )
+        );
     }
 
     /**

@@ -21,6 +21,7 @@ class CreateLivePetTable extends Migration
             $table->integer('vaccine')->comment('是否疫苗 1-已打疫苗 0-未打疫苗');
             $table->string('number')->comment('编号');
             $table->string('color')->comment('毛色 ');
+            $table->string('varietyIdStr')->comment('品种Id字符串');            
             $table->string('varietyId')->comment('品种Id(配置id)');
             $table->string('variety')->comment('宠物品种名称');
             $table->decimal('originPrice', 8, 2)->comment('原价');

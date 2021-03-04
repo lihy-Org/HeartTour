@@ -28,7 +28,6 @@ class LivePetController extends Controller
      *       mediaType="multipart/form-data",
      *         @OA\Schema(
      *           @OA\Property(description="活体id", property="liveId", type="string", default="dd"),
-     *           @OA\Property(description="活体类型Id", property="typeId", type="string", default="dd"),
      *           @OA\Property(description="性别 0未知，1男，2女", property="gender", type="number", default="dd"),
      *           @OA\Property(description="是否疫苗 1-已打疫苗 0-未打疫苗", property="vaccine", type="number", default="dd"),
      *           @OA\Property(description="编号", property="number", type="string", default="dd"),
@@ -42,7 +41,7 @@ class LivePetController extends Controller
      *           @OA\Property(description="头像", property="avatar", type="number", default="dd"),
      *           @OA\Property(description="证书", property="certificates", type="string", default="dd"),
      *           @OA\Property(description="详情图", property="detailImgs", type="string", default="dd"),
-     *           required={"typeId","gender","vaccine","number","color","varietyId","originPrice","salePrice","age","shoulderHeight","note","bgImg","avatar","certificates","detailImgs"})
+     *           required={"gender","vaccine","number","color","varietyId","originPrice","salePrice","age","shoulderHeight","note","bgImg","avatar","certificates","detailImgs"})
      *       )
      *     ),
      *     @OA\Response(
@@ -89,8 +88,7 @@ class LivePetController extends Controller
      */
     public function AddOrUpdate(Request $request)
     {
-        $rules = [
-            'typeId' => ['required', Rule::exists('configs', 'id')],
+        $rules = [            
             'gender' => ['required', 'numeric', Rule::in([0, 1, 2])],
             'vaccine' => ['required', 'numeric', Rule::in([0, 1])],
             'number' => ['required', 'string', Rule::unique('livePets')->ignore($request->liveId, 'id')],
@@ -176,7 +174,7 @@ class LivePetController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/api/admin/live/remove",
+     *     path="/api/admin/live/list",
      *     tags={"总台管理系统-活体管理"},
      *     summary="活体列表",
      *     @OA\Parameter(name="token", in="header", @OA\Schema(type="string"), required=true, description="token"),

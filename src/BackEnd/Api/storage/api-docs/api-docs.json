@@ -712,7 +712,7 @@
                     "总台管理系统-套餐管理"
                 ],
                 "summary": "新增或修改套餐",
-                "operationId": "App\\Http\\Controllers\\Admin\\ComboController::addOrUpdate",
+                "operationId": "App\\Http\\Controllers\\Admin\\ComboController::AddOrUpdate",
                 "parameters": [
                     {
                         "name": "token",
@@ -1452,13 +1452,13 @@
                 }
             }
         },
-        "/api/admin/livePet/addOrUpdate": {
+        "/api/admin/live/addOrUpdate": {
             "post": {
                 "tags": [
-                    "总台管理系统-9"
+                    "总台管理系统-活体管理"
                 ],
                 "summary": "新增或修改活体",
-                "operationId": "App\\Http\\Controllers\\Admin\\LivePetController::addOrUpdate",
+                "operationId": "App\\Http\\Controllers\\Admin\\LivePetController::AddOrUpdate",
                 "parameters": [
                     {
                         "name": "token",
@@ -1475,7 +1475,6 @@
                         "multipart/form-data": {
                             "schema": {
                                 "required": [
-                                    "typeId",
                                     "gender",
                                     "vaccine",
                                     "number",
@@ -1492,13 +1491,8 @@
                                     "detailImgs"
                                 ],
                                 "properties": {
-                                    "lpetId": {
+                                    "liveId": {
                                         "description": "活体id",
-                                        "type": "string",
-                                        "default": "dd"
-                                    },
-                                    "typeId": {
-                                        "description": "活体类型Id",
                                         "type": "string",
                                         "default": "dd"
                                     },
@@ -1613,6 +1607,205 @@
                                         "data": {
                                             "type": "object",
                                             "example": "错误信息"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/live/remove": {
+            "post": {
+                "tags": [
+                    "总台管理系统-活体管理"
+                ],
+                "summary": "活体上下架",
+                "operationId": "App\\Http\\Controllers\\Admin\\LivePetController::Remove",
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "header",
+                        "description": "token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "liveId"
+                                ],
+                                "properties": {
+                                    "liveId": {
+                                        "description": "活体编号",
+                                        "type": "number",
+                                        "default": "10"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "状态码",
+                                            "type": "number",
+                                            "example": "200"
+                                        },
+                                        "msg": {
+                                            "type": "string",
+                                            "example": "禁用/启用成功!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "失败",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "状态码",
+                                            "type": "number",
+                                            "example": "500"
+                                        },
+                                        "msg": {
+                                            "type": "string",
+                                            "example": "禁用/启用失败!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/live/list": {
+            "post": {
+                "tags": [
+                    "总台管理系统-活体管理"
+                ],
+                "summary": "活体列表",
+                "operationId": "App\\Http\\Controllers\\Admin\\LivePetController::GetList",
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "header",
+                        "description": "token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [],
+                                "properties": {
+                                    "typeId": {
+                                        "description": "活体类型编号",
+                                        "type": "string",
+                                        "default": ""
+                                    },
+                                    "varietyId": {
+                                        "description": "品种Id",
+                                        "type": "string",
+                                        "default": ""
+                                    },
+                                    "searchKey": {
+                                        "description": "关键字",
+                                        "type": "string",
+                                        "default": ""
+                                    },
+                                    "state": {
+                                        "description": "上架状态 0-待上架 1-已上架 2-已下架，3-已售",
+                                        "type": "string",
+                                        "default": ""
+                                    },
+                                    "pageSize": {
+                                        "description": "条数",
+                                        "type": "number",
+                                        "default": "10"
+                                    },
+                                    "page": {
+                                        "description": "页数",
+                                        "type": "number",
+                                        "default": "1"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "状态码",
+                                            "type": "number",
+                                            "example": "200"
+                                        },
+                                        "msg": {
+                                            "description": "提示信息",
+                                            "type": "string",
+                                            "example": "获取列表成功!"
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "example": ""
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "失败",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "状态码",
+                                            "type": "number",
+                                            "example": "500"
+                                        },
+                                        "msg": {
+                                            "description": "提示信息",
+                                            "type": "string",
+                                            "example": "获取列表失败!"
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "example": "{'page':['\\u8bf7\\u8f93\\u5165\\u5355\\u4f4d\\u540d\\u79f0\\uff01']}"
                                         }
                                     },
                                     "type": "object"
@@ -3949,16 +4142,8 @@
                     "content": {
                         "multipart/form-data": {
                             "schema": {
-                                "required": [
-                                    "storeId",
-                                    "post"
-                                ],
+                                "required": [],
                                 "properties": {
-                                    "storeId": {
-                                        "description": "门店编号",
-                                        "type": "number",
-                                        "default": "13888888888"
-                                    },
                                     "post": {
                                         "description": "职位",
                                         "type": "string",

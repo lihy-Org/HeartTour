@@ -29,14 +29,13 @@ class UserController extends Controller
      *     @OA\RequestBody(
      *     @OA\MediaType(
      *       mediaType="multipart/form-data",
-     *         @OA\Schema(
-     *           @OA\Property(description="门店编号", property="storeId", type="number", default="13888888888"),
+     *         @OA\Schema(     *         
      *           @OA\Property(description="职位", property="post", type="string", default=""),
      *           @OA\Property(description="性别", property="gender", type="string", default=""),
      *           @OA\Property(description="条数", property="pageSize", type="number", default="10"),
      *           @OA\Property(description="页数", property="page", type="number", default="1"),
      *           @OA\Property(description="关键字", property="searchKey", type="string", default=""),
-     *           required={"storeId","post"})
+     *           required={})
      *       )
      *     ),
      *     @OA\Response(
@@ -90,8 +89,7 @@ class UserController extends Controller
      */
     public function GetList(Request $request)
     {
-        $rules = [
-            'storeId' => ['uuid'],
+        $rules = [          
             'post' => ['string'],
             'gender' => ['string'],
             'searchKey' => ['nullable','string'],
@@ -108,7 +106,7 @@ class UserController extends Controller
             ));
         } else {
             $data = (object) $request->all();
-            $data = $request->user->storeId;
+            $data->storeId = $request->user->storeId;
             $takeNum = isset($data->pageSize) ? $data->pageSize : 10;
             $page = isset($data->page) ? $data->page : 1;
             $skipNum = ($page - 1) * $takeNum;

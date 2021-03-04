@@ -184,6 +184,11 @@ class AppointmentRepository
     public function GetWorktime($data)
     {
         $worktimes = UserWorktime::where('storeId', $data->storeId);
+        if (isset($data->startDate) && isset($data->endDate)) {
+            $worktimes = $worktimes->where(function ($query) use ($data) {
+                $query->where('workDay', '>=', $data->startDate)->where('workDay', '<=', $data->endDate);
+            });
+        }
         if (isset($data->workDay)) {
             $worktimes = $worktimes->where('workDay', $data->workDay);
         } else {

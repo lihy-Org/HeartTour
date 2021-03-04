@@ -49,7 +49,7 @@ class ConfigRepository
 
     public function GetOneById($configId)
     {
-        return Config::where('id', $configId)->orderBy('sort')->first();
+        return Config::find($configId);
     }
 
     public function GetOne($type, $key)
