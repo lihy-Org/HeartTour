@@ -90,6 +90,7 @@ const actions = {
   },
   delVisitedView({ commit, state }, view) {
     return new Promise(resolve => {
+      console.log(state)
       commit('DEL_VISITED_VIEW', view)
       resolve([...state.visitedViews])
     })

@@ -29,7 +29,25 @@
               :formatter="item.formatter"
               show-overflow-tooltip
               :fixed="item.fixed"
-            />
+            >
+              <!-- 是否有可选择的下拉框 -->
+              <template v-if="isSelect && item.canEdit">
+                <el-select
+                  v-model="scope.row.date"
+                  popper-class="role-option"
+                  placeholder="请选择"
+                  size="small"
+                  @change="dateHandleChange"
+                >
+                  <el-option
+                    v-for="(ele, index) in item.optionData"
+                    :key="index"
+                    :label="ele.name"
+                    :value="ele.value"
+                  />
+                </el-select>
+              </template>
+            </el-table-column>
             <el-table-column
               v-else-if="item.contentType==='img'"
               :key="key"
@@ -146,11 +164,19 @@ export default {
       type: Array,
       required: true
     },
+    isSelect: {
+      type: Boolean
+    },
     columns: {
       type: Array,
       required: true
     },
     selectedChange: {
+      type: Function,
+      /* eslint-disable-next-line */
+      default: () => { },
+    },
+    dateHandleChange: {
       type: Function,
       /* eslint-disable-next-line */
       default: () => { },
@@ -184,6 +210,8 @@ export default {
     }
   },
   mounted() {
+    console.log(this)
+    console.log(this.tableData)
     const mHeight = this.$refs['table-wrap'].offsetHeight
     this.$nextTick(() => {
       this.$set(this, 'mHeight', mHeight)
