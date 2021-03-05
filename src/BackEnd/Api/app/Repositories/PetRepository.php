@@ -25,7 +25,7 @@ class PetRepository
                 }
                 $topvariety = $ConfigRepository->GetTopConfig($variety->id);
                 $pet = Pet::create([
-                    'wcid' => $data->wcid,
+                    'wcId' => $data->wcId,
                     'avatar' => $data->avatar,
                     'nickname' => $data->nickname,
                     'gender' => $data->gender,
@@ -93,8 +93,8 @@ class PetRepository
                     ->orWhere('variety', 'like', '%' . $data->searchKey . '%');
             });
         }
-        if (isset($data->wcid)) {
-            $pets = $pets->where('wcid', $data->wcid);
+        if (isset($data->wcId)) {
+            $pets = $pets->where('wcId', $data->wcId);
         }
         if (isset($data->varietyId)) {
             $pets = $pets->where('varietyId', $data->varietyId);

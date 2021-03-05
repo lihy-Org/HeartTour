@@ -1,10 +1,10 @@
 /*
  * @Author: Li-HONGYAO
  * @Date: 2021-02-24 18:24:11
- * @LastEditTime: 2021-02-25 16:24:15
+ * @LastEditTime: 2021-03-01 17:35:25
  * @LastEditors: Li-HONGYAO
  * @Description:
- * @FilePath: /Admin/src/pages/Configs/Varieties.tsx
+ * @FilePath: /Admin/src/components/ConfigTree/index.tsx
  */
 
 import React, { Children, FC, memo, useEffect, useState } from 'react';
@@ -15,13 +15,14 @@ import {
   DeleteOutlined,
 } from '@ant-design/icons';
 import Api from '@/Api';
-import { kVARIETIES } from '@/constants';
 import HT from '@/constants/interface';
 interface IProps {
   visible: boolean;
+  type: string;
+  title: string;
   onCancel: () => void;
 }
-const Varieties: FC<IProps> = (props) => {
+const ConfigTree: FC<IProps> = (props) => {
   const [inputVisible, setInputVisible] = useState(false);
   const [inputValue, setInputValue] = useState('');
   const [treeData, setTreeData] = useState<any[]>([]);
@@ -45,7 +46,7 @@ const Varieties: FC<IProps> = (props) => {
   // methods
   const getVarieties = (loading: boolean) => {
     loading && message.loading('加载中...');
-    Api.config.get<HT.BaseResponse<any>>(kVARIETIES).then((res) => {
+    Api.config.get<HT.BaseResponse<any>>(props.type).then((res) => {
       if (res && res.status === 200) {
         const data = recursive(res.data);
         setTreeData(data);
@@ -60,7 +61,7 @@ const Varieties: FC<IProps> = (props) => {
       message.loading('处理中...');
       Api.config
         .addOrUpdate<HT.BaseResponse<any>>({
-          type: kVARIETIES,
+          type: props.type,
           key: inputValue,
           value: inputValue,
           parentId: parentId || undefined,
@@ -78,10 +79,10 @@ const Varieties: FC<IProps> = (props) => {
     }
   };
   const onDelete = (configId: string) => {
-    Modal.info({
-      closable: true,
-      content: '您确定要删除么？',
+    Modal.confirm({
+      content: '删除该项会连同子类一起删除，您确定要删除么？',
       okText: '确定',
+      cancelText: '点错了',
       onOk: () => {
         message.info('处理中...');
         Api.config.remove<HT.BaseResponse<any>>(configId).then((res) => {
@@ -105,7 +106,7 @@ const Varieties: FC<IProps> = (props) => {
   return (
     <Modal
       maskClosable={false}
-      title="类型配置"
+      title={props.title}
       visible={props.visible}
       width={800}
       onCancel={props.onCancel}
@@ -190,4 +191,4 @@ const Varieties: FC<IProps> = (props) => {
   );
 };
 
-export default memo(Varieties);
+export default memo(ConfigTree);

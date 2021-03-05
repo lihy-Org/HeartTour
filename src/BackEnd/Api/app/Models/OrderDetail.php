@@ -13,5 +13,5 @@ class OrderDetail extends Model
     use \App\Http\Traits\UseUuid;
     protected $table = 'orderDetails';
     protected $primaryKey = 'id';
-    protected $fillable = ['orderId','orderNo','goodId','num','unitPrice','totalMoney'];
+    protected $fillable = ['orderId','orderNo','goodsId','num','unitPrice','totalMoney'];
 }

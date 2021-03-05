@@ -1,7 +1,7 @@
 /*
  * @Author: Li-HONGYAO
  * @Date: 2021-01-28 18:18:09
- * @LastEditTime: 2021-02-25 16:22:52
+ * @LastEditTime: 2021-03-01 17:33:47
  * @LastEditors: Li-HONGYAO
  * @Description:
  * @FilePath: /Admin/src/components/TagModal/index.tsx
@@ -93,7 +93,14 @@ const TagModal: FC<IProps> = (props) => {
                 key={`tag__${i}`}
                 closable
                 onClose={() => {
-                  removeTag(tag.id);
+                  Modal.confirm({
+                    content: '您确定要删除么？',
+                    okText: '确定',
+                    cancelText: '点错了',
+                    onOk: () => {
+                      removeTag(tag.id);
+                    },
+                  });
                 }}
                 style={{ display: 'inline-block' }}
               >

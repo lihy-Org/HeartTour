@@ -21,7 +21,7 @@ class ComboController extends Controller
      * @OA\Post(
      *     path="/api/admin/combo/addOrUpdate",
      *     tags={"总台管理系统-套餐管理"},
-     *     summary="新增或修改套餐管理",
+     *     summary="新增或修改套餐",
      *     @OA\Parameter(name="token", in="header", @OA\Schema(type="string"), required=true, description="token"),
      *     @OA\RequestBody(
      *     @OA\MediaType(
@@ -83,7 +83,7 @@ class ComboController extends Controller
      *     )
      * )
      */
-    public function addOrUpdate(Request $request)
+    public function AddOrUpdate(Request $request)
     {
         $rules = [
             'name' => ['required', 'string', Rule::unique('combos')->ignore($request->comboId, 'id')],
@@ -315,9 +315,9 @@ class ComboController extends Controller
         $rules = [
             'storeId' => ['exists:stores,id', 'nullable'],
             'varietyId' => ['nullable'],
-            'comboType' => [Rule::in(['0', '1'])],
-            'state' => [Rule::in(['0', '1', '2'])],
-            'searchKey' => ['nullable','string'],
+            'comboType' => ['nullable', Rule::in([0, 1])],
+            'state' => ['nullable', Rule::in([0, 1, 2])],
+            'searchKey' => ['nullable', 'string'],
             'pageSize' => ['integer', 'gt:0'],
             'page' => ['integer', 'gt:0'],
         ];
@@ -338,7 +338,7 @@ class ComboController extends Controller
             $total = $combos->count();
             $list = $combos->skip($skipNum)->take($takeNum)->get();
             $pageTotal = $total / $takeNum;
-            $pageRes=(object)[];
+            $pageRes = (object) [];
             $pageRes->total = $total;
             $pageRes->pageNo = $page;
             $pageRes->pageSize = $takeNum;

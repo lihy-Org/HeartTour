@@ -17,7 +17,7 @@ class CreateOrderRefundTable extends Migration
             $table->uuid('id')->primary;
             $table->uuid('orderId')->comment('订单id');
             $table->string('refundNo')->comment('退款编号');
-            $table->uuid('wcid')->comment('小程序用户id');
+            $table->uuid('wcId')->comment('小程序用户id');
             $table->uuid('wcName')->comment('小程序名称');
             $table->unsignedTinyInteger('type')->default(1)->comment('售后类型1仅退款2退货退款');
             $table->unsignedDecimal('money', 11, 2)->comment('退款金额');

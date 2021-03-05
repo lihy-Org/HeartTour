@@ -27,6 +27,8 @@ class AppointmentController extends Controller
      *       mediaType="multipart/form-data",
      *         @OA\Schema(
      *           @OA\Property(description="状态", property="state", type="string", default=""),
+     *           @OA\Property(description="人员编号", property="userId", type="string", default=""),
+     *           @OA\Property(description="小程序用户编号", property="wcId", type="string", default=""),
      *           @OA\Property(description="预约开始时间", property="startDate", type="string", default=""),
      *           @OA\Property(description="预约结束时间", property="endDate", type="string", default=""),
      *           @OA\Property(description="条数", property="pageSize", type="number", default="10"),
@@ -368,5 +370,82 @@ class AppointmentController extends Controller
         $data = (object) $request->all();
         $data->state = 500;
         return json_encode($this->appointmentRepository->ChangeState($data));
+    }
+
+    /**
+     * @OA\Post(
+     *     path="/api/storesys/appt/refund",
+     *     tags={"门店管理系统-预约管理"},
+     *     summary="退款",
+     *     @OA\Parameter(name="token", in="header", @OA\Schema(type="string"), required=true, description="token"),
+     *     @OA\RequestBody(
+     *     @OA\MediaType(
+     *       mediaType="multipart/form-data",
+     *         @OA\Schema(
+     *           @OA\Property(description="订单编号", property="orderId", type="string", default="dd"),
+     *           @OA\Property(description="退款理由", property="reason", type="string", default="dd"),
+     *           @OA\Property(description="图片凭证", property="images", type="string", default="dd"),
+     *           required={"orderId","reason"})
+     *       )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="成功",
+     *         @OA\JsonContent(
+     *            type="object",
+     *            @OA\Property(
+     *                   example="200",
+     *                   property="status",
+     *                   description="状态码",
+     *                   type="number",
+     *               ),
+     *            @OA\Property(
+     *                  type="string",
+     *                  property="msg",
+     *                  example="成功!",
+     *              )
+     *         ),
+     *     ),
+     *      @OA\Response(
+     *         response=500,
+     *         description="失败",
+     *         @OA\JsonContent(
+     *            type="object",
+     *            @OA\Property(
+     *                   example="500",
+     *                   property="status",
+     *                   description="状态码",
+     *                   type="number",
+     *               ),
+     *           @OA\Property(
+     *                  type="string",
+     *                  property="msg",
+     *                  example="失败!",
+     *               )
+     *           )
+     *       ),
+     * )
+     */
+    public function Refund(Request $request)
+    {
+        $rules = [
+            'orderId' => ['required', Rule::exists('stores', 'id')->where(function ($query) use ($request) {
+                $query->where('storeId', $request->user->storeId)->where('type', 1)->where('state', 200);
+            })],
+            'reason' => ['required', 'string'],
+        ];
+        $messages = [];
+        $validator = Validator::make($request->all(), $rules, $messages);
+        if ($validator->fails()) {
+            return json_encode(array(
+                'status' => 500,
+                'msg' => '验证失败!',
+                'data' => $validator->errors(),
+            ));
+        }
+        $data = (object) $request->all();
+        $data->userId = $request->user->id;
+        $data->userName = $request->user->name;
+        return json_encode($this->appointmentRepository->Refund($data));
     }
 }
