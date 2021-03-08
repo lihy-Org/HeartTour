@@ -21,6 +21,7 @@
       :total="total"
       :current-change="currentChange"
       :size-change="sizeChange"
+      :is-select="isSelect"
     />
   </div>
 </template>
@@ -29,7 +30,7 @@
 import Form from '@/components/Form/index'
 import Btns from '@/components/Btns/index'
 import Table from '@/components/Table/index'
-import { getStaffShiftList } from '@/api/personManage'
+import { getStaffShiftList, getUsersList } from '@/api/personManage'
 import moment from 'moment'
 import 'moment/locale/zh-cn'
 
@@ -72,8 +73,8 @@ export default {
        * @param searchFormItems 搜索内容组
        */
       searchForm: {
-        placeId: '',
-        dateVal: []
+        workDay: [],
+        userId: ''
       },
       searchFormItems: [
         {
@@ -84,7 +85,7 @@ export default {
           separator: '至',
           startPlaceholder: '开始时间',
           endPlaceholder: '结束时间',
-          value: 'dateVal',
+          value: 'workDay',
           pickerOptions: pickerOptions,
           change: val => this.changeDate(val)
         },
@@ -93,14 +94,22 @@ export default {
           size: 'mini',
           placeholder: '请选择人员',
           label: '人员 :',
-          value: 'placeId',
+          value: 'userId',
           clearable: true,
-          list: () => this.communitys,
+          list: () => this.usersList,
           change: () => this.currentChange(1),
           filterable: true,
           style: 'width: 120px'
         }
       ],
+
+      usersList: [],
+
+      // 是否table展示下拉框
+      isSelect: false,
+
+      // 是否首次进入该页面，控制查询按钮的触发
+      isFirstIn: true,
 
       /**
        * 顶部按钮组
@@ -111,7 +120,14 @@ export default {
           type: 'success',
           size: 'small',
           value: '查询',
-          click: () => this.aaa(),
+          click: () => this.seachList(),
+          icon: 'el-icon-search'
+        },
+        {
+          type: 'success',
+          size: 'small',
+          value: '编辑人员班表',
+          click: () => this.setRota(),
           icon: 'el-icon-search'
         }
       ],
@@ -131,7 +147,7 @@ export default {
       columns: [
         {
           label: '姓名',
-          prop: 'name',
+          prop: 'uname',
           fixed: true
         },
         {
@@ -150,7 +166,7 @@ export default {
   created() {
     console.log('排班')
     this.setTimeFn()
-    this.getStaffShiftList()
+    this.getUsersList()
   },
   methods: {
     /**
@@ -158,27 +174,31 @@ export default {
      * 从当日0点起，至结束日期23.59.59
      */
     setTimeFn() {
-      this.searchForm.dateVal[0] = new Date(new Date().toLocaleDateString()).getTime()
-      this.searchForm.dateVal[1] = new Date(new Date().toLocaleDateString()).getTime() + 7 * 24 * 60 * 60 * 1000 - 1000
-      this.changeDate(this.searchForm.dateVal)
+      this.searchForm.workDay[0] = new Date(new Date().toLocaleDateString()).getTime()
+      this.searchForm.workDay[1] = new Date(new Date().toLocaleDateString()).getTime() + 7 * 24 * 60 * 60 * 1000 - 1000
+      console.log(this.searchForm.workDay)
+      this.changeDate(this.searchForm.workDay)
     },
 
-    // 人员班次列表
-    getStaffShiftList() {
-      this.tableLoading = true
-      getStaffShiftList().then(res => {
-        this.tableLoading = false
-        this.tableData = res.data
-      }).catch(err => {
-        this.tableLoading = false
-        this.$message({
-          message: err.msg,
-          type: 'error'
-        })
+    // 获取人员列表
+    getUsersList() {
+      const data = {}
+      getUsersList(data).then(res => {
+        console.log(res.data)
+        this.usersList = res.data.map(item => ({
+          value: item.id,
+          label: item.name
+        }))
+        console.log(this.usersList)
       })
     },
+
     // 时间修改触发
     changeDate(val) {
+      this.getRota(val)
+    },
+    // 获取班表
+    getRota(val) {
       if (!val) { return }
       const timeDifference = (val[1] + 1000 - val[0]) / (24 * 60 * 60 * 1000)
       console.log(val)
@@ -186,32 +206,47 @@ export default {
       if (timeDifference > 31) {
         this.$message.error('最多只能查询一个月数据')
       } else {
-        this.tableLoading = true
-        getStaffShiftList().then(res => {
-          // 每次切换时间，数据重置
-          this.columns = this.$options.data().columns
-
-          this.tableLoading = false
-          this.tableData = res.data
-
-          const dateArr = []
-          for (let i = 0; i < timeDifference; i++) {
-            const dateStamp = moment(val[0] + i * 1000 * 60 * 60 * 24)
-            const obj = {
-              label: `${dateStamp.format('MM-DD')} / ${this.getWeek(dateStamp.day())}`,
-              prop: 'staffShift'
-            }
-            dateArr.push(obj)
+        if (this.isFirstIn) {
+          this.tableLoading = true
+          const data = {
+            startDate: moment(this.searchForm.workDay[0]).format('YYYY-MM-DD'),
+            endDate: moment(this.searchForm.workDay[1]).format('YYYY-MM-DD')
           }
-          this.columns.splice(2, 0, ...dateArr)
-        }).catch(err => {
-          this.tableLoading = false
-          this.$message({
-            message: err.msg,
-            type: 'error'
+          if (this.searchForm.userId) {
+            data.userId = this.searchForm.userId
+          }
+          getStaffShiftList(data).then(res => {
+            // 每次切换时间，数据重置
+            this.columns = this.$options.data().columns
+
+            this.tableLoading = false
+            this.tableData = res.data
+
+            const dateArr = []
+            for (let i = 0; i < timeDifference; i++) {
+              const dateStamp = moment(val[0] + i * 1000 * 60 * 60 * 24)
+              const obj = {
+                label: `${dateStamp.format('MM-DD')} / ${this.getWeek(dateStamp.day())}`,
+                prop: 'staffShift',
+                canEdit: true
+              }
+              dateArr.push(obj)
+            }
+            console.log(dateArr)
+            this.columns.splice(2, 0, ...dateArr)
+            this.isFirstIn = false
+          }).catch(err => {
+            console.log(err)
+            this.isFirstIn = false
+            this.tableLoading = false
           })
-        })
+        }
       }
+    },
+
+    // 编辑人员班表
+    setRota() {
+      this.isSelect = true
     },
 
     // 时间戳转汉字的星期
@@ -240,14 +275,16 @@ export default {
      */
     currentChange(val) {
       this.pagination.page = val
-      this.getTableData()
+      this.getRota(this.searchForm.workDay)
     },
     sizeChange(val) {
       this.pagination.pageSize = val
-      this.getTableData()
+      this.getRota(this.searchForm.workDay)
     },
-    aaa() {
-      console.log('aaa')
+    seachList() {
+      console.log('seachList')
+      this.isFirstIn = true
+      this.getRota(this.searchForm.workDay)
     }
   }
 }

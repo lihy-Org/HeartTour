@@ -6,7 +6,7 @@ import request from '@/utils/request'
 
 export function getBookingList(data) {
   return request({
-    url: '/mock/06260b1fdf2704085031aac99da750a5/xinzhilv/xinzhilv/booking',
+    url: '/api/storesys/appt/list',
     method: 'post',
     data
   })
