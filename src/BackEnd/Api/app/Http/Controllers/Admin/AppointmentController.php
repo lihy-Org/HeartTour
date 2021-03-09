@@ -133,7 +133,7 @@ class AppointmentController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/api/admin/appt/getWorkTime",
+     *     path="/api/admin/appt/getWorktime",
      *     tags={"总台管理系统-预约管理"},
      *     summary="人员排班表",
      *     @OA\Parameter(name="token", in="header", @OA\Schema(type="string"), required=true, description="token"),

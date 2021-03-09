@@ -101,7 +101,9 @@ class AppointmentRepository
                 'orderNo' => app('snowflake')->id(),
                 'wcId' => $data->wcId,
                 'wcName' => $wc->nickname,
+                'remark' => isset($data->remark) ? $data->remark : '',
                 'petId' => $data->petId,
+                'petName' => $pet->nickname,
                 'petType' => $pet->type,
                 'userId' => $data->userId,
                 'userName' => $user->name,
@@ -109,6 +111,7 @@ class AppointmentRepository
                 'storeName' => $store->name,
                 'phone' => $wc->phone,
                 'mainComboName' => $mainCombo->name,
+                'serviceTime' => $allTime,
                 'apptTime' => $data->workDay . ' ' . $apptUserWorktimes[0]->workTime,
                 'totalMoney' => $totalMoney,
                 'freight' => 0,
@@ -152,6 +155,154 @@ class AppointmentRepository
         }
     }
 
+    //线下加单
+    public function OfflineAppt()
+    {
+
+        try {
+            $ConfigRepository = new ConfigRepository();
+            $config = $ConfigRepository->GetOne('TimeSlot', 'TimeSlot')->first();
+            $combos = [];
+            $allTime = 0; //套餐总时间
+            $totalMoney = 0; //总价格
+            $mainCombo = null;
+            foreach ($data->comboIds as $v) {
+                $combo = Combo::find($v);
+                //有且只能有一个主套餐
+                if ($combo->comboType == 0) {
+                    if ($mainCombo != null) {
+                        return array(
+                            'status' => 500,
+                            'msg' => '预约失败，主套餐数据必须为1!',
+                            'data' => '');
+                    } else {
+                        $mainCombo = $combo;
+                    }
+                }
+                array_push($combos, $combo);
+                $allTime = bcadd($allTime, $combo->nursingTime);
+                $totalMoney = bcadd($totalMoney, $combo->salePrice, 2);
+            }
+            if (bccomp($totalMoney, $data->totalMoney, 10) !== 0) {
+                return array(
+                    'status' => 500,
+                    'msg' => '预约失败，订单金额有误!',
+                    'data' => '');
+            }
+            if ($mainCombo == null) {
+                return array(
+                    'status' => 500,
+                    'msg' => '预约失败，主套餐数据必须为1!',
+                    'data' => '');
+            }
+            if ($allTime == 0) {
+                return array(
+                    'status' => 500,
+                    'msg' => '预约失败，套餐总护理时间为0!',
+                    'data' => '');
+            }
+            $times = ceil(bcdiv($allTime, $config->value, 2));
+
+            DB::beginTransaction(); // 开启事务
+            //无需判断技师是否有空预约
+            //小程序用户如无则新增该用户和其宠物
+            $wc;
+            if (isset($data->wcId)) {
+                $wc = WechatUser::find($data->wcId);
+            } else {
+                $wc = WechatUser::create([
+                    'sessionkey' => '1',
+                    'openid' => '1',
+                    'code' => '1',
+                    'token' => app('snowflake')->id(),
+                    'nickname' => $data->wcNickname,
+                    'avatar' => isset($data->wcAvatar) ? $data->wcAvatar : '',
+                    'gender' => $data->wcGender,
+                    'province' => isset($data->province) ? $data->province : '',
+                    'city' => isset($data->city) ? $data->city : '',
+                    'country' => isset($data->country) ? $data->country : '',
+                    'address' => isset($data->address) ? $data->address : '',
+                    'phone' => $data->phone,
+                    'state' => 0,
+                ]);
+            }
+            $pet;
+            if (isset($data->petId)) {
+                $pet = Pet::find($data->petId);
+            } else {
+                $variety = $ConfigRepository->GetOneById($data->petVarietyId);
+                if (!$variety) {
+                    return array(
+                        'status' => 500,
+                        'msg' => '无该品种信息!',
+                        'data' => '');
+                }
+                $topvariety = $ConfigRepository->GetTopConfig($variety->id);
+                $pet = Pet::create([
+                    'wcId' => $wc->id,
+                    'avatar' => isset($data->petAvatar) ? $data->petAvatar : '',
+                    'nickname' => $data->petNickname,
+                    'gender' => $data->petGender,
+                    'type' => $topvariety->id,
+                    'type' => $topvariety->value,
+                    'varietyId' => $data->petVarietyId,
+                    'variety' => $variety->value,
+                    'birthday' => isset($data->birthday) ? $data->birthday : "",
+                    'color' => isset($data->color) ? $data->color : "",
+                    'shoulderHeight' => isset($data->shoulderHeight) ? $data->shoulderHeight : 0,
+                    'is_sterilization' => 0,
+                    'remark' => isset($data->remark) ? $data->remark : "",
+                ]);
+            }
+
+            $user = User::find($data->userId);
+            $store = Store::find($user->storeId);
+            //保存主订单
+            $order = Order::create([
+                'orderNo' => app('snowflake')->id(),
+                'wcId' => $data->wcId,
+                'wcName' => $wc->nickname,
+                'petId' => $data->petId,
+                'petType' => $pet->type,
+                'userId' => $data->userId,
+                'userName' => $user->name,
+                'storeId' => $user->storeId,
+                'storeName' => $store->name,
+                'phone' => $wc->phone,
+                'mainComboName' => $mainCombo->name,
+                'apptTime' => $data->workDay . ' ' . $apptUserWorktimes[0]->workTime,
+                'totalMoney' => $totalMoney,
+                'freight' => 0,
+                'payMoney' => $totalMoney,
+                'payType' => 1,
+                'type' => 1,
+            ]);
+            //保存订单详细信息
+            foreach ($combos as $combo) {
+                OrderDetail::create([
+                    'orderId' => $order->id,
+                    'orderNo' => $order->orderNo,
+                    'goodsId' => $combo->id,
+                    'num' => 1,
+                    'unitPrice' => $combo->salePrice,
+                    'totalMoney' => $combo->salePrice,
+                ]);
+            }           
+            Db::commit(); // 提交事务
+            return array(
+                'status' => 200,
+                'msg' => '添加信息成功!',
+                'data' => '');
+
+        } catch (\Exception $exception) {
+            // dd($exception);
+            Db::rollback(); // 回滚事务
+            return array(
+                'status' => 500,
+                'msg' => '保存失败!' . $exception->getMessage(),
+                'data' => '');
+        }
+    }
     public function GetList($data)
     {
         $orders = Order::where('type', '1')->orderBy('created_at');
@@ -200,6 +351,7 @@ class AppointmentRepository
         if (isset($data->userId)) {
             $worktimes = $worktimes->where('uid', $data->userId);
         }
+
         return $worktimes->orderBy('workTime')->select('storeId', 'uid', 'uname', 'workDay', 'workTime', 'orderId');
     }
 
@@ -228,7 +380,7 @@ class AppointmentRepository
                 }
                 $st = Carbon::parse($v . ' ' . $startTime . ':00');
                 $et = Carbon::parse($v . ' ' . $endTime . ':00');
-                while ($et->gt($st)) {
+                while ($et->gte($st)) {
                     UserWorktime::create(['workDay' => $st->format('Y-m-d'), 'workTime' => $st->format('H:i'), 'storeId' => $user->storeId, 'uid' => $user->id, 'uname' => $user->name]);
                     $st = $st->addMinutes($config->value);
                 }
@@ -357,6 +509,42 @@ class AppointmentRepository
         }
     }
 
+    //预约技师添加备注
+    public function AddUserRemark($data)
+    {
+        $order = Order::find($data->orderId);
+        if ($order->state == 200 || $order->state == 300) {
+            $order->userRemark = $data->userRemark;
+            $order->save();
+            return array(
+                'status' => 200,
+                'msg' => '操作成功!',
+                'data' => '');
+        } else {
+            return array(
+                'status' => 200,
+                'msg' => '失败，订单状态不正确!',
+                'data' => '');
+        }
+    }
+    //预约单店铺添加备注
+    public function AddStoreRemark($data)
+    {
+        $order = Order::find($data->orderId);
+        if ($order->state == 200 || $order->state == 300) {
+            $order->storeRemark = $data->storeRemark;
+            $order->save();
+            return array(
+                'status' => 200,
+                'msg' => '操作成功!',
+                'data' => '');
+        } else {
+            return array(
+                'status' => 200,
+                'msg' => '失败，订单状态不正确!',
+                'data' => '');
+        }
+    }
     //支付后更新状态
     public function Paid($data)
     {
@@ -432,5 +620,28 @@ class AppointmentRepository
         } else {
             return $result;
         }
+    }
+
+    //查询技师总排版情况
+    public function GetStatsWorktime($data)
+    {
+        $worktimes = DB::table('userworktimes')->where('userworktimes.storeId', $data->storeId);
+        if (isset($data->userId)) {
+            $worktimes = $worktimes->where('uid', $data->userId);
+        }
+        if (isset($data->startDate) && isset($data->endDate)) {
+            $worktimes = $worktimes->where(function ($query) use ($data) {
+                $query->where('workDay', '>=', $data->startDate)->where('workDay', '<=', $data->endDate);
+            });
+        }
+        if (isset($data->workDay)) {
+            $worktimes = $worktimes->where('workDay', $data->workDay);
+        } else {
+            $worktimes = $worktimes->where('workDay', '>', Carbon::now()->format('Y-m-d'));
+        }
+        $worktimes = $worktimes->leftJoin('users', 'users.id', '=', 'userworktimes.uid')
+            ->groupBy('uid', 'uname', 'workDay', 'post')
+            ->select('uid', 'uname', 'workDay', 'post', DB::raw('CONCAT(min(workTime),\'-\',max(workTime)) as times'));
+        return $worktimes;
     }
 }

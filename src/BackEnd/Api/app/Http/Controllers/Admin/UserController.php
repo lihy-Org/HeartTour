@@ -90,7 +90,7 @@ class UserController extends Controller
         $rules = [
             'storeId' => ['uuid'],
             'post' => ['string'],
-            'gender' => ['string'],
+            'gender' => ['nullable','integer', Rule::in([0, 1, 2])],
             'searchKey' => ['nullable','string'],
             'pageSize' => ['integer', 'gt:0'],
             'page' => ['integer', 'gt:0'],

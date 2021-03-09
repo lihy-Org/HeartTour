@@ -92,8 +92,8 @@ class WechatUserController extends Controller
     public function GetList(Request $request)
     {
         $rules = [
-            'gender' => [Rule::in([0,1,2])],
-            'searchKey' => ['nullable','string'],
+            'gender' => ['nullable','integer', Rule::in([0, 1, 2])],
+            'searchKey' => ['nullable', 'string'],
             'pageSize' => ['integer', 'gt:0'],
             'page' => ['integer', 'gt:0'],
         ];
@@ -115,7 +115,7 @@ class WechatUserController extends Controller
             $list = $users->skip($skipNum)->take($takeNum)
                 ->selectRaw("*")->get();
             $pageTotal = $total / $takeNum;
-            $pageRes=(object)[];
+            $pageRes = (object) [];
             $pageRes->total = $total;
             $pageRes->pageNo = $page;
             $pageRes->pageSize = $takeNum;

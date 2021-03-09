@@ -65,13 +65,13 @@ Route::prefix('api/admin')->middleware(['auth:sanctum', 'adminapi'])->group(func
 
     //预约管理
     Route::post('/appt/list', [AdminAppointmentController::class, 'GetList']);
-    Route::post('/appt/getWorkTime', [AdminAppointmentController::class, 'GetWorkTime']);
+    Route::post('/appt/getWorktime', [AdminAppointmentController::class, 'GetWorktime']);
     Route::post('/appt/trans', [AdminAppointmentController::class, 'TransferAppt']);
 
     //活体
-    Route::post('/live/addOrUpdate', [AdminLivePetController::class, 'AddOrUpdate']);
-    Route::post('/live/remove', [AdminLivePetController::class, 'Remove']);
-    Route::post('/live/list', [AdminLivePetController::class, 'GetList']);
+    // Route::post('/live/addOrUpdate', [AdminLivePetController::class, 'AddOrUpdate']);
+    // Route::post('/live/remove', [AdminLivePetController::class, 'Remove']);
+    // Route::post('/live/list', [AdminLivePetController::class, 'GetList']);
 });
 
 // ---------------------------------门店---------------------------------------------
@@ -92,7 +92,8 @@ Route::prefix('api/storesys')->middleware(['auth:sanctum', 'storeapi'])->group(f
 
     //预约管理
     Route::post('/appt/list', [StoreSysAppointmentController::class, 'GetList']);
-    Route::post('/appt/getWorkTime', [StoreSysAppointmentController::class, 'GetWorkTime']);
+    Route::post('/appt/getWorktime', [StoreSysAppointmentController::class, 'GetWorktime']);    
+    Route::post('/appt/getStatsWorktime', [StoreSysAppointmentController::class, 'getStatsWorktime']);
     Route::post('/appt/trans', [StoreSysAppointmentController::class, 'TransferAppt']);
     Route::post('/appt/refund', [StoreSysAppointmentController::class, 'Refund']);
 });

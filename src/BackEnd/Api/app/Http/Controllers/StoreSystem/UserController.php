@@ -90,8 +90,8 @@ class UserController extends Controller
     public function GetList(Request $request)
     {
         $rules = [          
-            'post' => ['string'],
-            'gender' => ['string'],
+            'post' => ['string'], 
+            'gender' => ['nullable','integer', Rule::in([0, 1, 2])],
             'searchKey' => ['nullable','string'],
             'pageSize' => ['integer', 'gt:0'],
             'page' => ['integer', 'gt:0'],

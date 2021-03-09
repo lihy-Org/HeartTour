@@ -317,7 +317,7 @@
                 }
             }
         },
-        "/api/admin/appt/getWorkTime": {
+        "/api/admin/appt/getWorktime": {
             "post": {
                 "tags": [
                     "总台管理系统-预约管理"
@@ -1442,370 +1442,6 @@
                                         "data": {
                                             "type": "object",
                                             "example": "错误信息"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/api/admin/live/addOrUpdate": {
-            "post": {
-                "tags": [
-                    "总台管理系统-活体管理"
-                ],
-                "summary": "新增或修改活体",
-                "operationId": "App\\Http\\Controllers\\Admin\\LivePetController::AddOrUpdate",
-                "parameters": [
-                    {
-                        "name": "token",
-                        "in": "header",
-                        "description": "token",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "requestBody": {
-                    "content": {
-                        "multipart/form-data": {
-                            "schema": {
-                                "required": [
-                                    "gender",
-                                    "vaccine",
-                                    "number",
-                                    "color",
-                                    "varietyId",
-                                    "originPrice",
-                                    "salePrice",
-                                    "age",
-                                    "shoulderHeight",
-                                    "note",
-                                    "bgImg",
-                                    "avatar",
-                                    "certificates",
-                                    "detailImgs"
-                                ],
-                                "properties": {
-                                    "liveId": {
-                                        "description": "活体id",
-                                        "type": "string",
-                                        "default": "dd"
-                                    },
-                                    "gender": {
-                                        "description": "性别 0未知，1男，2女",
-                                        "type": "number",
-                                        "default": "dd"
-                                    },
-                                    "vaccine": {
-                                        "description": "是否疫苗 1-已打疫苗 0-未打疫苗",
-                                        "type": "number",
-                                        "default": "dd"
-                                    },
-                                    "number": {
-                                        "description": "编号",
-                                        "type": "string",
-                                        "default": "dd"
-                                    },
-                                    "color": {
-                                        "description": "毛色",
-                                        "type": "string",
-                                        "default": "dd"
-                                    },
-                                    "varietyId": {
-                                        "description": "品种Id",
-                                        "type": "string",
-                                        "default": "dd"
-                                    },
-                                    "originPrice": {
-                                        "description": "原价",
-                                        "type": "string",
-                                        "default": "dd"
-                                    },
-                                    "salePrice": {
-                                        "description": "售价",
-                                        "type": "string",
-                                        "default": "dd"
-                                    },
-                                    "age": {
-                                        "description": "年龄",
-                                        "type": "number",
-                                        "default": "dd"
-                                    },
-                                    "shoulderHeight": {
-                                        "description": "肩高",
-                                        "type": "number",
-                                        "default": "dd"
-                                    },
-                                    "note": {
-                                        "description": "备注",
-                                        "type": "number",
-                                        "default": "dd"
-                                    },
-                                    "avatar": {
-                                        "description": "头像",
-                                        "type": "number",
-                                        "default": "dd"
-                                    },
-                                    "certificates": {
-                                        "description": "证书",
-                                        "type": "string",
-                                        "default": "dd"
-                                    },
-                                    "detailImgs": {
-                                        "description": "详情图",
-                                        "type": "string",
-                                        "default": "dd"
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "成功",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "status": {
-                                            "description": "状态码",
-                                            "type": "number",
-                                            "example": "200"
-                                        },
-                                        "msg": {
-                                            "type": "string",
-                                            "example": "新增/修改信息成功!"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "失败",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "status": {
-                                            "description": "状态码",
-                                            "type": "number",
-                                            "example": "500"
-                                        },
-                                        "msg": {
-                                            "type": "string",
-                                            "example": "修改失败!"
-                                        },
-                                        "data": {
-                                            "type": "object",
-                                            "example": "错误信息"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/api/admin/live/remove": {
-            "post": {
-                "tags": [
-                    "总台管理系统-活体管理"
-                ],
-                "summary": "活体上下架",
-                "operationId": "App\\Http\\Controllers\\Admin\\LivePetController::Remove",
-                "parameters": [
-                    {
-                        "name": "token",
-                        "in": "header",
-                        "description": "token",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "requestBody": {
-                    "content": {
-                        "multipart/form-data": {
-                            "schema": {
-                                "required": [
-                                    "liveId"
-                                ],
-                                "properties": {
-                                    "liveId": {
-                                        "description": "活体编号",
-                                        "type": "number",
-                                        "default": "10"
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "成功",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "status": {
-                                            "description": "状态码",
-                                            "type": "number",
-                                            "example": "200"
-                                        },
-                                        "msg": {
-                                            "type": "string",
-                                            "example": "禁用/启用成功!"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "失败",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "status": {
-                                            "description": "状态码",
-                                            "type": "number",
-                                            "example": "500"
-                                        },
-                                        "msg": {
-                                            "type": "string",
-                                            "example": "禁用/启用失败!"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/api/admin/live/list": {
-            "post": {
-                "tags": [
-                    "总台管理系统-活体管理"
-                ],
-                "summary": "活体列表",
-                "operationId": "App\\Http\\Controllers\\Admin\\LivePetController::GetList",
-                "parameters": [
-                    {
-                        "name": "token",
-                        "in": "header",
-                        "description": "token",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "requestBody": {
-                    "content": {
-                        "multipart/form-data": {
-                            "schema": {
-                                "required": [],
-                                "properties": {
-                                    "typeId": {
-                                        "description": "活体类型编号",
-                                        "type": "string",
-                                        "default": ""
-                                    },
-                                    "varietyId": {
-                                        "description": "品种Id",
-                                        "type": "string",
-                                        "default": ""
-                                    },
-                                    "searchKey": {
-                                        "description": "关键字",
-                                        "type": "string",
-                                        "default": ""
-                                    },
-                                    "state": {
-                                        "description": "上架状态 0-待上架 1-已上架 2-已下架，3-已售",
-                                        "type": "string",
-                                        "default": ""
-                                    },
-                                    "pageSize": {
-                                        "description": "条数",
-                                        "type": "number",
-                                        "default": "10"
-                                    },
-                                    "page": {
-                                        "description": "页数",
-                                        "type": "number",
-                                        "default": "1"
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "成功",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "status": {
-                                            "description": "状态码",
-                                            "type": "number",
-                                            "example": "200"
-                                        },
-                                        "msg": {
-                                            "description": "提示信息",
-                                            "type": "string",
-                                            "example": "获取列表成功!"
-                                        },
-                                        "data": {
-                                            "type": "object",
-                                            "example": ""
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "失败",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "status": {
-                                            "description": "状态码",
-                                            "type": "number",
-                                            "example": "500"
-                                        },
-                                        "msg": {
-                                            "description": "提示信息",
-                                            "type": "string",
-                                            "example": "获取列表失败!"
-                                        },
-                                        "data": {
-                                            "type": "object",
-                                            "example": "{'page':['\\u8bf7\\u8f93\\u5165\\u5355\\u4f4d\\u540d\\u79f0\\uff01']}"
                                         }
                                     },
                                     "type": "object"
@@ -3739,7 +3375,7 @@
                 }
             }
         },
-        "/api/storesys/appt/getWorkTime": {
+        "/api/storesys/appt/getWorktime": {
             "post": {
                 "tags": [
                     "门店管理系统-预约管理"
@@ -3767,8 +3403,123 @@
                                         "type": "string",
                                         "default": ""
                                     },
+                                    "startDate": {
+                                        "description": "开始时间",
+                                        "type": "string",
+                                        "default": ""
+                                    },
+                                    "endDate": {
+                                        "description": "结束时间",
+                                        "type": "string",
+                                        "default": ""
+                                    },
                                     "workTime": {
                                         "description": "时间",
+                                        "type": "string",
+                                        "default": ""
+                                    },
+                                    "userId": {
+                                        "description": "用户编号",
+                                        "type": "string",
+                                        "default": ""
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "状态码",
+                                            "type": "number",
+                                            "example": "200"
+                                        },
+                                        "msg": {
+                                            "description": "提示信息",
+                                            "type": "string",
+                                            "example": "获取列表成功!"
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "example": ""
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "失败",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "状态码",
+                                            "type": "number",
+                                            "example": "500"
+                                        },
+                                        "msg": {
+                                            "description": "提示信息",
+                                            "type": "string",
+                                            "example": "获取列表失败!"
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "example": "{'page':['\\u8bf7\\u8f93\\u5165\\u5355\\u4f4d\\u540d\\u79f0\\uff01']}"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/storesys/appt/getStatsWorktime": {
+            "post": {
+                "tags": [
+                    "门店管理系统-预约管理"
+                ],
+                "summary": "人员排班总表",
+                "operationId": "App\\Http\\Controllers\\StoreSystem\\AppointmentController::getStatsWorktime",
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "header",
+                        "description": "token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "properties": {
+                                    "workDay": {
+                                        "description": "日期",
+                                        "type": "string",
+                                        "default": ""
+                                    },
+                                    "startDate": {
+                                        "description": "开始时间",
+                                        "type": "string",
+                                        "default": ""
+                                    },
+                                    "endDate": {
+                                        "description": "结束时间",
                                         "type": "string",
                                         "default": ""
                                     },
@@ -4660,7 +4411,7 @@
                 }
             }
         },
-        "/api/appt/getWorkTime": {
+        "/api/appt/getWorktime": {
             "post": {
                 "tags": [
                     "小程序-预约"

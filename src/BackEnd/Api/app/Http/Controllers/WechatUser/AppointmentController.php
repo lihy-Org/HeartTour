@@ -38,6 +38,7 @@ class AppointmentController extends Controller
      *           @OA\Property(description="技师ID", property="userId", type="string", default="dd"),
      *           @OA\Property(description="套餐总额", property="totalMoney", type="number", default="dd"),
      *           @OA\Property(description="门店ID", property="storeId", type="string", default="dd"),
+     *           @OA\Property(description="备注", property="remark", type="string", default="dd"),
      *           required={"comboIds","workDay","workTime","petId","userId","storeId"})
      *       )
      *     ),
@@ -115,7 +116,7 @@ class AppointmentController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/api/appt/getWorkTime",
+     *     path="/api/appt/getWorktime",
      *     tags={"小程序-预约"},
      *     summary="人员排班表",
      *     @OA\Parameter(name="token", in="header", @OA\Schema(type="string"), required=true, description="token"),

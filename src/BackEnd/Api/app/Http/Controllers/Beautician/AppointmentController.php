@@ -140,9 +140,10 @@ class AppointmentController extends Controller
      *     @OA\MediaType(
      *       mediaType="multipart/form-data",
      *         @OA\Schema(
-     *           @OA\Property(description="套餐编号", property="orderId", type="string", default="dd"),     *
+     *           @OA\Property(description="套餐编号", property="orderId", type="string", default="dd"),
      *           @OA\Property(description="状态 300开始服务 400待接取", property="state", type="string", default="dd"),
-     *           required={"orderId","state"})
+     *           @OA\Property(description="技师备注", property="userRemark", type="string", default="dd"),
+     *           required={"orderId","state","userRemark"})
      *       )
      *     ),
      *     @OA\Response(
@@ -187,6 +188,7 @@ class AppointmentController extends Controller
     {
         $rules = [
             'state' => ['required', Rule::in([300, 400])],
+            'userRemark' => ['required', 'string'],
             'orderId' => ['required', Rule::exists('orders', 'id')->where(function ($query) use ($request) {
                 $query->where('userId', $request->user->id);
             })],
@@ -201,6 +203,10 @@ class AppointmentController extends Controller
             ));
         }
         $data = (object) $request->all();
-        return json_encode($this->appointmentRepository->ChangeState($data));
+        $result = $this->appointmentRepository->ChangeState($data);
+        if ($result->status == 200) {
+            $this->appointmentRepository->AddUserRemark($data);
+        }
+        return json_encode($result);
     }
 }
