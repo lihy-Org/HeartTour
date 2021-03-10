@@ -19,8 +19,8 @@ class CreatePetTable extends Migration
             $table->string('avatar')->comment('宠物头像');
             $table->string('nickname')->comment('宠物昵称');
             $table->integer('gender')->comment('性别 0未知，1男，2女');     
-            $table->integer('typeId')->comment('宠物种类编号');
-            $table->integer('type')->comment('宠物种类');
+            $table->string('typeId')->comment('宠物种类编号');
+            $table->string('type')->comment('宠物种类');
             $table->string('varietyId')->comment('品种Id(配置id)');
             $table->string('variety')->comment('宠物品种名称');
             $table->timestamp('birthday')->comment('宠物生日');

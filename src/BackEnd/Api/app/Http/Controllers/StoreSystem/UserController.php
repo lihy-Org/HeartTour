@@ -4,8 +4,8 @@ namespace App\Http\Controllers\StoreSystem;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use App\Repositories\UserRepository;
 use App\Repositories\AppointmentRepository;
+use App\Repositories\UserRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
@@ -14,8 +14,8 @@ class UserController extends Controller
 {
     protected $userRepository;
     protected $appointmentRepository;
-   
-    public function __construct(UserRepository $_userRepository,AppointmentRepository $_appointmentRepository)
+
+    public function __construct(UserRepository $_userRepository, AppointmentRepository $_appointmentRepository)
     {
         $this->userRepository = $_userRepository;
         $this->appointmentRepository = $_appointmentRepository;
@@ -29,7 +29,7 @@ class UserController extends Controller
      *     @OA\RequestBody(
      *     @OA\MediaType(
      *       mediaType="multipart/form-data",
-     *         @OA\Schema(     *         
+     *         @OA\Schema(     *
      *           @OA\Property(description="职位", property="post", type="string", default=""),
      *           @OA\Property(description="性别", property="gender", type="string", default=""),
      *           @OA\Property(description="条数", property="pageSize", type="number", default="10"),
@@ -89,10 +89,10 @@ class UserController extends Controller
      */
     public function GetList(Request $request)
     {
-        $rules = [          
-            'post' => ['string'], 
-            'gender' => ['nullable','integer', Rule::in([0, 1, 2])],
-            'searchKey' => ['nullable','string'],
+        $rules = [
+            'post' => ['string'],
+            'gender' => ['nullable', 'integer', Rule::in([0, 1, 2])],
+            'searchKey' => ['nullable', 'string'],
             'pageSize' => ['integer', 'gt:0'],
             'page' => ['integer', 'gt:0'],
         ];
@@ -114,7 +114,7 @@ class UserController extends Controller
             $total = $users->count();
             $list = $users->skip($skipNum)->take($takeNum)->get();
             $pageTotal = $total / $takeNum;
-            $pageRes=(object)[];
+            $pageRes = (object) [];
             $pageRes->total = $total;
             $pageRes->pageNo = $page;
             $pageRes->pageSize = $takeNum;
@@ -130,13 +130,12 @@ class UserController extends Controller
 
         }
     }
-   
 
     /**
      * @OA\Post(
      *     path="/api/storesys/user/SetWorktime",
      *     tags={"门店管理系统-人员管理"},
-     *     summary="人员排期",       *     
+     *     summary="人员排期",       *
      *     @OA\Parameter(name="token", in="header", @OA\Schema(type="string"), required=true, description="token"),
      *     @OA\RequestBody(
      *     @OA\MediaType(
@@ -189,13 +188,13 @@ class UserController extends Controller
      * )
      */
     public function SetWorktime(Request $request)
-    {        
+    {
         $rules = [
             'days' => ['required', 'array'],
-            'days.*'=>['date_format:"Y-m-d"','after_or_equal:today'],
+            'days.*' => ['date_format:"Y-m-d"', 'after_or_equal:today'],
             'startTime' => ['nullable', 'date_format:"H:i"'],
             'endTime' => ['nullable', 'date_format:"H:i"'],
-            'userId' => ['required', Rule::exists('users', 'id')->where(function ($query)use($request) {
+            'userId' => ['required', Rule::exists('users', 'id')->where(function ($query) use ($request) {
                 $query->where('state', 0)->whereNotIn('type', [0, 1])->where('isBeautician', 1)->where('storeId', $request->user->storeId);
             })],
         ];
@@ -212,5 +211,85 @@ class UserController extends Controller
             ));
         }
         return json_encode($this->appointmentRepository->SetWorktime((object) $request->all()));
+    }
+
+    /**
+     * @OA\Post(
+     *     path="/api/storesys/user/tranStore",
+     *     tags={"门店管理系统-人员管理"},
+     *     summary="调店",
+     *     @OA\Parameter(name="token", in="header", @OA\Schema(type="string"), required=true, description="token"),
+     *     @OA\RequestBody(
+     *     @OA\MediaType(
+     *       mediaType="multipart/form-data",
+     *         @OA\Schema(
+     *           @OA\Property(description="用户ID", property="userId", type="number", default="10"),
+     *           @OA\Property(description="门店ID", property="storeId", type="number", default="10"),
+     *           required={"storeId","userId"}
+     *           )
+     *       )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="成功",
+     *         @OA\JsonContent(
+     *            type="object",
+     *            @OA\Property(
+     *                   example="200",
+     *                   property="status",
+     *                   description="状态码",
+     *                   type="number",
+     *               ),
+     *            @OA\Property(
+     *                  type="string",
+     *                  property="msg",
+     *                  example="成功!",
+     *              )
+     *         ),
+     *     ),
+     *      @OA\Response(
+     *         response=500,
+     *         description="失败",
+     *         @OA\JsonContent(
+     *            type="object",
+     *            @OA\Property(
+     *                   example="500",
+     *                   property="status",
+     *                   description="状态码",
+     *                   type="number",
+     *               ),
+     *           @OA\Property(
+     *                  type="string",
+     *                  property="msg",
+     *                  example="失败!",
+     *               )
+     *           )
+     *       ),
+     * )
+     */
+    public function TranStore(Request $request)
+    {
+        $rules = [
+            'storeId' => ['required', 'exists:stores,id'],
+            'userId' => ['required', Rule::exists('users', 'id')->where(function ($query) {
+                $query->where('state', 0)->whereNotIn('type', [0, 1, 2])->where('storeId', $request->user->storeId);
+            }),
+            ],
+        ];
+        $messages = [
+            'storeId.required' => '请输入门店编号!',
+            'userId.required' => '请输入人员编号!',
+            'storeId.exists' => '错误的门店编号!',
+            'userId.exists' => '错误的人员编号!',
+        ];
+        $validator = Validator::make($request->all(), $rules, $messages);
+        if ($validator->fails()) {
+            return json_encode(array(
+                'status' => 500,
+                'msg' => '验证失败!',
+                'data' => $validator->errors(),
+            ));
+        }
+        return json_encode($this->userRepository->SetStore((object) $request->all()));
     }
 }

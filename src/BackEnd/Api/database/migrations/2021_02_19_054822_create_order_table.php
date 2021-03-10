@@ -23,7 +23,7 @@ class CreateOrderTable extends Migration
             // 预约的信息
             $table->uuid('petId')->nullable()->comment('预约宠物Id');
             $table->uuid('petName')->nullable()->comment('预约宠物Id');
-            $table->integer('petType')->nullable()->comment('宠物种类');
+            $table->string('petType')->nullable()->comment('宠物种类');
             $table->uuid('userId')->nullable()->comment('预约技师id');
             $table->string('userName')->nullable()->comment('预约技师姓名');
             $table->uuid('storeId')->nullable()->comment('预约门店id');
@@ -33,6 +33,7 @@ class CreateOrderTable extends Migration
             $table->string('apptTime')->nullable()->comment('预约日');
             $table->string('userRemark')->nullable()->comment('技师备注');
             $table->string('storeRemark')->nullable()->comment('店长备注');
+            $table->integer('isOffline')->default(0)->comment('是否线下加单 0线上预约 1线下加单');
             //订单的信息
             $table->uuid('addId')->nullable()->comment('收货地址id');
             $table->string('address')->nullable()->comment('收货地址信息');

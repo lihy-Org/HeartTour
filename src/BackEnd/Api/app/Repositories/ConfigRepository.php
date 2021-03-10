@@ -65,7 +65,7 @@ class ConfigRepository
 
     public function GetTopConfig($configId)
     {
-        $config = $this->GetOne($type, $key);
+        $config = $this->GetOneById($configId);
         if ($config->parentId == '' || $config->parentId == null) {
             return $config;
         } else {

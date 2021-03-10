@@ -14,7 +14,7 @@ class Order extends Model
     protected $table = 'orders';
     protected $primaryKey = 'id';
     protected $fillable = ['orderNo','wcId','wcName','remark','petId','petName','petType','userId','userName','storeId','storeName','mainComboName','phone','apptTime','addId','address','expId','expName'
-    ,'expNumber','totalMoney','freight','payMoney','payType','type','payTime','shippingTime','finishTime','cancelTime','state','remark','userRemark','storeRemark'];
+    ,'expNumber','totalMoney','freight','payMoney','payType','type','payTime','shippingTime','isOffline','serviceTime','finishTime','cancelTime','state','remark','userRemark','storeRemark'];
 
     public function Details()
     {

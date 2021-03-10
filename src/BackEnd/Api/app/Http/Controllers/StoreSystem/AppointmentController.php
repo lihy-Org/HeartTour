@@ -28,6 +28,7 @@ class AppointmentController extends Controller
      *         @OA\Schema(
      *           @OA\Property(description="状态", property="state", type="string", default=""),
      *           @OA\Property(description="人员编号", property="userId", type="string", default=""),
+     *           @OA\Property(description="是否加单 不填全部 0为线上预约  1为线下加单", property="isOffline", type="number", default=""),
      *           @OA\Property(description="小程序用户编号", property="wcId", type="string", default=""),
      *           @OA\Property(description="预约开始时间", property="startDate", type="string", default=""),
      *           @OA\Property(description="预约结束时间", property="endDate", type="string", default=""),
@@ -91,6 +92,7 @@ class AppointmentController extends Controller
         $rules = [
             'startDate' => ['date_format:"Y-m-d H:i:s"'],
             'endDate' => ['date_format:"Y-m-d H:i:s"'],
+            'isOffline'=>['nullable',Rule::in([0,1])],
             'state' => [Rule::in([100, 200, 300, 400, 500, 501, 502, 600, 601])],
             'searchKey' => ['nullable', 'string'],
             'pageSize' => ['integer', 'gt:0'],
@@ -533,7 +535,7 @@ class AppointmentController extends Controller
     public function Refund(Request $request)
     {
         $rules = [
-            'orderId' => ['required', Rule::exists('stores', 'id')->where(function ($query) use ($request) {
+            'orderId' => ['required', Rule::exists('orders', 'id')->where(function ($query) use ($request) {
                 $query->where('storeId', $request->user->storeId)->where('type', 1)->where('state', 200);
             })],
             'reason' => ['required', 'string'],
@@ -555,9 +557,9 @@ class AppointmentController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/api/beaut/appt/addRemark",
-     *     tags={"技师公众号系统-预约管理"},
-     *     summary="预约订单开始服务/预约订单待接取",
+     *     path="/api/storesys/appt/addRemark",
+     *     tags={"门店管理系统-预约管理"},
+     *     summary="门店预约单备注",
      *     @OA\Parameter(name="token", in="header", @OA\Schema(type="string"), required=true, description="token"),
      *     @OA\RequestBody(
      *     @OA\MediaType(
@@ -606,7 +608,7 @@ class AppointmentController extends Controller
      *       ),
      * )
      */
-    public function addStoreRemark(Request $request)
+    public function AddStoreRemark(Request $request)
     {
         $rules = [
             'storeRemark' => ['required', 'string'],
@@ -626,4 +628,6 @@ class AppointmentController extends Controller
         $data = (object) $request->all();  
         return json_encode($this->appointmentRepository->AddStoreRemark($data));
     }
+
+  
 }

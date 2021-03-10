@@ -156,7 +156,7 @@ class AppointmentRepository
     }
 
     //线下加单
-    public function OfflineAppt()
+    public function OfflineAppt($data)
     {
 
         try {
@@ -182,7 +182,7 @@ class AppointmentRepository
                 array_push($combos, $combo);
                 $allTime = bcadd($allTime, $combo->nursingTime);
                 $totalMoney = bcadd($totalMoney, $combo->salePrice, 2);
-            }
+            }      
             if (bccomp($totalMoney, $data->totalMoney, 10) !== 0) {
                 return array(
                     'status' => 500,
@@ -237,21 +237,23 @@ class AppointmentRepository
                         'msg' => '无该品种信息!',
                         'data' => '');
                 }
+                
                 $topvariety = $ConfigRepository->GetTopConfig($variety->id);
+                
                 $pet = Pet::create([
                     'wcId' => $wc->id,
                     'avatar' => isset($data->petAvatar) ? $data->petAvatar : '',
                     'nickname' => $data->petNickname,
                     'gender' => $data->petGender,
-                    'type' => $topvariety->id,
+                    'typeId' => $topvariety->id,
                     'type' => $topvariety->value,
                     'varietyId' => $data->petVarietyId,
                     'variety' => $variety->value,
-                    'birthday' => isset($data->birthday) ? $data->birthday : "",
+                    'birthday' => isset($data->birthday) ? $data->birthday : Carbon::now(),
                     'color' => isset($data->color) ? $data->color : "",
                     'shoulderHeight' => isset($data->shoulderHeight) ? $data->shoulderHeight : 0,
                     'is_sterilization' => 0,
-                    'remark' => isset($data->remark) ? $data->remark : "",
+                    'remark' => isset($data->petRemark) ? $data->petRemark : "",
                 ]);
             }
 
@@ -262,7 +264,9 @@ class AppointmentRepository
                 'orderNo' => app('snowflake')->id(),
                 'wcId' => $data->wcId,
                 'wcName' => $wc->nickname,
-                'petId' => $data->petId,
+                'remark' => isset($data->remark) ? $data->remark : '',
+                'petId' => $pet->id,
+                'petName' => $pet->nickname,
                 'petType' => $pet->type,
                 'userId' => $data->userId,
                 'userName' => $user->name,
@@ -270,12 +274,14 @@ class AppointmentRepository
                 'storeName' => $store->name,
                 'phone' => $wc->phone,
                 'mainComboName' => $mainCombo->name,
-                'apptTime' => $data->workDay . ' ' . $apptUserWorktimes[0]->workTime,
+                'serviceTime' => $allTime,
+                'apptTime' => Carbon::now()->format('Y-m-d H:i'),
                 'totalMoney' => $totalMoney,
                 'freight' => 0,
                 'payMoney' => $totalMoney,
                 'payType' => 1,
                 'type' => 1,
+                'isOffline' => 1,               
             ]);
             //保存订单详细信息
             foreach ($combos as $combo) {
@@ -287,7 +293,7 @@ class AppointmentRepository
                     'unitPrice' => $combo->salePrice,
                     'totalMoney' => $combo->salePrice,
                 ]);
-            }           
+            }
             Db::commit(); // 提交事务
             return array(
                 'status' => 200,
@@ -295,7 +301,7 @@ class AppointmentRepository
                 'data' => '');
 
         } catch (\Exception $exception) {
-            // dd($exception);
+             dd($exception);
             Db::rollback(); // 回滚事务
             return array(
                 'status' => 500,
@@ -319,6 +325,9 @@ class AppointmentRepository
         }
         if (isset($data->wcId)) {
             $orders = $orders->where('wcId', $data->wcId);
+        }
+        if (isset($data->isOffline)) {
+            $orders = $orders->where('isOffline', $data->isOffline);
         }
         if (isset($data->storeId)) {
             $orders = $orders->where('storeId', $data->storeId);
@@ -443,7 +452,6 @@ class AppointmentRepository
 
             $user = User::find($data->userId);
             // $store = Store::find($data->storeId);
-
             //修改主订单
             $order = Order::find($data->orderId);
             $order->userId = $data->userId;
