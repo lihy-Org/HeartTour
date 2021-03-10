@@ -1,6 +1,6 @@
-<!-- 商品管理-周边 -->
+<!-- 线下加单 -->
 <template>
-  <div class="dervatives-container">
+  <div class="addorder-container">
     <!-- 搜索区域 -->
     <div class="search-wrap">
       <Form class="search-form" :inline="true" :form="searchForm" :form-items="searchFormItems" />
@@ -31,7 +31,7 @@ import { parseTime } from '@/utils'
 import { getBookingManageList } from '@/api/personManage'
 
 export default {
-  name: 'Dervatives',
+  name: 'Addorder',
   components: {
     Form,
     Btns,
@@ -195,7 +195,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.dervatives-container {
+.addorder-container {
   padding: 20px;
   .search-wrap {
     display: flex;

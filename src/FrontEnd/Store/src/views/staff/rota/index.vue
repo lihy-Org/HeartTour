@@ -30,7 +30,7 @@
 import Form from '@/components/Form/index'
 import Btns from '@/components/Btns/index'
 import Table from '@/components/Table/index'
-import { getStaffShiftList, getUsersList } from '@/api/personManage'
+import { getStatsWorktime, getUsersList } from '@/api/personManage'
 import moment from 'moment'
 import 'moment/locale/zh-cn'
 
@@ -215,7 +215,7 @@ export default {
           if (this.searchForm.userId) {
             data.userId = this.searchForm.userId
           }
-          getStaffShiftList(data).then(res => {
+          getStatsWorktime(data).then(res => {
             // 每次切换时间，数据重置
             this.columns = this.$options.data().columns
 

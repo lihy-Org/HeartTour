@@ -5,6 +5,7 @@ export default {
     goodsManage: '商品管理',
     staffManage: '人员管理',
     accountManage: '账目管理',
+    addorderManagement: '线下加单',
 
     documentation: '文档',
     guide: '引导页',
