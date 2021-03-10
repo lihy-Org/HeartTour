@@ -206,6 +206,7 @@ export default {
     }
   },
   created() {
+    console.log(this.item)
     // 根据dataMap处理数据
     if (this.item.dataMap) {
       this.form[this.item.value] = this.item.dataMap[this.form[this.item.value]]
@@ -237,5 +238,8 @@ export default {
 ::v-deep .el-form-item__label {
   font-weight: normal;
   padding: 0 8px 0 0;
+}
+::v-deep .el-form-item__content {
+  vertical-align: middle;
 }
 </style>

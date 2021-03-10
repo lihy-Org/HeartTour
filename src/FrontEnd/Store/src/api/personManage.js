@@ -18,7 +18,7 @@ export function getUsersList(data) {
 
 export function getStaffShiftList(data) {
   return request({
-    url: '/api/storesys/appt/getWorkTime',
+    url: '/api/storesys/appt/getWorktime',
     method: 'post',
     data
   })

@@ -37,17 +37,15 @@ module.exports = {
       errors: true
     },
     proxy: {
-      // [process.env.VUE_APP_BASE_API]: {
-      // // fastmock接口
-      // target: 'https://www.fastmock.site',
-      //   changeOrigin: true,
-      //   pathRewrite: {
-      //     ['^' + process.env.VUE_APP_BASE_API]: ''
-      //   }
-      // }
       [process.env.VUE_APP_BASE_API]: {
-        // 进锋本地的接口
-        target: 'http://jfwang.tpddns.cn:20001',
+        // // fastmock接口
+        // target: 'https://www.fastmock.site',
+
+        // // 进锋本地接口
+        // target: 'http://jfwang.tpddns.cn:20001',
+
+        // 服务器接口
+        target: 'http://api.xinzhilv.vip:32001',
         changeOrigin: true,
         pathRewrite: {
           ['^' + process.env.VUE_APP_BASE_API]: ''

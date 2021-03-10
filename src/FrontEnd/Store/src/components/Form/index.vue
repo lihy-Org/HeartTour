@@ -11,7 +11,7 @@
     <slot />
     <el-row>
       <el-col v-for="(item, index) in formItems" :key="index" :style="formColStyle">
-        <FormItem :form="form" :item="item">
+        <FormItem v-if="!item.isShow" :form="form" :item="item">
           <template #[item.subSlotName]>
             <slot :name="item.topSlotName" />
           </template>
