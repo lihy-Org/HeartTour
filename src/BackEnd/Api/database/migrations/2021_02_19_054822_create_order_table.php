@@ -19,22 +19,27 @@ class CreateOrderTable extends Migration
             $table->uuid('wcId')->comment('小程序用户id');
             $table->string('wcName')->comment('小程序用户姓名');
             $table->string('phone')->nullable()->comment('联系方式');
+            $table->string('remark')->nullable()->comment('用户备注');
             // 预约的信息
             $table->uuid('petId')->nullable()->comment('预约宠物Id');
-            $table->integer('petType')->nullable()->comment('宠物种类');
+            $table->uuid('petName')->nullable()->comment('预约宠物Id');
+            $table->string('petType')->nullable()->comment('宠物种类');
             $table->uuid('userId')->nullable()->comment('预约技师id');
             $table->string('userName')->nullable()->comment('预约技师姓名');
             $table->uuid('storeId')->nullable()->comment('预约门店id');
             $table->string('storeName')->nullable()->comment('预约门店名称');
-            $table->string('mainComboName')->nullable()->comment('主套餐名称');
+            $table->string('mainComboName')->nullable()->comment('主套餐名称');            
+            $table->integer('serviceTime')->nullable()->comment('套餐总时间');
             $table->string('apptTime')->nullable()->comment('预约日');
+            $table->string('userRemark')->nullable()->comment('技师备注');
+            $table->string('storeRemark')->nullable()->comment('店长备注');
+            $table->integer('isOffline')->default(0)->comment('是否线下加单 0线上预约 1线下加单');
             //订单的信息
             $table->uuid('addId')->nullable()->comment('收货地址id');
             $table->string('address')->nullable()->comment('收货地址信息');
             $table->uuid('expId')->nullable()->comment('快递信息编号');
             $table->string('expName')->nullable()->default('')->comment('快递公司名称');
             $table->string('expNumber')->nullable()->default('')->comment('快递单号');
-
             $table->unsignedDecimal('totalMoney', 11, 2)->comment('订单总价');
             $table->unsignedDecimal('freight', 11, 2)->default(0)->comment('运费');
             $table->unsignedDecimal('payMoney', 11, 2)->comment('最终支付总价');

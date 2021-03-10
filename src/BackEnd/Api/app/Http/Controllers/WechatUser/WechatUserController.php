@@ -4,11 +4,10 @@ namespace App\Http\Controllers\WechatUser;
 
 use App\Http\Controllers\Controller;
 use App\Models\WechatUser;
-use App\Repositories\CouponRepository;
-use App\Utilities\WXBizDataCrypt;
-use Illuminate\Http\Request;
-use Carbon\Carbon;
 use App\Repositories\WechatUserRepository;
+use App\Utilities\WXBizDataCrypt;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
 class WechatUserController extends Controller
@@ -68,10 +67,9 @@ class WechatUserController extends Controller
      * )
      */
     public function WeAppLogin(Request $request)
-    {      
+    {
         $code = $request->code;
-        if(!$code)
-        {
+        if (!$code) {
             return json_encode(array(
                 'status' => 500,
                 'msg' => 'code错误',
@@ -95,9 +93,9 @@ class WechatUserController extends Controller
             $user = WechatUser::create([
                 'code' => $code,
                 'openid' => $weappOpenid,
-                'sessionkey' => $weixinSessionKey,               
+                'sessionkey' => $weixinSessionKey,
                 'token' => $token,
-                'lastlogin'=>Carbon::now(),
+                'lastlogin' => Carbon::now(),
             ]);
         };
         //如果注册过的，就更新下下面的信息
@@ -311,8 +309,25 @@ class WechatUserController extends Controller
             $pc = new WXBizDataCrypt(env('WECHAT_MINI_PROGRAM_APPID'), $user->sessionkey);
             $errCode = $pc->decryptData(urldecode($request->encryptedData), urldecode($request->iv), $data);
             if ($errCode == 0) {
-                $user->phone = json_decode($data)->phoneNumber;
-                $user->save();
+                $phone = json_decode($data)->phoneNumber;
+                $wc = WechatUser::where('phone', $phone)->first();
+                if ($wc) {
+                    $wc->code = $user->code;
+                    $wc->openid = $user->openid;
+                    $wc->sessionkey = $user->sessionkey;
+                    $wc->token = $user->token;
+                    $wc->lastlogin = Carbon::now();
+                    $wc->nickname = $user->nickname;
+                    $wc->avatar = $user->avatar;
+                    $wc->country = $user->country;
+                    $wc->province = $user->province;
+                    $wc->city = $user->city;
+                    $wc->gender = $user->gender;
+                    $user->forceDelete();
+                } else {
+                    $user->phone = json_decode($data)->phoneNumber;
+                    $user->save();
+                }
                 return json_encode(
                     array(
                         'status' => 200,
@@ -328,7 +343,8 @@ class WechatUserController extends Controller
                 ));
             }
         }
-    }   
+    }
+
     /**
      * @OA\Post(
      *     path="/api/combo/list",
@@ -399,7 +415,7 @@ class WechatUserController extends Controller
      *     )
      * )
      */
-     /**
+    /**
      * @OA\Post(
      *     path="/api/store/list",
      *     tags={"小程序-获取门店列表"},

@@ -23,6 +23,9 @@ class WechatUserRepository
                     ->orWhere('phone', 'like', '%' . $data->searchKey . '%');
             });
         }
+        if (isset($data->phone)) {
+            $users = $users->where('phone', $data->phone);
+        }
         if (isset($data->state)) {
             $users = $users->where('state', $data->state);
         }

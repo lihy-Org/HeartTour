@@ -88,7 +88,8 @@ class PetController extends Controller
         $rules = [
             'avatar' => ['required', 'string'],
             'nickname' => ['required', 'string'],
-            'gender' => ['required', 'string'], //宠物性别
+            'birthday'=>['required','date_format:"Y-m-d"'],
+            'gender' => ['nullable','integer', Rule::in([0, 1, 2])], //宠物性别
             'varietyId' => ['required', 'string'], //品种
             'shoulderHeight' => ['integer', 'gt:0'], //肩高
             'is_sterilization' => ['integer', 'gt:0'], //是否绝育

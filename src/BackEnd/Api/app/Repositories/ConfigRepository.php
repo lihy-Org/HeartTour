@@ -49,7 +49,7 @@ class ConfigRepository
 
     public function GetOneById($configId)
     {
-        return Config::where('id', $configId)->orderBy('sort')->first();
+        return Config::find($configId);
     }
 
     public function GetOne($type, $key)
@@ -65,7 +65,7 @@ class ConfigRepository
 
     public function GetTopConfig($configId)
     {
-        $config = $this->GetOne($type, $key);
+        $config = $this->GetOneById($configId);
         if ($config->parentId == '' || $config->parentId == null) {
             return $config;
         } else {

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class AccountController extends Controller
 {
@@ -77,7 +78,9 @@ class AccountController extends Controller
     {
 
         $rules = [
-            'phone' => ['required', 'regex:/^((13[0-9])|(14[5,7])|(15[0-3,5-9])|(17[0,3,5-8])|(18[0-9])|166|198|199)\d{8}$/'],
+            'phone' => ['required', Rule::exists('users', 'phone')->where(function ($query) use ($request) {
+                $query->where('state', 0)->where('isBeautician', 1);
+            })],
             'code' => ['required', 'string'],
         ];
         $messages = [

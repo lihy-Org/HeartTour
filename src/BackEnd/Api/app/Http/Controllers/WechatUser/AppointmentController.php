@@ -38,6 +38,7 @@ class AppointmentController extends Controller
      *           @OA\Property(description="技师ID", property="userId", type="string", default="dd"),
      *           @OA\Property(description="套餐总额", property="totalMoney", type="number", default="dd"),
      *           @OA\Property(description="门店ID", property="storeId", type="string", default="dd"),
+     *           @OA\Property(description="备注", property="remark", type="string", default="dd"),
      *           required={"comboIds","workDay","workTime","petId","userId","storeId"})
      *       )
      *     ),
@@ -115,7 +116,7 @@ class AppointmentController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/api/appt/getWorkTime",
+     *     path="/api/appt/getWorktime",
      *     tags={"小程序-预约"},
      *     summary="人员排班表",
      *     @OA\Parameter(name="token", in="header", @OA\Schema(type="string"), required=true, description="token"),
@@ -352,6 +353,7 @@ class AppointmentController extends Controller
      *         @OA\Schema(
      *           @OA\Property(description="门店编号", property="storeId", type="string", default="13888888888"),
      *           @OA\Property(description="状态", property="state", type="string", default=""),
+     *           @OA\Property(description="是否加单 不填全部 0为线上预约  1为线下加单", property="isOffline", type="number", default=""),
      *           @OA\Property(description="人员编号", property="userId", type="string", default=""),
      *           @OA\Property(description="预约开始时间", property="startDate", type="string", default=""),
      *           @OA\Property(description="预约结束时间", property="endDate", type="string", default=""),
@@ -415,6 +417,7 @@ class AppointmentController extends Controller
         $rules = [
             'storeId' => [Rule::exists('stores', 'id')],
             'startDate' => ['date_format:"Y-m-d H:i:s"'],
+            'isOffline'=>['nullable',Rule::in([0,1])],
             'endDate' => ['date_format:"Y-m-d H:i:s"'],
             'state' => [Rule::in([100, 200, 300, 400, 500, 501, 502, 600, 601])],
             'searchKey' => ['nullable', 'string'],

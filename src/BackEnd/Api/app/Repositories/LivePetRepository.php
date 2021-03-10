@@ -19,8 +19,10 @@ class LivePetRepository
         }
         if (!$live) {
             try {
-                $type = $ConfigRepository->GetOneById($data->typeId);
-                $variety = $ConfigRepository->GetOneById($data->varietyId);
+                $exploded = explode(" ", $data->varietyIdStr);
+                $varietyId = end($exploded);
+                $variety = $ConfigRepository->GetOneById($varietyId);
+                $type = $ConfigRepository->GetTopConfig($variety->id);
                 DB::beginTransaction(); // 开启事务
                 $live = LivePet::create([
                     'typeId' => $type->id,
@@ -29,6 +31,7 @@ class LivePetRepository
                     'vaccine' => $data->vaccine,
                     'number' => $data->number,
                     'color' => $data->color,
+                    'varietyIdStr' => $data->varietyIdStr,
                     'varietyId' => $variety->id,
                     'variety' => $variety->value,
                     'originPrice' => $data->originPrice,
@@ -64,8 +67,10 @@ class LivePetRepository
             }
         } else {
             try {
-                $type = $ConfigRepository->GetOneById($data->typeId);
-                $variety = $ConfigRepository->GetOneById($data->varietyId);
+                $exploded = explode(" ", $data->varietyIdStr);
+                $varietyId = end($exploded);
+                $variety = $ConfigRepository->GetOneById($varietyId);
+                $type = $ConfigRepository->GetTopConfig($variety->id);
                 DB::beginTransaction(); // 开启事务
                 $live->typeId = $type->id;
                 $live->typeName = $type->value;
@@ -73,6 +78,7 @@ class LivePetRepository
                 $live->vaccine = $data->vaccine;
                 $live->number = $data->number;
                 $live->color = $data->color;
+                $live->varietyIdStr =  $data->varietyIdStr;
                 $live->varietyId = $variety->id;
                 $live->variety = $variety->value;
                 $live->originPrice = $data->originPrice;

@@ -32,7 +32,7 @@ class SmsSeveice
                     'query' => [
                         'RegionId' => "cn-hangzhou",
                         'PhoneNumbers' => $phone,
-                        'SignName' => "i觅宠",
+                        'SignName' => "心之旅",
                         'TemplateCode' => $tempcode,
                         'TemplateParam' => $msg,
                     ],

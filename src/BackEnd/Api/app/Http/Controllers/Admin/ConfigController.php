@@ -267,24 +267,7 @@ class ConfigController extends Controller
      */
     public function Remove(Request $request)
     {
-
-        return json_encode($this->configRepository->Remove($request->configId));
-        // $Config = Config::where('id', $request->configId)->first();
-        // if ($Config) {
-        //     $Config->delete();
-        //     return json_encode(
-        //         array(
-        //             'status' => 200,
-        //             'msg' => '删除成功!',
-        //             'data' => '')
-        //     );
-        // }
-        // return json_encode(
-        //     array(
-        //         'status' => 500,
-        //         'msg' => '删除失败,找不到该配置!',
-        //         'data' => '')
-        // );
+        return json_encode($this->configRepository->Remove($request->configId));       
     }
 
 }

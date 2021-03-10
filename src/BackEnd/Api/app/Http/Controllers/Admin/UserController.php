@@ -28,7 +28,7 @@ class UserController extends Controller
      *       mediaType="multipart/form-data",
      *         @OA\Schema(
      *           @OA\Property(description="门店编号", property="storeId", type="number", default="13888888888"),
-     *           @OA\Property(description="职位", property="post", type="string", default=""),
+     *           @OA\Property(description="职位", property="postId", type="string", default=""),
      *           @OA\Property(description="性别", property="gender", type="string", default=""),
      *           @OA\Property(description="条数", property="pageSize", type="number", default="10"),
      *           @OA\Property(description="页数", property="page", type="number", default="1"),
@@ -90,8 +90,8 @@ class UserController extends Controller
         $rules = [
             'storeId' => ['uuid'],
             'post' => ['string'],
-            'gender' => ['string'],
-            'searchKey' => ['nullable','string'],
+            'gender' => ['nullable', 'integer', Rule::in([0, 1, 2])],
+            'searchKey' => ['nullable', 'string'],
             'pageSize' => ['integer', 'gt:0'],
             'page' => ['integer', 'gt:0'],
         ];
@@ -342,7 +342,7 @@ class UserController extends Controller
         $rules = [
             'storeId' => ['required', 'exists:stores,id'],
             'userId' => ['required', Rule::exists('users', 'id')->where(function ($query) {
-                $query->where('state', 0)->whereNotIn('type', [0, 1]);
+                $query->where('state', 0)->whereNotIn('type', [0, 1, 2]);
             }),
             ],
         ];

@@ -29,7 +29,7 @@ class PetRepository
                     'avatar' => $data->avatar,
                     'nickname' => $data->nickname,
                     'gender' => $data->gender,
-                    'type' => $topvariety->id,
+                    'typeId' => $topvariety->id,
                     'type' => $topvariety->value,
                     'varietyId' => $data->varietyId,
                     'variety' => $variety->value,
