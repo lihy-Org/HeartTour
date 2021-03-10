@@ -46,7 +46,7 @@ module.exports = {
       //   }
       // }
       [process.env.VUE_APP_BASE_API]: {
-        // 进锋本地接口
+        // 进锋本地的接口
         target: 'http://jfwang.tpddns.cn:20001',
         changeOrigin: true,
         pathRewrite: {
