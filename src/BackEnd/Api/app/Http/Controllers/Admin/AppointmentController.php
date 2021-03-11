@@ -94,7 +94,7 @@ class AppointmentController extends Controller
             'storeId' => [Rule::exists('stores', 'id')],
             'startDate' => ['date_format:"Y-m-d H:i:s"'],
             'endDate' => ['date_format:"Y-m-d H:i:s"'],
-            'isOffline'=>['nullable',Rule::in([0,1])],
+            'isOffline' => ['nullable', Rule::in([0, 1])],
             'state' => [Rule::in([100, 200, 300, 400, 500, 501, 502, 600, 601])],
             'searchKey' => ['nullable', 'string'],
             'pageSize' => ['integer', 'gt:0'],
@@ -462,7 +462,7 @@ class AppointmentController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/api/admin/appt/OfflineAppt",
+     *     path="/api/admin/appt/offlineAppt",
      *     tags={"总台管理系统-预约管理"},
      *     summary="插单",
      *     @OA\Parameter(name="token", in="header", @OA\Schema(type="string"), required=true, description="token"),
@@ -470,6 +470,7 @@ class AppointmentController extends Controller
      *     @OA\MediaType(
      *       mediaType="multipart/form-data",
      *         @OA\Schema(
+     *           @OA\Property(description="订单编号", property="orderId", type="string", default="dd"),
      *           @OA\Property(description="套餐编号", property="comboIds", type="string", default="dd"),
      *           @OA\Property(description="小程序用户编号", property="wcId", type="string", default="dd"),
      *           @OA\Property(description="小程序用户昵称", property="wcNickname", type="string", default="dd"),
@@ -479,7 +480,7 @@ class AppointmentController extends Controller
      *           @OA\Property(description="小程序用户市", property="city", type="string", default="dd"),
      *           @OA\Property(description="小程序用户区", property="country", type="string", default="dd"),
      *           @OA\Property(description="小程序用户地址", property="address", type="string", default="dd"),
-     *           @OA\Property(description="小程序用户手机", property="phone", type="string", default="dd"),     
+     *           @OA\Property(description="小程序用户手机", property="phone", type="string", default="dd"),
      *           @OA\Property(description="预约宠物id", property="petId", type="string", default="dd"),
      *           @OA\Property(description="预约宠物头像", property="petAvatar", type="string", default="dd"),
      *           @OA\Property(description="预约宠物昵称", property="petNickname", type="string", default="dd"),
@@ -537,6 +538,9 @@ class AppointmentController extends Controller
     public function OfflineAppt(Request $request)
     {
         $rules = [
+            'orderId' => ['nullable', Rule::exists('orders', 'id')->where(function ($query) use ($request) {
+                $query->where('isOffline', 1);
+            })],
             'wcId' => ['nullable', Rule::exists('wechatuser', 'id')],
             'wcNickname' => ['required_without:wcId', 'string'],
             'wcAvatar' => ['string'],

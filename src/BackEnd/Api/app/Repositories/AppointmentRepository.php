@@ -182,7 +182,7 @@ class AppointmentRepository
                 array_push($combos, $combo);
                 $allTime = bcadd($allTime, $combo->nursingTime);
                 $totalMoney = bcadd($totalMoney, $combo->salePrice, 2);
-            }      
+            }
             if (bccomp($totalMoney, $data->totalMoney, 10) !== 0) {
                 return array(
                     'status' => 500,
@@ -204,6 +204,10 @@ class AppointmentRepository
             $times = ceil(bcdiv($allTime, $config->value, 2));
 
             DB::beginTransaction(); // 开启事务
+            //修改 是删除以前的老订单，新增新的订单
+            if (isset($data->orderId)) {
+                Order::find($data->userId)->forceDelete();
+            }
             //无需判断技师是否有空预约
             //小程序用户如无则新增该用户和其宠物
             $wc;
@@ -237,9 +241,9 @@ class AppointmentRepository
                         'msg' => '无该品种信息!',
                         'data' => '');
                 }
-                
+
                 $topvariety = $ConfigRepository->GetTopConfig($variety->id);
-                
+
                 $pet = Pet::create([
                     'wcId' => $wc->id,
                     'avatar' => isset($data->petAvatar) ? $data->petAvatar : '',
@@ -281,7 +285,12 @@ class AppointmentRepository
                 'payMoney' => $totalMoney,
                 'payType' => 1,
                 'type' => 1,
-                'isOffline' => 1,               
+                'isOffline' => 1,
+                'state' => 500,
+                'payTime' => Carbon::now()->format('Y-m-d H:i'),
+                'shippingTime' => Carbon::now()->format('Y-m-d H:i'),
+                'beginTime' => Carbon::now()->format('Y-m-d H:i'),
+                'finishTime' => Carbon::now()->format('Y-m-d H:i'),
             ]);
             //保存订单详细信息
             foreach ($combos as $combo) {
@@ -301,7 +310,7 @@ class AppointmentRepository
                 'data' => '');
 
         } catch (\Exception $exception) {
-             dd($exception);
+            dd($exception);
             Db::rollback(); // 回滚事务
             return array(
                 'status' => 500,
@@ -490,6 +499,7 @@ class AppointmentRepository
         $order = Order::find($data->orderId);
         if ($data->state == 300 && $order->state == 200) {
             $order->state = 300;
+            $order->beginTime = Carbon::now();
             $order->save();
             return array(
                 'status' => 200,
@@ -497,6 +507,7 @@ class AppointmentRepository
                 'data' => '');
         } else if ($data->state == 400 && $order->state == 300) {
             $order->state = 400;
+            $order->shippingTime = Carbon::now();
             $order->save();
             return array(
                 'status' => 200,
@@ -504,6 +515,7 @@ class AppointmentRepository
                 'data' => '');
         } else if ($data->state == 500 && $order->state == 400) {
             $order->state = 500;
+            $order->finishTime = Carbon::now();
             $order->save();
             return array(
                 'status' => 200,

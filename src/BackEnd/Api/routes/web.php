@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\AccountController as AdminAccountController;
 use App\Http\Controllers\Admin\AppointmentController as AdminAppointmentController;
 use App\Http\Controllers\Admin\ComboController as AdminComboController;
 use App\Http\Controllers\Admin\ConfigController as AdminConfigController;
+use App\Http\Controllers\Admin\OSSController as AdminOSSController;
 use App\Http\Controllers\Admin\StoreController as AdminStoreController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Admin\WechatUserController as AdminWechatUserController;
@@ -11,7 +12,8 @@ use App\Http\Controllers\Beautician\AccountController as BeautAccountController;
 use App\Http\Controllers\Beautician\AppointmentController as BeautAppointmentController;
 use App\Http\Controllers\StoreSystem\AccountController as StoreSysAccountController;
 use App\Http\Controllers\StoreSystem\AppointmentController as StoreSysAppointmentController;
-use App\Http\Controllers\StoreSystem\UserController as StoreSysUserController;
+use App\Http\Controllers\StoreSystem\UserController as StoreSysUserController; 
+use App\Http\Controllers\StoreSystem\ComboController as StoreSysComboController;
 use App\Http\Controllers\TestController;
 use App\Http\Controllers\WechatUser\AddressController;
 use App\Http\Controllers\WechatUser\AppointmentController;
@@ -67,6 +69,8 @@ Route::prefix('api/admin')->middleware(['auth:sanctum', 'adminapi'])->group(func
     Route::post('/appt/getWorktime', [AdminAppointmentController::class, 'GetWorktime']);
     Route::post('/appt/trans', [AdminAppointmentController::class, 'TransferAppt']);
     Route::post('/appt/offlineAppt', [AdminAppointmentController::class, 'OfflineAppt']);
+    //OSS
+    Route::get('/oss/getKey', [AdminOSSController::class, 'GetKey']);
     //活体
     // Route::post('/live/addOrUpdate', [AdminLivePetController::class, 'AddOrUpdate']);
     // Route::post('/live/remove', [AdminLivePetController::class, 'Remove']);
@@ -98,12 +102,18 @@ Route::prefix('api/storesys')->middleware(['auth:sanctum', 'storeapi'])->group(f
     Route::post('/appt/refund', [StoreSysAppointmentController::class, 'Refund']);
     Route::post('/appt/changeState', [StoreSysAppointmentController::class, 'ChangeState']);
     Route::post('/appt/addRemark', [StoreSysAppointmentController::class, 'AddStoreRemark']);
-
+    Route::post('/appt/offlineAppt', [StoreSysAppointmentController::class, 'OfflineAppt']);
     //配置
     Route::get('/config/{type}/{key?}', [AdminConfigController::class, 'GetConfig']);
     //用户
     Route::post('/wechat/list', [AdminWechatUserController::class, 'GetList']);
     Route::get('/pet/list', [AdminWechatUserController::class, 'GetPetList']);
+    //OSS
+    Route::get('/oss/getKey', [AdminOSSController::class, 'GetKey']);
+
+    //套餐
+    Route::post('/combo/list', [StoreSysComboController::class, 'GetList']);
+
 });
 // --------------------------------小程序---------------------------------------------
 Route::post('api/user/login', [WechatUserController::class, 'WeAppLogin']);
@@ -139,6 +149,8 @@ Route::prefix('api')->middleware(['web', 'wechatapi'])->group(function () {
     Route::post('/appt/getWorktime', [AppointmentController::class, 'GetWorktime']);
     Route::post('/appt/pay', [AppointmentController::class, 'Pay']);
     Route::post('/appt/paid', [AppointmentController::class, 'Paid']);
+    //OSS
+    Route::get('/oss/getKey', [AdminOSSController::class, 'GetKey']);
 });
 
 // --------------------------------技师---------------------------------------------
