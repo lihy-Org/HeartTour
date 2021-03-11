@@ -7,7 +7,11 @@ Page({
   data: {
 
   },
-
+  goOrderList(){
+    wx.navigateTo({
+      url: '../my-order/my-order',
+    });
+  },
   /**
    * 生命周期函数--监听页面加载
    */

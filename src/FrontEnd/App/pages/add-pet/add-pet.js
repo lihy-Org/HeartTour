@@ -1,4 +1,5 @@
 // pages/add-pet/add-pet.js
+
 Page({
 
   /**
@@ -39,6 +40,7 @@ Page({
       is_sterilization: '',
       is_vaccine:''
     },
+    petId:''
   },
 
   _checkForm() {
@@ -88,6 +90,7 @@ Page({
     },
     onFilesAfterRead(event) {
       const { file } = event.detail;
+      console.log(file)
       this.setData({
         files: [ { url: file.path }],
         isEditAvatar: true
@@ -114,7 +117,7 @@ Page({
   onAddPets() {
     this._checkForm().then(() => {
         wx.showToast({
-          title:'点你妈卖批！胎神',
+          title:'添加成功',
           icon:'none'
         }),
         wx.navigateTo({
@@ -122,11 +125,12 @@ Page({
         })
     });
   },
+
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-
+    
   },
 
   /**
@@ -140,7 +144,7 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow: function () {
-
+    console.log(this.data.petId);
   },
 
   /**

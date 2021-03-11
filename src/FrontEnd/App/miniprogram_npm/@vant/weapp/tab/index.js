@@ -24,6 +24,10 @@ component_1.VantComponent({
       type: Boolean,
       observer: 'update',
     },
+    nextTitle: {
+      type: String,
+      observer: 'update',
+    },
     titleStyle: {
       type: String,
       observer: 'update',
@@ -31,7 +35,7 @@ component_1.VantComponent({
     name: {
       type: [Number, String],
       value: '',
-    },
+    }
   },
   data: {
     active: false,

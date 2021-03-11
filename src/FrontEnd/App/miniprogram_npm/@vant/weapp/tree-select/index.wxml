@@ -26,8 +26,11 @@
       class="van-ellipsis content-item-class {{ utils.bem('tree-select__item', { active: wxs.isActive(activeId, item.id), disabled: item.disabled }) }} {{ wxs.isActive(activeId, item.id) ? 'content-active-class' : '' }} {{ item.disabled ? 'content-disabled-class' : '' }}"
       data-item="{{ item }}"
       bind:tap="onSelectItem"
+      style="margin-bottom:20rpx;"
     >
-      {{ item.text }}
+      <image class="" src="{{item.src}}" style="width:80rpx;height:80rpx;margin-right:30rpx;border-radius: 50%;"></image>
+      <span>{{ item.text }}</span>
+      
       <van-icon
         wx:if="{{ wxs.isActive(activeId, item.id) }}"
         name="checked"
