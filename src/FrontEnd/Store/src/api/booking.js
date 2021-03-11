@@ -4,6 +4,7 @@
  * @param changeBookingMsg 改单
  * @param refund 退单
  * @param changeState 完成订单
+ * @param remarks 备注
  */
 import request from '@/utils/request'
 
@@ -34,6 +35,14 @@ export function refund(data) {
 export function changeState(data) {
   return request({
     url: '/api/storesys/appt/changeState',
+    method: 'post',
+    data
+  })
+}
+
+export function remarks(data) {
+  return request({
+    url: '/api/storesys/appt/addRemark',
     method: 'post',
     data
   })

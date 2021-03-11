@@ -109,21 +109,6 @@ export const constantRoutes = [
   // 人员管理
   staffRouter,
 
-  // 账目管理
-  {
-    path: '/account',
-    component: Layout,
-    redirect: 'noRedirect',
-    children: [
-      {
-        path: 'management',
-        component: () => import('@/views/account/management/index'),
-        name: 'AccountManagement',
-        meta: { title: 'accountManage', icon: 'money', affix: true, keepAlive: false, keepComponentPages: [] }
-      }
-    ]
-  },
-
   // 线下加单
   {
     path: '/addorder',
@@ -135,6 +120,21 @@ export const constantRoutes = [
         component: () => import('@/views/addOrder/management/index'),
         name: 'AddorderManagement',
         meta: { title: 'addorderManagement', icon: 'edit', affix: true, keepAlive: false, keepComponentPages: [] }
+      }
+    ]
+  },
+
+  // 账目管理
+  {
+    path: '/account',
+    component: Layout,
+    redirect: 'noRedirect',
+    children: [
+      {
+        path: 'management',
+        component: () => import('@/views/account/management/index'),
+        name: 'AccountManagement',
+        meta: { title: 'accountManage', icon: 'money', affix: true, keepAlive: false, keepComponentPages: [] }
       }
     ]
   },
@@ -234,18 +234,19 @@ export const asyncRoutes = [
   //   ]
   // },
 
-  {
-    path: '/icon',
-    component: Layout,
-    children: [
-      {
-        path: 'index',
-        component: () => import('@/views/icons/index'),
-        name: 'Icons',
-        meta: { title: 'icons', icon: 'icon', noCache: true }
-      }
-    ]
-  }
+  // 图标
+  // {
+  //   path: '/icon',
+  //   component: Layout,
+  //   children: [
+  //     {
+  //       path: 'index',
+  //       component: () => import('@/views/icons/index'),
+  //       name: 'Icons',
+  //       meta: { title: 'icons', icon: 'icon', noCache: true }
+  //     }
+  //   ]
+  // }
 
   // /** when your routing map is too long, you can split it into small modules **/
   // componentsRouter,

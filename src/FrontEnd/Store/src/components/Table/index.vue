@@ -35,7 +35,7 @@
               <!-- 是否有可选择的下拉框 -->
               <template v-if="isSelect && item.canEdit">
                 <el-select
-                  v-model="scope.row.date"
+                  v-model="item.dateTime"
                   popper-class="role-option"
                   placeholder="请选择"
                   size="small"
@@ -211,9 +211,15 @@ export default {
       mHeight: 0
     }
   },
+  watch: {
+    isSelect: {
+      handler(n, o) {
+        console.log('子组件中的isSelect值： ' + this.isSelect)
+      },
+      deep: true // 深度监听父组件传过来对象变化
+    }
+  },
   mounted() {
-    console.log(this)
-    console.log(this.tableData)
     const mHeight = this.$refs['table-wrap'].offsetHeight
     this.$nextTick(() => {
       this.$set(this, 'mHeight', mHeight)

@@ -1,6 +1,6 @@
 <!-- 商品管理-产品 -->
 <template>
-  <div class="dervatives-container">
+  <div class="product-container">
     <!-- 搜索区域 -->
     <div class="search-wrap">
       <Form class="search-form" :inline="true" :form="searchForm" :form-items="searchFormItems" />
@@ -27,8 +27,7 @@ import Form from '@/components/Form/index'
 import Btns from '@/components/Btns/index'
 import Table from '@/components/Table/index'
 import { parseTime } from '@/utils'
-
-import { getBookingManageList } from '@/api/personManage'
+import axios from 'axios'
 
 export default {
   name: 'Product',
@@ -45,14 +44,27 @@ export default {
        * @param searchFormItems 搜索内容组
        */
       searchForm: {
-        placeName: '',
+        // 默认待支付
+        state: 100,
         orgName: ''
       },
       searchFormItems: [
         {
+          type: 'select',
+          size: 'mini',
+          placeholder: '请选择状态',
+          label: '订单状态 :',
+          value: 'state',
+          clearable: true,
+          list: () => this.goodsState,
+          change: () => this.currentChange(1),
+          filterable: true,
+          style: 'width: 120px'
+        },
+        {
           type: 'datetimerange',
           size: 'mini',
-          label: '预约时间 :',
+          label: '下单时间 :',
           style: 'width: 360px',
           separator: '至',
           startPlaceholder: '开始时间',
@@ -61,21 +73,9 @@ export default {
           change: () => this.currentChange(1)
         },
         {
-          type: 'select',
-          size: 'mini',
-          placeholder: '请选择技师',
-          label: '技师 :',
-          value: 'placeId',
-          clearable: true,
-          list: () => this.communitys,
-          change: () => this.currentChange(1),
-          filterable: true,
-          style: 'width: 120px'
-        },
-        {
           type: 'input',
           size: 'mini',
-          placeholder: '预约用户名/手机号',
+          placeholder: '下单用户名/手机号',
           value: 'deviceId',
           clearable: true
         }
@@ -84,6 +84,7 @@ export default {
       /**
        * 顶部按钮组
        * @param operationBtns 按钮组
+       * @param goodsState 状态
        */
       operationBtns: [
         {
@@ -94,17 +95,30 @@ export default {
           icon: 'el-icon-search'
         }
       ],
+      goodsState: [
+        { value: 100, label: '待支付' },
+        { value: 200, label: '待发货' },
+        { value: 400, label: '已发货' },
+        { value: 500, label: '已收货' }
+      ],
 
       /**
        * table属性
        * @param tableLoading 动画
        * @param tableData 列表数据
+       * @param statusMap 状态对应字典
        * @param columns 列表展示项
        * @param pagination 分页
        * @param total 数据总量
        * @param petTypeMap 宠物类型对应字典
        */
       tableLoading: false,
+      statusMap: {
+        100: '待支付',
+        200: '待发货',
+        400: '已发货',
+        500: '已收货'
+      },
       tableData: [],
       petTypeMap: {
         0: '猫猫',
@@ -112,32 +126,47 @@ export default {
       },
       columns: [
         {
-          label: '预约技师',
-          prop: 'technician'
+          label: '订单ID',
+          prop: 'id'
         },
         {
-          label: '预约时间',
-          prop: 'time',
-          formatter: row => parseTime(row.time, '{y}-{m}-{d} {h}:{i}')
+          label: '下单用户',
+          prop: 'wcName'
         },
         {
-          label: '预约用户',
-          prop: 'userName'
-        },
-        {
-          label: '联系方式',
-          prop: 'phone'
+          label: '订单状态',
+          prop: 'state',
+          formatter: row => {
+            return this.statusMap[row.state]
+          }
         },
         {
           label: '套餐名称',
-          prop: 'comboName'
+          prop: 'mainComboName'
         },
         {
-          label: '宠物类型',
+          label: '下单时间',
+          prop: 'apptTime',
+          formatter: row => parseTime(row.apptTime, '{y}-{m}-{d} {h}:{i}')
+        },
+        {
+          label: '产品编号',
+          prop: 'goodsNumber'
+        },
+        {
+          label: '产品类型',
           prop: 'petType',
           formatter: row => {
             return this.petTypeMap[row.petType]
           }
+        },
+        {
+          label: '产品品种',
+          prop: 'petBreed'
+        },
+        {
+          label: '订单金额',
+          prop: 'totalMoney'
         }
         // {
         //   contentType: 'img',
@@ -161,10 +190,13 @@ export default {
     // 获取列表数据
     getBookingManageList() {
       this.tableLoading = true
-      getBookingManageList().then(res => {
-        this.tableLoading = false
-        this.tableData = res.data
-        console.log(this.tableData)
+      axios.post('https://www.fastmock.site/mock/06260b1fdf2704085031aac99da750a5/xinzhilv/xinzhilv/goods').then(res => {
+        if (res.status === 200) {
+          console.log(res)
+          this.tableLoading = false
+          this.tableData = res.data.data
+          console.log(this.tableData)
+        }
       }).catch(err => {
         this.tableLoading = false
         this.$message({
@@ -195,7 +227,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.dervatives-container {
+.product-container {
   padding: 20px;
   .search-wrap {
     display: flex;
@@ -212,4 +244,3 @@ export default {
   }
 }
 </style>
-

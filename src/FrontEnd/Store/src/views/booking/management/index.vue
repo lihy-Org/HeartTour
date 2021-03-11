@@ -68,7 +68,7 @@ import Btns from '@/components/Btns/index'
 import Table from '@/components/Table/index'
 import { parseTime } from '@/utils'
 
-import { getBookingList, changeBookingMsg, refund, changeState } from '@/api/booking'
+import { getBookingList, changeBookingMsg, refund, changeState, remarks } from '@/api/booking'
 import { getStaffShiftList, getUsersList } from '@/api/personManage'
 
 import moment from 'moment'
@@ -229,6 +229,23 @@ export default {
             return this.petTypeMap[row.petType]
           }
         },
+        {
+          label: '用户备注',
+          prop: 'remark'
+        },
+        {
+          label: '技师备注',
+          prop: 'userRemark',
+          formatter: row => {
+            if (!row.userRemark) {
+              return '-'
+            }
+          }
+        },
+        {
+          label: '店铺备注',
+          prop: 'storeRemark'
+        },
         // {
         //   contentType: 'img',
         //   name: '背景图',
@@ -237,7 +254,7 @@ export default {
         {
           contentType: 'button',
           label: '操作',
-          width: 320,
+          width: 380,
           align: 'center',
           buttons: [
             {
@@ -250,7 +267,10 @@ export default {
               type: 'primary',
               size: 'mini',
               label: '改 单',
-              click: row => this.editRowData(row)
+              click: row => this.editRowData(row),
+              hidden(row) {
+                return row.state === 500
+              }
             },
             {
               type: 'danger',
@@ -262,6 +282,15 @@ export default {
               }
             },
             {
+              type: 'danger',
+              size: 'mini',
+              label: '加 单',
+              click: row => this.refund(row),
+              hidden(row) {
+                return row.state !== 500
+              }
+            },
+            {
               type: 'warning',
               size: 'mini',
               label: '完成订单',
@@ -269,6 +298,12 @@ export default {
               hidden(row) {
                 return row.state !== 400
               }
+            },
+            {
+              type: 'info',
+              size: 'mini',
+              label: '店铺备注',
+              click: row => this.remarks(row)
             }
           ]
         }
@@ -613,6 +648,43 @@ export default {
         this.$message({
           type: 'info',
           message: '已取消 完成订单'
+        })
+      })
+    },
+
+    // 备注
+    remarks(row) {
+      console.log(row)
+      this.$prompt('请输入备注', '备注', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        inputValidator: function(v) {
+          if (v) {
+            return true
+          } else {
+            return false
+          }
+        },
+        inputErrorMessage: '请输入备注'
+      }).then(({ value }) => {
+        const data = {
+          orderId: row.id,
+          storeRemark: value
+        }
+        remarks(data).then(res => {
+          if (res.status === 200) {
+            this.$message({
+              type: 'success',
+              message: '备注成功'
+            })
+          }
+        }).catch(err => {
+          console.log(err)
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '取消备注'
         })
       })
     },

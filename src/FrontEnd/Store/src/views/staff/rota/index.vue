@@ -23,6 +23,26 @@
       :size-change="sizeChange"
       :is-select="isSelect"
     />
+
+    <!-- 调店的dialog -->
+    <div v-if="dialogVisible">
+      <el-dialog title="调店" :visible.sync="dialogVisible" width="500px" :before-close="handleClose">
+        <Form
+          ref="transferForm"
+          class="transfer-form"
+          :inline="true"
+          :form="transferForm"
+          :form-items="transferFormItems"
+          :form-col-style="formColStyle"
+          :label-width="labelWidth"
+          :label-position="labelPosition"
+        />
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="dialogVisible = false">取 消</el-button>
+          <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
+        </span>
+      </el-dialog>
+    </div>
   </div>
 </template>
 
@@ -108,6 +128,9 @@ export default {
       // 是否table展示下拉框
       isSelect: false,
 
+      // 调店
+      dialogVisible: false,
+
       // 是否首次进入该页面，控制查询按钮的触发
       isFirstIn: true,
 
@@ -128,7 +151,7 @@ export default {
           size: 'small',
           value: '编辑人员班表',
           click: () => this.setRota(),
-          icon: 'el-icon-search'
+          icon: 'el-icon-setting'
         }
       ],
 
@@ -152,9 +175,56 @@ export default {
         },
         {
           label: '职位',
-          prop: 'position'
+          prop: 'post',
+          fixed: true
         }
       ],
+
+      /**
+       * 调店属性
+       * @param transferStores 店铺
+       * @param transferForm 编辑的字段
+       * @param formColStyle 表单元素样式
+       * @param labelWidth form中label文字宽度
+       * @param labelPosition 对齐方式
+       * @param transferFormItems 页面展示内容
+       */
+      transferStores: [
+        { value: 100, label: '店铺A' },
+        { value: 200, label: '店铺B' },
+        { value: 300, label: '店铺C' },
+        { value: 400, label: '店铺D' },
+        { value: 500, label: '店铺E' },
+        { value: 501, label: '店铺F' },
+        { value: 502, label: '店铺G' }
+      ],
+      transferForm: {
+        storeId: '',
+        nowStore: '店铺XXX'
+      },
+      formColStyle: 'width: 100%',
+      labelWidth: '110px',
+      labelPosition: 'right',
+      transferFormItems: [
+        {
+          size: 'mini',
+          label: '当前店铺 :',
+          value: 'nowStore',
+          style: 'width: 320px'
+        },
+        {
+          type: 'select',
+          size: 'mini',
+          placeholder: '请选择店铺',
+          label: '调离到 :',
+          value: 'storeId',
+          list: () => this.transferStores,
+          // change: () => this.currentChange(1),
+          filterable: true,
+          style: 'width: 220px'
+        }
+      ],
+
       pagination: {
         page: 1,
         pageSize: 20
@@ -216,23 +286,66 @@ export default {
             data.userId = this.searchForm.userId
           }
           getStatsWorktime(data).then(res => {
+            console.log(res.data)
+            /**
+             * 数据格式化
+             * 1. 去重、且将同一人的班表放在一个数组中，数组中每个对象即不同的人 personArr存放去重后的人员id
+             * 2. 将同一个id下人员的班表以key-value形式加入对象中 如："2021-3-11": "13:00-17:00"
+             */
+            const personArr = []
+            const newData = []
+            for (let i = 0; i < res.data.length; i++) {
+              if (personArr.indexOf(res.data[i].uid) === -1) {
+                personArr.push(res.data[i].uid)
+              }
+            }
+            personArr.forEach(item => {
+              const obj = {}
+              res.data.forEach(ele => {
+                if (item === ele.uid) {
+                  obj.post = ele.post
+                  obj.uid = ele.uid
+                  obj.uname = ele.uname
+                  obj[`${ele.workDay}`] = ele.times
+                }
+              })
+              newData.push(obj)
+            })
+            console.log(newData)
             // 每次切换时间，数据重置
             this.columns = this.$options.data().columns
 
             this.tableLoading = false
-            this.tableData = res.data
+            this.tableData = newData
 
             const dateArr = []
             for (let i = 0; i < timeDifference; i++) {
               const dateStamp = moment(val[0] + i * 1000 * 60 * 60 * 24)
               const obj = {
                 label: `${dateStamp.format('MM-DD')} / ${this.getWeek(dateStamp.day())}`,
-                prop: 'staffShift',
-                canEdit: true
+                prop: `${dateStamp.format('YYYY-MM-DD')}`,
+                canEdit: true,
+                dateTime: ''
               }
               dateArr.push(obj)
             }
             console.log(dateArr)
+            const operation = {
+              contentType: 'button',
+              label: '操作',
+              width: 120,
+              align: 'center',
+              fixed: 'right',
+              buttons: [
+                {
+                  type: 'primary',
+                  size: 'mini',
+                  label: '调店',
+                  click: row => this.transferStore(row)
+                }
+              ]
+            }
+            dateArr.push(operation)
             this.columns.splice(2, 0, ...dateArr)
             this.isFirstIn = false
           }).catch(err => {
@@ -246,7 +359,24 @@ export default {
 
     // 编辑人员班表
     setRota() {
-      this.isSelect = true
+      this.isSelect = !this.isSelect
+      this.isFirstIn = true
+      this.getRota(this.searchForm.workDay)
+    },
+
+    // 调店
+    transferStore(row) {
+      console.log(row)
+      this.dialogVisible = true
+    },
+
+    // 关闭编辑弹框的提示
+    handleClose(done) {
+      this.$confirm('确认关闭？')
+        .then(_ => {
+          done()
+        })
+        .catch(_ => { })
     },
 
     // 时间戳转汉字的星期
@@ -283,6 +413,7 @@ export default {
     },
     seachList() {
       console.log('seachList')
+      this.isSelect = false
       this.isFirstIn = true
       this.getRota(this.searchForm.workDay)
     }

@@ -27,7 +27,8 @@ import Form from '@/components/Form/index'
 import Btns from '@/components/Btns/index'
 import Table from '@/components/Table/index'
 
-import { getPerformanceList } from '@/api/personManage'
+// import { getPerformanceList } from '@/api/personManage'
+import axios from 'axios'
 
 export default {
   name: 'Performance',
@@ -141,9 +142,10 @@ export default {
     // 获取列表数据
     getPerformanceList() {
       this.tableLoading = true
-      getPerformanceList().then(res => {
+      axios.post('https://www.fastmock.site/mock/06260b1fdf2704085031aac99da750a5/xinzhilv/xinzhilv/personManage/performance').then(res => {
+      // getPerformanceList().then(res => {
         this.tableLoading = false
-        this.tableData = res.data
+        this.tableData = res.data.data
         console.log(this.tableData)
       }).catch(err => {
         this.tableLoading = false
