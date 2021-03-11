@@ -6,6 +6,7 @@
         v-loading="loading"
         :data="tableData"
         :max-height="mHeight"
+        fit
         border
         tooltip-effect="dark"
         style="width: 100%"
@@ -29,7 +30,26 @@
               :formatter="item.formatter"
               show-overflow-tooltip
               :fixed="item.fixed"
-            />
+              :align="item.align"
+            >
+              <!-- 是否有可选择的下拉框 -->
+              <template v-if="isSelect && item.canEdit">
+                <el-select
+                  v-model="item.dateTime"
+                  popper-class="role-option"
+                  placeholder="请选择"
+                  size="small"
+                  @change="dateHandleChange"
+                >
+                  <el-option
+                    v-for="(ele, index) in item.optionData"
+                    :key="index"
+                    :label="ele.name"
+                    :value="ele.value"
+                  />
+                </el-select>
+              </template>
+            </el-table-column>
             <el-table-column
               v-else-if="item.contentType==='img'"
               :key="key"
@@ -146,11 +166,19 @@ export default {
       type: Array,
       required: true
     },
+    isSelect: {
+      type: Boolean
+    },
     columns: {
       type: Array,
       required: true
     },
     selectedChange: {
+      type: Function,
+      /* eslint-disable-next-line */
+      default: () => { },
+    },
+    dateHandleChange: {
       type: Function,
       /* eslint-disable-next-line */
       default: () => { },
@@ -181,6 +209,14 @@ export default {
   data() {
     return {
       mHeight: 0
+    }
+  },
+  watch: {
+    isSelect: {
+      handler(n, o) {
+        console.log('子组件中的isSelect值： ' + this.isSelect)
+      },
+      deep: true // 深度监听父组件传过来对象变化
     }
   },
   mounted() {

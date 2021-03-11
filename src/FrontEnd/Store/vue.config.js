@@ -38,14 +38,21 @@ module.exports = {
     },
     proxy: {
       [process.env.VUE_APP_BASE_API]: {
-        target: 'https://www.fastmock.site',
+        // // fastmock接口
+        // target: 'https://www.fastmock.site',
+
+        // // 进锋本地接口
+        // target: 'http://jfwang.tpddns.cn:20001',
+
+        // 服务器接口
+        target: 'http://api.xinzhilv.vip:32001',
         changeOrigin: true,
         pathRewrite: {
           ['^' + process.env.VUE_APP_BASE_API]: ''
         }
       }
     },
-    before: require('./mock/mock-server.js')
+    // before: require('./mock/mock-server.js')
   },
   // 函数式引入插件
   configureWebpack: {

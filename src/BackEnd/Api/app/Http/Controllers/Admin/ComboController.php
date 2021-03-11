@@ -21,7 +21,7 @@ class ComboController extends Controller
      * @OA\Post(
      *     path="/api/admin/combo/addOrUpdate",
      *     tags={"总台管理系统-套餐管理"},
-     *     summary="新增或修改套餐管理",
+     *     summary="新增或修改套餐",
      *     @OA\Parameter(name="token", in="header", @OA\Schema(type="string"), required=true, description="token"),
      *     @OA\RequestBody(
      *     @OA\MediaType(
@@ -29,6 +29,7 @@ class ComboController extends Controller
      *         @OA\Schema(
      *           @OA\Property(description="套餐id", property="comboId", type="string", default="dd"),
      *           @OA\Property(description="套餐类型：0-主套餐  1-增项套餐", property="comboType", type="string", default="dd"),
+     *           @OA\Property(description="套餐描述", property="desc", type="string", default="dd"),
      *           @OA\Property(description="适用品种", property="varietyIds", type="string", default="dd"),
      *           @OA\Property(description="名称", property="name", type="string", default="dd"),
      *           @OA\Property(description="原价", property="originPrice", type="string", default="dd"),
@@ -82,11 +83,11 @@ class ComboController extends Controller
      *     )
      * )
      */
-    public function addOrUpdate(Request $request)
+    public function AddOrUpdate(Request $request)
     {
         $rules = [
             'name' => ['required', 'string', Rule::unique('combos')->ignore($request->comboId, 'id')],
-            'comboType' => ['required', Rule::in(['0', '1'])],
+            'comboType' => ['required', Rule::in([0, 1])],
             'desc' => ['required', 'string'],
             'originPrice' => ['numeric', 'required'],
             'salePrice' => ['numeric', 'required'],
@@ -225,7 +226,7 @@ class ComboController extends Controller
                 $query->where('state', 0)->whereNotIn('type', [0, 1])->where('isBeautician', 1);
             })],
             'comboId' => ['required', Rule::exists('combos', 'id')->where(function ($query) {
-                $query->where('state', 0)->where('comboType', 0);
+                $query->where('comboType', 0);
             })],
         ];
         $messages = [];
@@ -314,9 +315,9 @@ class ComboController extends Controller
         $rules = [
             'storeId' => ['exists:stores,id', 'nullable'],
             'varietyId' => ['nullable'],
-            'comboType' => [Rule::in(['0', '1'])],
-            'state' => [Rule::in(['0', '1', '2'])],
-            'searchKey' => ['nullable','string'],
+            'comboType' => ['nullable', Rule::in([0, 1])],
+            'state' => ['nullable', Rule::in([0, 1, 2])],
+            'searchKey' => ['nullable', 'string'],
             'pageSize' => ['integer', 'gt:0'],
             'page' => ['integer', 'gt:0'],
         ];
@@ -337,7 +338,7 @@ class ComboController extends Controller
             $total = $combos->count();
             $list = $combos->skip($skipNum)->take($takeNum)->get();
             $pageTotal = $total / $takeNum;
-            $pageRes=(object)[];
+            $pageRes = (object) [];
             $pageRes->total = $total;
             $pageRes->pageNo = $page;
             $pageRes->pageSize = $takeNum;

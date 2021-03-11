@@ -6,13 +6,20 @@ use App\Http\Controllers\Controller;
 use App\Models\Address;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use App\Repositories\AddressRepository;
 
 class AddressController extends Controller
 {
+    protected $addressRepository;
+
+    public function __construct(AddressRepository $_addressRepository)
+    {
+        $this->addressRepository = $_addressRepository;
+    }
 
     /**
      * @OA\Post(
-     *     path="/api/address/update",
+     *     path="/api/address/addOrUpdate",
      *     tags={"小程序-收货地址"},
      *     summary="新增或修改收货地址",
      *     @OA\Parameter(name="token", in="header", @OA\Schema(type="string"), required=true, description="token"),
@@ -25,7 +32,7 @@ class AddressController extends Controller
      *           @OA\Property(description="手机号码", property="phone", type="string", default="dd"),
      *           @OA\Property(description="地址", property="address", type="string", default="dd"),
      *           @OA\Property(description="门牌号", property="doorplate", type="string", default="dd"),
-     *           @OA\Property(description="是否默认：0非默认 1默认", property="default", type="string", default="dd"),     * 
+     *           @OA\Property(description="是否默认：0非默认 1默认", property="default", type="string", default="dd"),     *
      *           required={"name","phone","address"})
      *       )
      *     ),
@@ -88,42 +95,14 @@ class AddressController extends Controller
         if ($validator->fails()) {
             return json_encode(array(
                 'status' => 500,
-                'msg' => '新增/修改收货地址失败!',
+                'msg' => '验证失败!',
                 'data' => $validator->errors(),
             ));
         } else {
-            //如果此地址是默认，则把其他地址调整为非默认
-            if ($request->default == 1) {
-                Address::where('uid', $request->user->id)->update(['default' => 0]);
-            }
-            $addr = Address::updateOrCreate(
-                ['id' => $request->addrId], [
-                    'uid' => $request->user->id,
-                    'name' => $request->name,
-                    'phone' => $request->phone,
-                    'address' => $request->address,
-                    'doorplate' => $request->doorplate,
-                    'default' => is_null($request->default) || empty($request->default) ? 0 : $request->default,
-                ]);
-            if ($addr) {
-                return json_encode(
-                    array(
-                        'status' => 200,
-                        'msg' => '新增/修改地址成功!',
-                        'data' => '',
-                    )
-                );
-
-            } else {
-                return json_encode(
-                    array(
-                        'status' => 500,
-                        'msg' => '新增/修改地址失败!',
-                        'data' => '',
-                    )
-                );
-
-            }
+            $data = (object) $request->all();
+            $data->wcId = $request->user->id;
+            $data->addrId=isset($data->addrId)?$data->addrId:null;
+            return json_encode($this->addressRepository->AddOrUpdate($data));
         }
     }
     /**
@@ -157,13 +136,17 @@ class AddressController extends Controller
      *    )
      * )
      */
-    function GetList(Request $request) {
-        $addrs = Address::where('uid', $request->user->id)->select('id as addrId', 'name', 'phone', 'address', 'doorplate','default')->get();
+    public function GetList(Request $request)
+    {
+        $data = (object) $request->all();
+        $data->wcId = $request->user->id;
+        $adds = $this->addressRepository->GetList($data)->select('id as addrId', 'name', 'phone', 'address', 'doorplate', 'default')->get();
         return json_encode(
             array(
                 'status' => 200,
-                'msg' => '获取收货地址列表成功!',
-                'data' => $addrs)
+                'msg' => '获取列表成功!',
+                'data' => $adds,
+            )
         );
     }
 
@@ -196,7 +179,7 @@ class AddressController extends Controller
      */
     public function Remove(Request $request)
     {
-        $addr = Address::where('uid', $request->user->id)->where('id', $request->addrId)->first();
+        $addr = Address::where('wcId', $request->user->id)->where('id', $request->addrId)->first();
         if ($addr) {
             $addr->delete();
             return json_encode(

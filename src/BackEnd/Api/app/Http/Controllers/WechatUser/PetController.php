@@ -88,7 +88,8 @@ class PetController extends Controller
         $rules = [
             'avatar' => ['required', 'string'],
             'nickname' => ['required', 'string'],
-            'gender' => ['required', 'string'], //宠物性别
+            'birthday'=>['required','date_format:"Y-m-d"'],
+            'gender' => ['nullable','integer', Rule::in([0, 1, 2])], //宠物性别
             'varietyId' => ['required', 'string'], //品种
             'shoulderHeight' => ['integer', 'gt:0'], //肩高
             'is_sterilization' => ['integer', 'gt:0'], //是否绝育
@@ -109,7 +110,7 @@ class PetController extends Controller
             ));
         } else {
             $data = (object) $request->all();
-            $data->wcid = $request->user->id;
+            $data->wcId = $request->user->id;
             return json_encode($this->petRepository->AddOrUpdate($data));
         }
     }
@@ -149,8 +150,8 @@ class PetController extends Controller
     {
         // ->select('id as petId', 'avatar', 'nickname', 'breed', 'gender')->get()->toArray();
         $data = (object) $request->all();
-        $data->wcid = $request->user->id;
-        $pets = $this->petRepository->GetList()->get();
+        $data->wcId = $request->user->id;
+        $pets = $this->petRepository->GetList($data)->get();
         return json_encode(
             array(
                 'status' => 200,
@@ -196,7 +197,7 @@ class PetController extends Controller
     {
         // ->select('id as petId', 'avatar', 'nickname', 'breed', 'gender',
         //     'birthday', 'grade', 'is_sterilization as isSterilization')
-        $pet = Pet::where('wcid', $request->user->id)->where('id', $request->id)->first();
+        $pet = Pet::where('wcId', $request->user->id)->where('id', $request->id)->first();
         return json_encode(
             array(
                 'status' => 200,
@@ -234,7 +235,7 @@ class PetController extends Controller
      */
     public function Remove(Request $request)
     {
-        $pet = Pet::where('wcid', $request->user->id)->where('id', $request->petId)->first();
+        $pet = Pet::where('wcId', $request->user->id)->where('id', $request->petId)->first();
         if ($pet) {
             $pet->delete();
             return json_encode(

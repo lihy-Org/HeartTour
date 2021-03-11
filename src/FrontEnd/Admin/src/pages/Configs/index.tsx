@@ -1,7 +1,7 @@
 /*
  * @Author: Li-HONGYAO
  * @Date: 2021-01-22 12:36:49
- * @LastEditTime: 2021-02-25 15:48:09
+ * @LastEditTime: 2021-03-01 17:21:58
  * @LastEditors: Li-HONGYAO
  * @Description:
  * @FilePath: /Admin/src/pages/Configs/index.tsx
@@ -10,8 +10,8 @@ import React, { FC, useState } from 'react';
 import { Card, Button } from 'antd';
 import { EditOutlined } from '@ant-design/icons';
 import TagModal from '@/components/TagModal';
-import { kPOST, kTITLE } from '@/constants';
-import Varieties from './Varieties';
+import { kGOODS_CLASSIFY, kPOST, kTITLE, kVARIETIES } from '@/constants';
+import ConfigTree from '../../components/ConfigTree';
 
 const { Meta } = Card;
 
@@ -20,13 +20,14 @@ const Banner: FC = () => {
   const [postVisible, setPostVisible] = useState(false);
   const [titleVisible, setTitleVisible] = useState(false);
   const [varietiesVisible, setVarietiesVisible] = useState(false);
+  const [goodsClassifyVisible, setGoodsClassifyVisible] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
 
   // list datas
   const datas = [
     {
       cover:
-        'https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png',
+        'https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=3062556219,1093566700&fm=26&gp=0.jpg',
       title: '预约须知',
       description: '商品详情预约须知',
       actions: [
@@ -58,7 +59,7 @@ const Banner: FC = () => {
     },
     {
       cover:
-        'https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=967197514,2532988482&fm=26&gp=0.jpg',
+        'https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=3062556219,1093566700&fm=26&gp=0.jpg',
       title: '头衔管理',
       description: '头衔相关管理',
       actions: [
@@ -74,8 +75,8 @@ const Banner: FC = () => {
     },
     {
       cover:
-        'https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png',
-      title: '宠物种类',
+        'https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=3062556219,1093566700&fm=26&gp=0.jpg',
+      title: '宠物品种',
       description: '宠物种类相关分类管理',
       actions: [
         <Button
@@ -88,10 +89,25 @@ const Banner: FC = () => {
         </Button>,
       ],
     },
-
     {
       cover:
-        'https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png',
+        'https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=3062556219,1093566700&fm=26&gp=0.jpg',
+      title: '商品分类',
+      description: '商品分类管理',
+      actions: [
+        <Button
+          type="primary"
+          size="small"
+          icon={<EditOutlined key="edit" />}
+          onClick={() => setGoodsClassifyVisible(true)}
+        >
+          查看编辑
+        </Button>,
+      ],
+    },
+    {
+      cover:
+        'https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=3062556219,1093566700&fm=26&gp=0.jpg',
       title: 'banner配置',
       description: '头衔相关管理',
       actions: [
@@ -150,9 +166,18 @@ const Banner: FC = () => {
         }}
       />
       {/* 宠物种类配置 */}
-      <Varieties
+      <ConfigTree
+        title="宠物品种管理"
+        type={kVARIETIES}
         visible={varietiesVisible}
         onCancel={() => setVarietiesVisible(false)}
+      />
+      {/* 商品分类 */}
+      <ConfigTree
+        title="商品分类管理"
+        type={kGOODS_CLASSIFY}
+        visible={goodsClassifyVisible}
+        onCancel={() => setGoodsClassifyVisible(false)}
       />
     </div>
   );

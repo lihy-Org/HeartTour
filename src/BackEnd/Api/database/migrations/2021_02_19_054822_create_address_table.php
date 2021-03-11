@@ -15,7 +15,7 @@ class CreateAddressTable extends Migration
     {
         Schema::create('addresses', function (Blueprint $table) {
             $table->uuid('id')->primary;
-            $table->string('wcid')->comment('小程序用户id');
+            $table->string('wcId')->comment('小程序用户id');
             $table->string('name')->comment('收件人');
             $table->string('phone')->comment('联系方式');
             $table->string('address')->comment('收货地址');

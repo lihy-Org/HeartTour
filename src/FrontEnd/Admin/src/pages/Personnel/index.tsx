@@ -1,7 +1,7 @@
 /*
  * @Author: Li-HONGYAO
  * @Date: 2021-01-18 11:15:25
- * @LastEditTime: 2021-02-24 17:22:21
+ * @LastEditTime: 2021-02-26 16:26:49
  * @LastEditors: Li-HONGYAO
  * @Description:
  * @FilePath: /Admin/src/pages/Personnel/index.tsx
@@ -56,7 +56,10 @@ type ColumnsType = {
   gender: string /** 性别 */;
   age: number /** 年龄 */;
   phone: string /** 电话 */;
-  title?: string[] /** 头衔 */;
+  titles: {
+    title: string;
+    titleId: string;
+  }[] /** 头衔 */;
   post: string /** 职位 */;
   store?: string /** 所属门店 */;
   storeId?: string /** 所属门店id */;
@@ -232,16 +235,21 @@ const Personnel: FC = () => {
     { title: '职位', dataIndex: 'post' },
     {
       title: '头衔',
-      dataIndex: 'title',
-      render: (record?: string[]) =>
-        record ? (
-          <Space size="small">
-            {record.map((title, i) => (
-              <Tag style={{ fontSize: 10 }} color="#87d068" key={`title__${i}`}>
-                {title}
+      dataIndex: 'titles',
+      render: (record: { title: string; titleId: string }[]) =>
+        record?.length > 0 ? (
+          <>
+            {record.map((item, i) => (
+              <Tag
+                style={{ fontSize: 10, marginRight: 6, marginBottom: 6 }}
+                color="#87d068"
+                key={item.titleId}
+              >
+                {item.title}
               </Tag>
             ))}
-          </Space>
+             
+          </>
         ) : (
           <span className="color-C5C5C5">暂无头衔</span>
         ),
@@ -258,6 +266,7 @@ const Personnel: FC = () => {
             onClick={() => {
               personnelForm.setFieldsValue({
                 ...record,
+                titleIds: record.titles?.map((item) => item.titleId),
               });
               setAddModalVisible(true);
               setUserId(record.id);

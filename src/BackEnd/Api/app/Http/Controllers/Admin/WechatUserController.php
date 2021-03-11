@@ -32,6 +32,7 @@ class WechatUserController extends Controller
      *         @OA\Schema(
      *           @OA\Property(description="性别", property="gender", type="string", default=""),
      *           @OA\Property(description="状态 0正常 1禁用", property="state", type="string", default=""),
+     *           @OA\Property(description="手机", property="phone", type="string", default=""),
      *           @OA\Property(description="累计消费 升序-ascend   降序-descend", property="consumesSort", type="string", default=""),
      *           @OA\Property(description="预约次数  升序-ascend   降序-descend", property="aptTimesSort", type="string", default=""),
      *           @OA\Property(description="条数", property="pageSize", type="number", default="10"),
@@ -92,8 +93,8 @@ class WechatUserController extends Controller
     public function GetList(Request $request)
     {
         $rules = [
-            'gender' => [Rule::in([0,1,2])],
-            'searchKey' => ['nullable','string'],
+            'gender' => ['nullable','integer', Rule::in([0, 1, 2])],
+            'searchKey' => ['nullable', 'string'],
             'pageSize' => ['integer', 'gt:0'],
             'page' => ['integer', 'gt:0'],
         ];
@@ -115,7 +116,7 @@ class WechatUserController extends Controller
             $list = $users->skip($skipNum)->take($takeNum)
                 ->selectRaw("*")->get();
             $pageTotal = $total / $takeNum;
-            $pageRes=(object)[];
+            $pageRes = (object) [];
             $pageRes->total = $total;
             $pageRes->pageNo = $page;
             $pageRes->pageSize = $takeNum;

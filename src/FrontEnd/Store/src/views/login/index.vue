@@ -11,39 +11,45 @@
 
       <el-form-item prop="username">
         <span class="svg-container">
-          <svg-icon icon-class="user" />
+          <i class="el-icon-phone" />
         </span>
         <el-input
           ref="username"
           v-model="loginForm.username"
-          :placeholder="$t('login.username')"
+          placeholder="请输入手机号"
           name="username"
           type="text"
           tabindex="1"
           autocomplete="on"
+          clearable
         />
       </el-form-item>
 
       <el-tooltip v-model="capsTooltip" content="Caps lock is On" placement="right" manual>
         <el-form-item prop="password">
           <span class="svg-container">
-            <svg-icon icon-class="password" />
+            <!-- <svg-icon icon-class="password" /> -->
+            <i class="el-icon-info" />
           </span>
           <el-input
             :key="passwordType"
             ref="password"
             v-model="loginForm.password"
-            :type="passwordType"
-            :placeholder="$t('login.password')"
+            class="password"
+            placeholder="请输入验证码"
             name="password"
             tabindex="2"
             autocomplete="on"
+            clearable
             @keyup.native="checkCapslock"
             @blur="capsTooltip = false"
             @keyup.enter.native="handleLogin"
           />
-          <span class="show-pwd" @click="showPwd">
+          <!-- <span class="show-pwd" @click="showPwd">
             <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'" />
+          </span> -->
+          <span class="show-pwd">
+            <el-button type="primary" :disabled="!showVerification" @click="getVerification">验证码</el-button>
           </span>
         </el-form-item>
       </el-tooltip>
@@ -81,35 +87,40 @@
 </template>
 
 <script>
-import { validUsername } from '@/utils/validate'
+import { phone } from '@/utils/validate'
 import LangSelect from '@/components/LangSelect'
 import SocialSign from './components/SocialSignin'
+
+import { getVerification } from '@/api/loginAndLogout'
 
 export default {
   name: 'Login',
   components: { LangSelect, SocialSign },
   data() {
     const validateUsername = (rule, value, callback) => {
-      if (!validUsername(value)) {
-        callback(new Error('请输入正确的用户名'))
+      if (!phone(value)) {
+        this.showVerification = false
+        callback(new Error('请输入正确的手机号'))
       } else {
+        this.showVerification = true
         callback()
       }
     }
     const validatePassword = (rule, value, callback) => {
-      if (value.length < 6) {
-        callback(new Error('密码不能少于6位'))
+      if (value.length < 1) {
+        callback(new Error('验证码不能为空'))
       } else {
         callback()
       }
     }
     return {
       loginForm: {
-        username: 'admin',
-        password: '111111'
+        username: '',
+        password: ''
       },
+      showVerification: false,
       loginRules: {
-        username: [{ required: true, trigger: 'blur', validator: validateUsername }],
+        username: [{ required: true, trigger: 'change', validator: validateUsername }],
         password: [{ required: true, trigger: 'blur', validator: validatePassword }]
       },
       passwordType: 'password',
@@ -160,13 +171,27 @@ export default {
         this.$refs.password.focus()
       })
     },
+    // 获取验证码
+    getVerification() {
+      const data = {
+        phone: this.loginForm.username
+      }
+      getVerification(data).then(res => {
+        console.log(res)
+      }).catch(err => {
+        console.log(err)
+      })
+    },
     handleLogin() {
       this.$refs.loginForm.validate(valid => {
         if (valid) {
           this.loading = true
           this.$store.dispatch('user/login', this.loginForm)
             .then(() => {
-              this.$router.push({ path: this.redirect || '/', query: this.otherQuery })
+              // 登入后，不用登出后的记录路由，直接跳转/dashboard
+              // this.$router.push({ path: this.redirect || '/', query: this.otherQuery })
+              this.$router.push({ path: '/dashboard' || '/', query: this.otherQuery })
+              console.log(this.$route)
               this.loading = false
             })
             .catch(() => {
@@ -212,7 +237,8 @@ export default {
 /* 修复input 背景不协调 和光标变色 */
 /* Detail see https://github.com/PanJiaChen/vue-element-admin/pull/927 */
 
-$bg:#283443;
+// $bg:#283443;
+$bg: rgba(54, 65, 79, 1);
 $light_gray:#fff;
 $cursor: #fff;
 
@@ -224,26 +250,34 @@ $cursor: #fff;
 
 /* reset element-ui css */
 .login-container {
-  .el-input {
-    display: inline-block;
+  .el-form-item__content{
     height: 47px;
-    width: 85%;
-
-    input {
-      background: transparent;
-      border: 0px;
-      -webkit-appearance: none;
-      border-radius: 0px;
-      padding: 12px 5px 12px 15px;
-      color: $light_gray;
+    .el-input {
+      display: inline-block;
       height: 47px;
-      caret-color: $cursor;
+      width: 85%;
 
-      &:-webkit-autofill {
-        box-shadow: 0 0 0px 1000px $bg inset !important;
-        -webkit-text-fill-color: $cursor !important;
+      input {
+        background: transparent;
+        border: 0px;
+        -webkit-appearance: none;
+        border-radius: 0px;
+        padding: 12px 5px 12px 15px;
+        color: $light_gray;
+        height: 47px;
+        line-height: 100%;
+        caret-color: $cursor;
+
+        &:-webkit-autofill {
+          box-shadow: 0 0 0px 1000px $bg inset !important;
+          -webkit-text-fill-color: $cursor !important;
+        }
       }
     }
+  }
+
+  .password {
+    width: calc(85% - 65px) !important;
   }
 
   .el-form-item {

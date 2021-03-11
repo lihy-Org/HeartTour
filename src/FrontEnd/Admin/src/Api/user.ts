@@ -1,7 +1,7 @@
 /*
  * @Author: Li-HONGYAO
  * @Date: 2021-02-23 15:13:37
- * @LastEditTime: 2021-02-23 17:09:55
+ * @LastEditTime: 2021-02-26 15:44:10
  * @LastEditors: Li-HONGYAO
  * @Description:
  * @FilePath: /Admin/src/Api/user.ts
@@ -45,3 +45,4 @@ export function pets<T>(wcId: string) {
     params: { wcId }
   })
 }
+

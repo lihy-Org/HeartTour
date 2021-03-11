@@ -16,7 +16,7 @@
     <!-- slot -->
     <slot v-if="item.slot" />
     <!-- 详情项 -->
-    <span v-if="!item.type">{{ item.value }}</span>
+    <span v-if="!item.type" v-html="form[item.value]" />
     <!-- 普通输入框 -->
     <el-input
       v-if="item.type === 'input' || item.type === 'password'"
@@ -90,11 +90,28 @@
         :key="childItem.value"
         :label="childItem.value"
         :disabled="childItem.disabled"
+        :style="childItem.style"
+        :border="childItem.border"
       >{{ childItem.label }}</el-radio>
     </el-radio-group>
     <!-- 日期选择框 -->
     <el-date-picker
-      v-if="[ 'daterange', 'datetime', 'date', 'month', 'week', 'year' ].includes(item.type)"
+      v-if="[ 'datetime', 'date', 'month', 'week', 'year' ].includes(item.type)"
+      v-model="form[item.value]"
+      :style="item.style"
+      v-bind="item"
+      :placeholder="item.placeholder"
+      :value-format="item.valueFormat || 'timestamp'"
+      :range-separator="item.separator"
+      :start-placeholder="item.startPlaceholder"
+      :end-placeholder="item.endPlaceholder"
+      :picker-options="item.pickerOptions"
+      @change="
+        typeof item.change === 'function' ? item.change($event) : () => {}
+      "
+    />
+    <el-date-picker
+      v-if="[ 'daterange' ].includes(item.type)"
       v-model="form[item.value]"
       :style="item.style"
       v-bind="item"
@@ -188,7 +205,19 @@ export default {
       required: true
     }
   },
-  created() {}
+  created() {
+    console.log(this.item)
+    // 根据dataMap处理数据
+    if (this.item.dataMap) {
+      this.form[this.item.value] = this.item.dataMap[this.form[this.item.value]]
+    }
+    if (this.item.dataJoin) {
+      this.form[this.item.value] = this.form[this.item.value] + this.item.dataJoin
+    }
+    if (!this.form[this.item.value] && !this.item.type) {
+      this.form[this.item.value] = '-'
+    }
+  }
 }
 </script>
 
@@ -209,5 +238,8 @@ export default {
 ::v-deep .el-form-item__label {
   font-weight: normal;
   padding: 0 8px 0 0;
+}
+::v-deep .el-form-item__content {
+  vertical-align: middle;
 }
 </style>

@@ -109,6 +109,21 @@ export const constantRoutes = [
   // 人员管理
   staffRouter,
 
+  // 线下加单
+  {
+    path: '/addorder',
+    component: Layout,
+    redirect: 'noRedirect',
+    children: [
+      {
+        path: 'management',
+        component: () => import('@/views/addOrder/management/index'),
+        name: 'AddorderManagement',
+        meta: { title: 'addorderManagement', icon: 'edit', affix: true, keepAlive: false, keepComponentPages: [] }
+      }
+    ]
+  },
+
   // 账目管理
   {
     path: '/account',
@@ -219,6 +234,7 @@ export const asyncRoutes = [
   //   ]
   // },
 
+  // 图标
   // {
   //   path: '/icon',
   //   component: Layout,
@@ -230,7 +246,7 @@ export const asyncRoutes = [
   //       meta: { title: 'icons', icon: 'icon', noCache: true }
   //     }
   //   ]
-  // },
+  // }
 
   // /** when your routing map is too long, you can split it into small modules **/
   // componentsRouter,

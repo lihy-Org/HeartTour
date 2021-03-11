@@ -1,7 +1,7 @@
 /*
  * @Author: Li-HONGYAO
  * @Date: 2021-02-23 16:44:42
- * @LastEditTime: 2021-02-24 17:50:30
+ * @LastEditTime: 2021-02-26 15:44:29
  * @LastEditors: Li-HONGYAO
  * @Description:
  * @FilePath: /Admin/src/Api/personnel.ts
@@ -72,4 +72,11 @@ export function setManage<T>(userId: string) {
   return request.post<T>('/admin/user/setManage', {
     data: { userId },
   });
+}
+
+/**
+ * 技师选择列表
+ */
+export function getSelectList<T>() {
+  return request.get<T>('/admin/user/getSelectList');
 }

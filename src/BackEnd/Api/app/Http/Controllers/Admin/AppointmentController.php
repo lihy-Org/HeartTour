@@ -28,12 +28,15 @@ class AppointmentController extends Controller
      *         @OA\Schema(
      *           @OA\Property(description="门店编号", property="storeId", type="string", default="13888888888"),
      *           @OA\Property(description="状态", property="state", type="string", default=""),
+     *           @OA\Property(description="是否加单 不填全部 0为线上预约  1为线下加单", property="isOffline", type="number", default=""),
+     *           @OA\Property(description="人员编号", property="userId", type="string", default=""),
+     *           @OA\Property(description="小程序用户编号", property="wcId", type="string", default=""),
      *           @OA\Property(description="预约开始时间", property="startDate", type="string", default=""),
      *           @OA\Property(description="预约结束时间", property="endDate", type="string", default=""),
      *           @OA\Property(description="条数", property="pageSize", type="number", default="10"),
      *           @OA\Property(description="页数", property="page", type="number", default="1"),
      *           @OA\Property(description="关键字", property="searchKey", type="string", default=""),
-     *           required={"state"})
+     *           required={})
      *       )
      *     ),
      *     @OA\Response(
@@ -91,8 +94,9 @@ class AppointmentController extends Controller
             'storeId' => [Rule::exists('stores', 'id')],
             'startDate' => ['date_format:"Y-m-d H:i:s"'],
             'endDate' => ['date_format:"Y-m-d H:i:s"'],
-            'state' => [Rule::in(['0', '1', '2', '3'])],
-            'searchKey' => ['nullable','string'],
+            'isOffline' => ['nullable', Rule::in([0, 1])],
+            'state' => [Rule::in([100, 200, 300, 400, 500, 501, 502, 600, 601])],
+            'searchKey' => ['nullable', 'string'],
             'pageSize' => ['integer', 'gt:0'],
             'page' => ['integer', 'gt:0'],
         ];
@@ -113,7 +117,7 @@ class AppointmentController extends Controller
             $total = $appts->count();
             $list = $appts->skip($skipNum)->take($takeNum)->get();
             $pageTotal = $total / $takeNum;
-            $pageRes=(object)[];
+            $pageRes = (object) [];
             $pageRes->total = $total;
             $pageRes->pageNo = $page;
             $pageRes->pageSize = $takeNum;
@@ -131,7 +135,7 @@ class AppointmentController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/api/admin/appt/getWorkTime",
+     *     path="/api/admin/appt/getWorktime",
      *     tags={"总台管理系统-预约管理"},
      *     summary="人员排班表",
      *     @OA\Parameter(name="token", in="header", @OA\Schema(type="string"), required=true, description="token"),
@@ -140,9 +144,9 @@ class AppointmentController extends Controller
      *       mediaType="multipart/form-data",
      *         @OA\Schema(
      *           @OA\Property(description="门店编号", property="storeId", type="string", default=""),
-     *           @OA\Property(description="日期", property="workDay", type="string", default=""),   
-     *           @OA\Property(description="时间", property="workTime", type="string", default=""),  
-     *           @OA\Property(description="用户编号", property="userId", type="string", default=""),  
+     *           @OA\Property(description="日期", property="workDay", type="string", default=""),
+     *           @OA\Property(description="时间", property="workTime", type="string", default=""),
+     *           @OA\Property(description="用户编号", property="userId", type="string", default=""),
      *           required={"storeId"})
      *       )
      *     ),
@@ -226,11 +230,10 @@ class AppointmentController extends Controller
         );
     }
 
-    
     /**
      * @OA\Post(
      *     path="/api/admin/appt/trans",
-     *     tags={"门店管理系统-预约管理"},
+     *     tags={"总台管理系统-预约管理"},
      *     summary="修改预约信息",
      *     @OA\Parameter(name="token", in="header", @OA\Schema(type="string"), required=true, description="token"),
      *     @OA\RequestBody(
@@ -288,7 +291,7 @@ class AppointmentController extends Controller
             'workDay' => ['required', 'date_format:"Y-m-d"', 'after_or_equal:today'],
             'workTime' => ['required', 'date_format:"H:i"'],
             'userId' => ['required', Rule::exists('users', 'id')->where(function ($query) use ($request) {
-                $query->where('state', 0)->whereNotIn('type', [0, 1])->where('isBeautician', 1)->where('storeId', $request->user->storeId);
+                $query->where('state', 0)->whereNotIn('type', [0, 1])->where('isBeautician', 1);
             })],
             'orderId' => ['required', Rule::exists('orders', 'id')->where(function ($query) use ($request) {
                 $query->where('state', 200);
@@ -303,14 +306,14 @@ class AppointmentController extends Controller
                 'data' => $validator->errors(),
             ));
         }
-        $data = (object) $request->all();        
+        $data = (object) $request->all();
         return json_encode($this->appointmentRepository->TransferAppt($data));
     }
 
     /**
      * @OA\Post(
      *     path="/api/admin/appt/changeState",
-     *     tags={"门店管理系统-预约管理"},
+     *     tags={"总台管理系统-预约管理"},
      *     summary="待接取订单客户不点击完成时门店点击完成",
      *     @OA\Parameter(name="token", in="header", @OA\Schema(type="string"), required=true, description="token"),
      *     @OA\RequestBody(
@@ -380,4 +383,208 @@ class AppointmentController extends Controller
         return json_encode($this->appointmentRepository->ChangeState($data));
     }
 
+    /**
+     * @OA\Post(
+     *     path="/api/admin/appt/refund",
+     *     tags={"总台管理系统-预约管理"},
+     *     summary="退款",
+     *     @OA\Parameter(name="token", in="header", @OA\Schema(type="string"), required=true, description="token"),
+     *     @OA\RequestBody(
+     *     @OA\MediaType(
+     *       mediaType="multipart/form-data",
+     *         @OA\Schema(
+     *           @OA\Property(description="订单编号", property="orderId", type="string", default="dd"),
+     *           @OA\Property(description="退款理由", property="reason", type="string", default="dd"),
+     *           @OA\Property(description="图片凭证", property="images", type="string", default="dd"),
+     *           required={"orderId","reason"})
+     *       )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="成功",
+     *         @OA\JsonContent(
+     *            type="object",
+     *            @OA\Property(
+     *                   example="200",
+     *                   property="status",
+     *                   description="状态码",
+     *                   type="number",
+     *               ),
+     *            @OA\Property(
+     *                  type="string",
+     *                  property="msg",
+     *                  example="成功!",
+     *              )
+     *         ),
+     *     ),
+     *      @OA\Response(
+     *         response=500,
+     *         description="失败",
+     *         @OA\JsonContent(
+     *            type="object",
+     *            @OA\Property(
+     *                   example="500",
+     *                   property="status",
+     *                   description="状态码",
+     *                   type="number",
+     *               ),
+     *           @OA\Property(
+     *                  type="string",
+     *                  property="msg",
+     *                  example="失败!",
+     *               )
+     *           )
+     *       ),
+     * )
+     */
+    public function Refund(Request $request)
+    {
+        $rules = [
+            'orderId' => ['required', Rule::exists('stores', 'id')->where(function ($query) use ($request) {
+                $query->where('type', 1)->where('state', 200);
+            })],
+            'reason' => ['required', 'string'],
+        ];
+        $messages = [];
+        $validator = Validator::make($request->all(), $rules, $messages);
+        if ($validator->fails()) {
+            return json_encode(array(
+                'status' => 500,
+                'msg' => '验证失败!',
+                'data' => $validator->errors(),
+            ));
+        }
+        $data = (object) $request->all();
+        $data->userId = $request->user->id;
+        $data->userName = $request->user->name;
+        return json_encode($this->appointmentRepository->Refund($data));
+    }
+
+    /**
+     * @OA\Post(
+     *     path="/api/admin/appt/offlineAppt",
+     *     tags={"总台管理系统-预约管理"},
+     *     summary="插单",
+     *     @OA\Parameter(name="token", in="header", @OA\Schema(type="string"), required=true, description="token"),
+     *     @OA\RequestBody(
+     *     @OA\MediaType(
+     *       mediaType="multipart/form-data",
+     *         @OA\Schema(
+     *           @OA\Property(description="订单编号", property="orderId", type="string", default="dd"),
+     *           @OA\Property(description="套餐编号", property="comboIds", type="string", default="dd"),
+     *           @OA\Property(description="小程序用户编号", property="wcId", type="string", default="dd"),
+     *           @OA\Property(description="小程序用户昵称", property="wcNickname", type="string", default="dd"),
+     *           @OA\Property(description="小程序用户头像", property="wcAvatar", type="string", default="dd"),
+     *           @OA\Property(description="小程序用户性别", property="wcGender", type="number", default="dd"),
+     *           @OA\Property(description="小程序用户省", property="province", type="string", default="dd"),
+     *           @OA\Property(description="小程序用户市", property="city", type="string", default="dd"),
+     *           @OA\Property(description="小程序用户区", property="country", type="string", default="dd"),
+     *           @OA\Property(description="小程序用户地址", property="address", type="string", default="dd"),
+     *           @OA\Property(description="小程序用户手机", property="phone", type="string", default="dd"),
+     *           @OA\Property(description="预约宠物id", property="petId", type="string", default="dd"),
+     *           @OA\Property(description="预约宠物头像", property="petAvatar", type="string", default="dd"),
+     *           @OA\Property(description="预约宠物昵称", property="petNickname", type="string", default="dd"),
+     *           @OA\Property(description="预约宠物性别", property="petGender", type="string", default="dd"),
+     *           @OA\Property(description="预约宠物品种", property="petVarietyId", type="string", default="dd"),
+     *           @OA\Property(description="预约宠物生日", property="birthday", type="string", default="dd"),
+     *           @OA\Property(description="预约宠物肩高", property="shoulderHeight", type="string", default="dd"),
+     *           @OA\Property(description="预约宠物备注", property="petRemark", type="string", default="dd"),
+     *           @OA\Property(description="预约宠物颜色", property="color", type="string", default="dd"),
+     *           @OA\Property(description="技师ID", property="userId", type="string", default="dd"),
+     *           @OA\Property(description="套餐总额", property="totalMoney", type="number", default="dd"),
+     *           @OA\Property(description="门店ID", property="storeId", type="string", default="dd"),
+     *           @OA\Property(description="备注", property="remark", type="string", default="dd"),
+     *           required={"comboIds","userId","storeId"})
+     *       )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="成功",
+     *         @OA\JsonContent(
+     *            type="object",
+     *            @OA\Property(
+     *                   example="200",
+     *                   property="status",
+     *                   description="状态码",
+     *                   type="number",
+     *               ),
+     *            @OA\Property(
+     *                  type="string",
+     *                  property="msg",
+     *                  example="成功!",
+     *              )
+     *         ),
+     *     ),
+     *      @OA\Response(
+     *         response=500,
+     *         description="失败",
+     *         @OA\JsonContent(
+     *            type="object",
+     *            @OA\Property(
+     *                   example="500",
+     *                   property="status",
+     *                   description="状态码",
+     *                   type="number",
+     *               ),
+     *           @OA\Property(
+     *                  type="string",
+     *                  property="msg",
+     *                  example="失败!",
+     *               )
+     *           )
+     *       ),
+     * )
+     */
+    public function OfflineAppt(Request $request)
+    {
+        $rules = [
+            'orderId' => ['nullable', Rule::exists('orders', 'id')->where(function ($query) use ($request) {
+                $query->where('isOffline', 1);
+            })],
+            'wcId' => ['nullable', Rule::exists('wechatuser', 'id')],
+            'wcNickname' => ['required_without:wcId', 'string'],
+            'wcAvatar' => ['string'],
+            'wcGender' => ['required_without:wcId', Rule::in([0, 1, 2])],
+            'province' => ['string'],
+            'city' => ['string'],
+            'country' => ['string'],
+            'address' => ['string'],
+            'phone' => ['required_without:wcId', 'regex:/^((13[0-9])|(14[5,7])|(15[0-3,5-9])|(17[0,3,5-8])|(18[0-9])|166|198|199)\d{8}$/', Rule::unique('wechatuser')->ignore($request->phone, 'phone')],
+
+            'petId' => ['nullable', Rule::exists('pets', 'id')->where(function ($query) use ($request) {
+                $query->where('wcId', $request->wcId);
+            })],
+            'petAvatar' => ['string'],
+            'petNickname' => ['required_without:petId', 'string'],
+            'petGender' => ['required_without:petId', Rule::in([0, 1, 2])],
+            'petVarietyId' => ['required_without:petId', Rule::exists('configs', 'id')],
+            'birthday' => ['string'],
+            'color' => ['string'],
+            'shoulderHeight' => ['string', 'integer', 'gt:0'],
+            'petRemark' => ['string'],
+
+            'userId' => ['required', Rule::exists('users', 'id')->where(function ($query) use ($request) {
+                $query->where('state', 0)->whereNotIn('type', [0, 1])->where('isBeautician', 1);
+            })],
+            'totalMoney' => ['required', 'numeric'],
+            'storeId' => ['required', Rule::exists('stores', 'id')->where(function ($query) {
+                $query->where('state', 0);
+            })],
+            'comboIds' => ['required', 'array', Rule::exists('combos', 'id')->where(function ($query) {
+                $query->where('state', 0);
+            })],
+            'comboIds.*' => ['distinct'],
+        ];
+        $messages = [];
+        $validator = Validator::make($request->all(), $rules, $messages);
+        if ($validator->fails()) {
+            return json_encode(array(
+                'status' => 500,
+                'msg' => '验证失败!',
+                'data' => $validator->errors(),
+            ));
+        }
+        $data = (object) $request->all();
+        return json_encode($this->appointmentRepository->OfflineAppt($data));
+    }
 }

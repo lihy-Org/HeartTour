@@ -8,6 +8,7 @@ use App\Utilities\SmsSeveice;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Validator;
 
 class AccountController extends Controller
@@ -17,7 +18,7 @@ class AccountController extends Controller
      *     version="1.0",
      *     title="心之旅"
      * )
-     */ 
+     */
 
     /**
      * @OA\Post(
@@ -87,8 +88,10 @@ class AccountController extends Controller
     {
 
         $rules = [
-            'phone' => ['required', 'regex:/^((13[0-9])|(14[5,7])|(15[0-3,5-9])|(17[0,3,5-8])|(18[0-9])|166|198|199)\d{8}$/'],
-            'code' => ['required', 'string'],
+            'phone' => ['required', Rule::exists('users', 'phone')->where(function ($query) use ($request) {
+                $query->where('state', 0)->whereIn('type', [0, 1]);
+            })],
+            'code' => ['required'],
         ];
         $messages = [
             'phone.required' => '请输入正确手机号码！',
@@ -131,7 +134,7 @@ class AccountController extends Controller
             //         'data' => '',
             //     );
             // }
-            $user = User::where('phone', $phone)->where(function($query){
+            $user = User::where('phone', $phone)->where(function ($query) {
                 $query->where('type', 1)->orWhere('type', 0);
             })->where('state', 0)->first();
             if (!$user) {
@@ -217,7 +220,7 @@ class AccountController extends Controller
     public function GetVerifCode(Request $request)
     {
         $rules = [
-            'phone' => ['required',Rule::exists('users', 'phone'), 'regex:/^((13[0-9])|(14[5,7])|(15[0-3,5-9])|(17[0,3,5-8])|(18[0-9])|166|198|199)\d{8}$/'],
+            'phone' => ['required', Rule::exists('users', 'phone'), 'regex:/^((13[0-9])|(14[5,7])|(15[0-3,5-9])|(17[0,3,5-8])|(18[0-9])|166|198|199)\d{8}$/'],
         ];
         $messages = [
             'phone.required' => '请输入正确手机号码！',
@@ -261,7 +264,7 @@ class AccountController extends Controller
         $arr = ['code' => $code];
         $sms = new SmsSeveice();
         $msg = '{"code":"' . $code . '"}';
-        $res = $sms->SendMsg($msg, $phone, 'SMS_199202193');
+        $res = $sms->SendMsg($msg, $phone, 'SMS_212645233');
         if ($res['Message'] == "OK") {
             Cache::put($phone . '_code', $code . ',' . Carbon::now());
             return array(

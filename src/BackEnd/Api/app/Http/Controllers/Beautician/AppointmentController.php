@@ -25,7 +25,11 @@ class AppointmentController extends Controller
      *     @OA\RequestBody(
      *     @OA\MediaType(
      *       mediaType="multipart/form-data",
-     *         @OA\Schema(     *
+     *         @OA\Schema(
+     *           @OA\Property(description="状态", property="state", type="string", default=""),
+     *           @OA\Property(description="小程序用户编号", property="wcId", type="string", default=""),
+     *           @OA\Property(description="预约开始时间", property="startDate", type="string", default=""),
+     *           @OA\Property(description="预约结束时间", property="endDate", type="string", default=""),
      *           @OA\Property(description="条数", property="pageSize", type="number", default="10"),
      *           @OA\Property(description="页数", property="page", type="number", default="1"),
      *           @OA\Property(description="关键字", property="searchKey", type="string", default=""),
@@ -84,6 +88,9 @@ class AppointmentController extends Controller
     public function GetList(Request $request)
     {
         $rules = [
+            'startDate' => ['date_format:"Y-m-d H:i:s"'],
+            'endDate' => ['date_format:"Y-m-d H:i:s"'],
+            'state' => [Rule::in([100, 200, 300, 400, 500, 501, 502, 600, 601])],
             'searchKey' => ['nullable', 'string'],
             'pageSize' => ['integer', 'gt:0'],
             'page' => ['integer', 'gt:0'],
@@ -133,9 +140,10 @@ class AppointmentController extends Controller
      *     @OA\MediaType(
      *       mediaType="multipart/form-data",
      *         @OA\Schema(
-     *           @OA\Property(description="套餐编号", property="orderId", type="string", default="dd"),     *
+     *           @OA\Property(description="套餐编号", property="orderId", type="string", default="dd"),
      *           @OA\Property(description="状态 300开始服务 400待接取", property="state", type="string", default="dd"),
-     *           required={"orderId","state"})
+     *           @OA\Property(description="技师备注", property="userRemark", type="string", default="dd"),
+     *           required={"orderId","state","userRemark"})
      *       )
      *     ),
      *     @OA\Response(
@@ -180,6 +188,7 @@ class AppointmentController extends Controller
     {
         $rules = [
             'state' => ['required', Rule::in([300, 400])],
+            'userRemark' => ['required', 'string'],
             'orderId' => ['required', Rule::exists('orders', 'id')->where(function ($query) use ($request) {
                 $query->where('userId', $request->user->id);
             })],
@@ -194,6 +203,10 @@ class AppointmentController extends Controller
             ));
         }
         $data = (object) $request->all();
-        return json_encode($this->appointmentRepository->ChangeState($data));
+        $result = $this->appointmentRepository->ChangeState($data);
+        if ($result->status == 200) {
+            $this->appointmentRepository->AddUserRemark($data);
+        }
+        return json_encode($result);
     }
 }
