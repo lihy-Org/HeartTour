@@ -124,6 +124,21 @@ export const constantRoutes = [
     ]
   },
 
+  // 线下加单
+  {
+    path: '/addorder',
+    component: Layout,
+    redirect: 'noRedirect',
+    children: [
+      {
+        path: 'management',
+        component: () => import('@/views/addOrder/management/index'),
+        name: 'AddorderManagement',
+        meta: { title: 'addorderManagement', icon: 'edit', affix: true, keepAlive: false, keepComponentPages: [] }
+      }
+    ]
+  },
+
   // 个人中心
   // {
   //   path: '/profile',

@@ -6,6 +6,7 @@
         v-loading="loading"
         :data="tableData"
         :max-height="mHeight"
+        fit
         border
         tooltip-effect="dark"
         style="width: 100%"
@@ -29,6 +30,7 @@
               :formatter="item.formatter"
               show-overflow-tooltip
               :fixed="item.fixed"
+              :align="item.align"
             >
               <!-- 是否有可选择的下拉框 -->
               <template v-if="isSelect && item.canEdit">

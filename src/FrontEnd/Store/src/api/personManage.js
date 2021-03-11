@@ -2,6 +2,7 @@
  * 人员管理接口
  * @param getUsersList 人员列表
  * @param getStaffShiftList 获取人员排班
+ * @param getStatsWorktime 获取人员排班总表
  * @param setStaffShiftList 设置人员排班
  * @param getBookingManageList 预约
  * @param getPerformanceList 业绩
@@ -16,9 +17,17 @@ export function getUsersList(data) {
   })
 }
 
+export function getStatsWorktime(data) {
+  return request({
+    url: '/api/storesys/appt/getStatsWorktime',
+    method: 'post',
+    data
+  })
+}
+
 export function getStaffShiftList(data) {
   return request({
-    url: '/api/storesys/appt/getWorkTime',
+    url: '/api/storesys/appt/getWorktime',
     method: 'post',
     data
   })
