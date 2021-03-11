@@ -28,7 +28,7 @@ class CreateOrderTable extends Migration
             $table->string('userName')->nullable()->comment('预约技师姓名');
             $table->uuid('storeId')->nullable()->comment('预约门店id');
             $table->string('storeName')->nullable()->comment('预约门店名称');
-            $table->string('mainComboName')->nullable()->comment('主套餐名称');            
+            $table->string('mainComboName')->nullable()->comment('主套餐名称');
             $table->integer('serviceTime')->nullable()->comment('套餐总时间');
             $table->string('apptTime')->nullable()->comment('预约日');
             $table->string('userRemark')->nullable()->comment('技师备注');
@@ -46,7 +46,8 @@ class CreateOrderTable extends Migration
             $table->unsignedInteger('payType')->default(1)->comment('支付方式，1微信支付');
             $table->unsignedInteger('type')->default(1)->comment('订单类型，1套餐预约，20商城,30活体');
             $table->timestamp('payTime')->nullable()->comment('付款时间');
-            $table->timestamp('shippingTime')->nullable()->comment('发货时间');
+            $table->timestamp('beginTime')->nullable()->comment('服务开始时间');
+            $table->timestamp('shippingTime')->nullable()->comment('发货/待解取时间');           
             $table->timestamp('finishTime')->nullable()->comment('完成时间');
             $table->timestamp('cancelTime')->nullable()->comment('取消时间');
             $table->unsignedInteger('state')->default(100)->comment('待支付100、 待发货/已预约200、进行中（技师点击开始服务）300 已发货/待接取400、

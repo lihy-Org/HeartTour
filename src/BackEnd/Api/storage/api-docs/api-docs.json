@@ -711,7 +711,7 @@
                 }
             }
         },
-        "/api/admin/appt/offlineAdd": {
+        "/api/admin/appt/offlineAppt": {
             "post": {
                 "tags": [
                     "总台管理系统-预约管理"
@@ -739,6 +739,11 @@
                                     "storeId"
                                 ],
                                 "properties": {
+                                    "orderId": {
+                                        "description": "订单编号",
+                                        "type": "string",
+                                        "default": "dd"
+                                    },
                                     "comboIds": {
                                         "description": "套餐编号",
                                         "type": "string",
@@ -824,7 +829,7 @@
                                         "type": "string",
                                         "default": "dd"
                                     },
-                                    "remark": {
+                                    "petRemark": {
                                         "description": "预约宠物备注",
                                         "type": "string",
                                         "default": "dd"
@@ -846,6 +851,11 @@
                                     },
                                     "storeId": {
                                         "description": "门店ID",
+                                        "type": "string",
+                                        "default": "dd"
+                                    },
+                                    "remark": {
+                                        "description": "备注",
                                         "type": "string",
                                         "default": "dd"
                                     }
@@ -1637,6 +1647,89 @@
                                         "data": {
                                             "type": "object",
                                             "example": "错误信息"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/oss/getKey": {
+            "get": {
+                "tags": [
+                    "总台管理系统-文件上传"
+                ],
+                "summary": "获取Key",
+                "operationId": "App\\Http\\Controllers\\Admin\\OSSController::GetKey",
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "header",
+                        "description": "token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": []
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "状态码",
+                                            "type": "number",
+                                            "example": "200"
+                                        },
+                                        "msg": {
+                                            "description": "提示信息",
+                                            "type": "string",
+                                            "example": "获取列表成功!"
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "example": ""
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "失败",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "状态码",
+                                            "type": "number",
+                                            "example": "500"
+                                        },
+                                        "msg": {
+                                            "description": "提示信息",
+                                            "type": "string",
+                                            "example": "获取列表失败!"
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "example": "{'page':['\\u8bf7\\u8f93\\u5165\\u5355\\u4f4d\\u540d\\u79f0\\uff01']}"
                                         }
                                     },
                                     "type": "object"
@@ -4172,6 +4265,201 @@
                 }
             }
         },
+        "/api/storesys/appt/offlineAppt": {
+            "post": {
+                "tags": [
+                    "门店管理系统-预约管理"
+                ],
+                "summary": "插单",
+                "operationId": "App\\Http\\Controllers\\StoreSystem\\AppointmentController::OfflineAppt",
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "header",
+                        "description": "token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "comboIds",
+                                    "userId",
+                                    "storeId"
+                                ],
+                                "properties": {
+                                    "orderId": {
+                                        "description": "订单编号",
+                                        "type": "string",
+                                        "default": "dd"
+                                    },
+                                    "comboIds": {
+                                        "description": "套餐编号",
+                                        "type": "string",
+                                        "default": "dd"
+                                    },
+                                    "wcId": {
+                                        "description": "小程序用户编号",
+                                        "type": "string",
+                                        "default": "dd"
+                                    },
+                                    "wcNickname": {
+                                        "description": "小程序用户昵称",
+                                        "type": "string",
+                                        "default": "dd"
+                                    },
+                                    "wcAvatar": {
+                                        "description": "小程序用户头像",
+                                        "type": "string",
+                                        "default": "dd"
+                                    },
+                                    "wcGender": {
+                                        "description": "小程序用户性别",
+                                        "type": "number",
+                                        "default": "dd"
+                                    },
+                                    "province": {
+                                        "description": "小程序用户省",
+                                        "type": "string",
+                                        "default": "dd"
+                                    },
+                                    "city": {
+                                        "description": "小程序用户市",
+                                        "type": "string",
+                                        "default": "dd"
+                                    },
+                                    "country": {
+                                        "description": "小程序用户区",
+                                        "type": "string",
+                                        "default": "dd"
+                                    },
+                                    "address": {
+                                        "description": "小程序用户地址",
+                                        "type": "string",
+                                        "default": "dd"
+                                    },
+                                    "phone": {
+                                        "description": "小程序用户手机",
+                                        "type": "string",
+                                        "default": "dd"
+                                    },
+                                    "petId": {
+                                        "description": "预约宠物id",
+                                        "type": "string",
+                                        "default": "dd"
+                                    },
+                                    "petAvatar": {
+                                        "description": "预约宠物头像",
+                                        "type": "string",
+                                        "default": "dd"
+                                    },
+                                    "petNickname": {
+                                        "description": "预约宠物昵称",
+                                        "type": "string",
+                                        "default": "dd"
+                                    },
+                                    "petGender": {
+                                        "description": "预约宠物性别",
+                                        "type": "string",
+                                        "default": "dd"
+                                    },
+                                    "petVarietyId": {
+                                        "description": "预约宠物品种",
+                                        "type": "string",
+                                        "default": "dd"
+                                    },
+                                    "birthday": {
+                                        "description": "预约宠物生日",
+                                        "type": "string",
+                                        "default": "dd"
+                                    },
+                                    "shoulderHeight": {
+                                        "description": "预约宠物肩高",
+                                        "type": "string",
+                                        "default": "dd"
+                                    },
+                                    "petRemark": {
+                                        "description": "预约宠物备注",
+                                        "type": "string",
+                                        "default": "dd"
+                                    },
+                                    "color": {
+                                        "description": "预约宠物颜色",
+                                        "type": "string",
+                                        "default": "dd"
+                                    },
+                                    "userId": {
+                                        "description": "技师ID",
+                                        "type": "string",
+                                        "default": "dd"
+                                    },
+                                    "totalMoney": {
+                                        "description": "套餐总额",
+                                        "type": "number",
+                                        "default": "dd"
+                                    },
+                                    "remark": {
+                                        "description": "备注",
+                                        "type": "string",
+                                        "default": "dd"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "状态码",
+                                            "type": "number",
+                                            "example": "200"
+                                        },
+                                        "msg": {
+                                            "type": "string",
+                                            "example": "成功!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "失败",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "状态码",
+                                            "type": "number",
+                                            "example": "500"
+                                        },
+                                        "msg": {
+                                            "type": "string",
+                                            "example": "失败!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/storesys/config/{type}/{key?}": {
             "get": {
                 "tags": [
@@ -4251,6 +4539,88 @@
                                         "data": {
                                             "type": "object",
                                             "example": "错误信息"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/storesys/oss/getKey": {
+            "get": {
+                "tags": [
+                    "门店管理系统-文件上传"
+                ],
+                "summary": "获取Key",
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "header",
+                        "description": "token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": []
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "状态码",
+                                            "type": "number",
+                                            "example": "200"
+                                        },
+                                        "msg": {
+                                            "description": "提示信息",
+                                            "type": "string",
+                                            "example": "获取列表成功!"
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "example": ""
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "失败",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "状态码",
+                                            "type": "number",
+                                            "example": "500"
+                                        },
+                                        "msg": {
+                                            "description": "提示信息",
+                                            "type": "string",
+                                            "example": "获取列表失败!"
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "example": "{'page':['\\u8bf7\\u8f93\\u5165\\u5355\\u4f4d\\u540d\\u79f0\\uff01']}"
                                         }
                                     },
                                     "type": "object"
@@ -5544,6 +5914,88 @@
                                         "data": {
                                             "type": "object",
                                             "example": "错误信息"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/oss/getKey": {
+            "get": {
+                "tags": [
+                    "小程序-文件上传"
+                ],
+                "summary": "获取Key",
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "header",
+                        "description": "token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": []
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "状态码",
+                                            "type": "number",
+                                            "example": "200"
+                                        },
+                                        "msg": {
+                                            "description": "提示信息",
+                                            "type": "string",
+                                            "example": "获取列表成功!"
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "example": ""
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "失败",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "状态码",
+                                            "type": "number",
+                                            "example": "500"
+                                        },
+                                        "msg": {
+                                            "description": "提示信息",
+                                            "type": "string",
+                                            "example": "获取列表失败!"
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "example": "{'page':['\\u8bf7\\u8f93\\u5165\\u5355\\u4f4d\\u540d\\u79f0\\uff01']}"
                                         }
                                     },
                                     "type": "object"
