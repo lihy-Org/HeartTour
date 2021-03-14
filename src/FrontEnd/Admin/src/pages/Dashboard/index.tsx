@@ -1,7 +1,7 @@
 /*
  * @Author: Li-HONGYAO
  * @Date: 2021-01-17 23:30:37
- * @LastEditTime: 2021-03-14 12:12:03
+ * @LastEditTime: 2021-03-14 17:32:33
  * @LastEditors: Li-HONGYAO
  * @Description:
  * @FilePath: /Admin/src/pages/Dashboard/index.tsx
@@ -54,7 +54,6 @@ const Dashboard: FC = () => {
     <div className="page dashboard">
       <h1>天道酬勤</h1>
       <div ref={echartsRef} style={{ width: 800, height: 300 }}></div>
-      {/* <UploadFile ossDirName="/avatar" max={10} value={['http://heart-tours.oss-cn-shenzhen.aliyuncs.com/admin/%E7%BC%96%E7%BB%84%207%402x.png']} /> */}
     </div>
   );
 };
