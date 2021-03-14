@@ -1,7 +1,7 @@
 /*
  * @Author: Li-HONGYAO
  * @Date: 2021-01-18 11:15:25
- * @LastEditTime: 2021-02-26 16:26:49
+ * @LastEditTime: 2021-03-11 00:05:57
  * @LastEditors: Li-HONGYAO
  * @Description:
  * @FilePath: /Admin/src/pages/Personnel/index.tsx
@@ -86,9 +86,10 @@ const layout = {
 const Personnel: FC = () => {
   // state
   const [addModalVisible, setAddModalVisible] = useState(false);
+  const [addModalTitle, setAddModalTitle] = useState('');
   const [storeModalVisible, setStoreModalVisible] = useState(false);
   const [stores, setStores] = useState<StoreType[]>([]);
-  const [selectedStore, setSelectedStore] = useState('');
+  const [selectedStore, setSelectedStore] = useState<string | null | undefined>();
   const [userId, setUserId] = useState('');
 
   // 职位列表
@@ -147,9 +148,9 @@ const Personnel: FC = () => {
 
   // 删除人员
   const onDeletePersonnel = (id: string) => {
-    Modal.warning({
+    Modal.confirm({
       content: '您确定要要删除该人员么？',
-      closable: true,
+      cancelText:'点错了',
       okText: '确定',
       onOk: () => {
         Api.personnel.remove<HT.BaseResponse<any>>(id).then((res) => {
@@ -268,6 +269,7 @@ const Personnel: FC = () => {
                 ...record,
                 titleIds: record.titles?.map((item) => item.titleId),
               });
+              setAddModalTitle('编辑人员');
               setAddModalVisible(true);
               setUserId(record.id);
             }}
@@ -280,7 +282,7 @@ const Personnel: FC = () => {
             onClick={() => {
               setStoreModalVisible(true);
               setUserId(record.id);
-              record.storeId && setSelectedStore(record.storeId);
+              setSelectedStore(record.storeId);
             }}
           >
             分配门店
@@ -313,6 +315,7 @@ const Personnel: FC = () => {
           shape="round"
           onClick={() => {
             personnelForm.resetFields();
+            setAddModalTitle('添加人员');
             setUserId('');
             setAddModalVisible(true);
           }}
@@ -339,7 +342,7 @@ const Personnel: FC = () => {
             <StoreSelect />
           </Form.Item>
           {/* 职位 */}
-          <Form.Item label="职位：" name="post">
+          <Form.Item label="职位：" name="postId">
             <Select placeholder="全部" allowClear>
               {posts.map((item, i) => (
                 <Option key={item.id} value={item.id}>
@@ -405,7 +408,7 @@ const Personnel: FC = () => {
       />
       {/* 添加人员 */}
       <Modal
-        title="添加人员"
+        title={addModalTitle}
         visible={addModalVisible}
         onCancel={() => setAddModalVisible(false)}
         onOk={onAddPersonnel}
@@ -444,12 +447,12 @@ const Personnel: FC = () => {
               ))}
             </Radio.Group>
           </Form.Item>
-          <Form.Item name="titleIds" label="头衔">
-            <Checkbox.Group>
-              <Row>
+          <Form.Item name="titleIds" label="头衔" >
+            <Checkbox.Group style={{width: '100%'}}>
+              <Row >
                 {titles.map((item) => (
                   <Col span={8} key={item.id}>
-                    <Checkbox value={item.id}>{item.value}</Checkbox>
+                    <Checkbox  value={item.id}>{item.value}</Checkbox>
                   </Col>
                 ))}
               </Row>

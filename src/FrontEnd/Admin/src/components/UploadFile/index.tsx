@@ -1,41 +1,44 @@
 /*
  * @Author: Li-HONGYAO
  * @Date: 2021-01-23 11:18:34
- * @LastEditTime: 2021-02-24 14:51:11
+ * @LastEditTime: 2021-03-13 10:11:57
  * @LastEditors: Li-HONGYAO
  * @Description:
  * @FilePath: /Admin/src/components/UploadFile/index.tsx
  */
 
-import React, { FC, memo, useState } from 'react';
+import React, { FC, memo, useEffect, useState } from 'react';
 import { Upload, Modal } from 'antd';
-import { PlusOutlined } from '@ant-design/icons';
+import { UploadOutlined, LoadingOutlined} from '@ant-design/icons';
 import OSS from 'ali-oss';
-
+import Api from '@/Api';
+import HT from '@/constants/interface';
+import { UploadFileStatus } from 'antd/es/upload/interface';
 
 interface IProps {
-  max?: number;
-  onChange?: (value: any) => void;
-  value?: any
+  max?: number /** 上传图片张数 */;
+  value?: string[] /** 回显 */;
+  ossDirName: string;
+  onChange?: (value: any) => void /** 值变化 */;
 }
+
+type OSSResponseType = {
+  Credentials: {
+    AccessKeyId: string;
+    AccessKeySecret: string;
+    Expiration: string;
+    SecurityToken: string;
+  };
+};
 
 const UploadFile: FC<IProps> = (props) => {
   const { max = 1 } = props;
+  const [loading, setLoading] = useState(false);
   const [previewVisible, setPreviewVisible] = useState(false);
   const [previewImage, setPreviewImage] = useState('');
   const [previewTitle, setPreviewTitle] = useState('');
-  const [fileList, setFileList] = useState(() => {
-    return [
-      {
-        uid: '-1',
-        name: 'image.png',
-        status: 'done',
-        url:
-          'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
-      },
-     
-    ];
-  });
+  const [client, setClient] = useState<any>();
+  const [fileList, setFileList] = useState<any[]>([]);
 
   // methods
   const getBase64 = (file: any) => {
@@ -57,27 +60,53 @@ const UploadFile: FC<IProps> = (props) => {
       file.name || file.url.substring(file.url.lastIndexOf('/') + 1),
     );
   };
-  const handleChange = (file: any) => {
-    props.onChange && props.onChange(['https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png']);
-    setFileList(file.fileList);
+
+  const beforeUpload = async (file: any) => {
+    // 上传照片
+    try {
+      // 文件目录/文件名
+      const fileName = `lovePets/admin${props.ossDirName}/${file.name}`;
+      // 上传数据
+      let result = await client.put(fileName, file);
+      console.log(result.url);
+    } catch (e) {
+      console.log(e);
+    }
   };
+
   const uploadButton = (
     <div>
-      <PlusOutlined />
-      <div style={{ marginTop: 8 }}>点击上传</div>
+      {loading ? <LoadingOutlined /> : <UploadOutlined />}
+      <div className="ant-upload-text">点击上传</div>
     </div>
   );
+
+  useEffect(() => {
+    Api.oss.getConfigs<HT.BaseResponse<OSSResponseType>>().then((res) => {
+      if (res && res.status === 200) {
+        const client = new OSS({
+          endpoint: 'oss-cn-shenzhen.aliyuncs.com',
+          accessKeyId: res.data.Credentials.AccessKeyId,
+          accessKeySecret: res.data.Credentials.AccessKeySecret,
+          stsToken: res.data.Credentials.SecurityToken,
+          bucket: 'heart-tours',
+          region: 'oss-cn-shenzhen',
+        });
+        setClient(client);
+      }
+    });
+  }, []);
   // render
   return (
     <>
       <Upload
-        action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
         accept="image/*"
         listType="picture-card"
         // @ts-ignore
         fileList={fileList}
         onPreview={handlePreview}
-        onChange={handleChange}
+        beforeUpload={beforeUpload}
+        maxCount={max}
       >
         {fileList.length >= max ? null : uploadButton}
       </Upload>

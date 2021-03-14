@@ -1,7 +1,7 @@
 /*
  * @Author: Li-HONGYAO
  * @Date: 2021-01-18 11:35:12
- * @LastEditTime: 2021-02-24 13:42:52
+ * @LastEditTime: 2021-03-02 11:12:54
  * @LastEditors: Li-HONGYAO
  * @Description:
  * @FilePath: /Admin/src/pages/User/index.tsx
@@ -28,6 +28,7 @@ import {
 } from '@ant-design/icons';
 import { ColumnProps } from 'antd/es/table';
 import Api from '@/Api';
+import Utils from '@/utils/utils';
 
 // 筛选条件
 type FilterParamsType = {
@@ -77,13 +78,12 @@ type ColumnsType = {
 // 用户预约记录
 type AptRecordsColumnsType = {
   id: number /** 预约id */;
-  nickName: string /** 预约用户（微信昵称） */;
-  store: string /** 预约门店 */;
-  time: string /** 预约时间 */;
-  status: number /** 预约状态  0-已预约 1-已过期 2-已完成 */;
-  technician: string /** 预约技师  */;
-  userName: string /** 预约用户名称 */;
-  comboName: string /** 预约套餐名称 */;
+  wcName: string /** 预约用户（微信昵称） */;
+  storeName: string /** 预约门店 */;
+  apptTime: string /** 预约时间 */;
+  state: number;
+  userName: string /** 预约技师  */;
+  mainComboName: string /** 预约套餐名称 */;
   petType: string /** 宠物类型 */;
 };
 
@@ -159,35 +159,27 @@ const User: FC = () => {
   };
   // 获取用户预约记录
   const getAptRecords = () => {
-    console.log('获取用户预约记录：', aptPage);
     message.loading('数据加载中...');
-    const tempArr: AptRecordsColumnsType[] = [];
-    for (let i = 0; i < 88; i++) {
-      tempArr.push({
-        id: i,
-        nickName: '苟玉梅',
-        status: 2,
-        store: '九里晴川店',
-        time: '2021/01/23 15:30',
-        technician: '李鸿耀',
-        userName: '郑云龙',
-        petType: '狗狗',
-        comboName: '洗护套餐A',
+    Api.appt
+      .list<HT.BaseResponse<AptRecordsColumnsType[]>>({
+        wcId: aptPage!.id,
+        page: aptPage!.page,
+        pageSize: aptPage!.pageSize,
+      })
+      .then((res) => {
+        if (res && res.status === 200) {
+          setAptRecords(res.data);
+          setAptTotal(res.page.total);
+        }
       });
-    }
-    setTimeout(() => {
-      setAptRecords(tempArr);
-      setAptTotal(tempArr.length);
-      message.destroy();
-    }, 500);
   };
 
   // events
 
   const onUpdateState = (id: string, status: number) => {
-    Modal.warning({
+    Modal.confirm({
       content: status ? '您确定要禁用该用户么？' : '你确定要解封该用户么？',
-      closable: true,
+      cancelText: '点错了',
       okText: '确定',
       onOk: () => {
         Api.user.updateState<HT.BaseResponse<any>>(id).then((res) => {
@@ -305,7 +297,7 @@ const User: FC = () => {
             onClick={() => {
               setAptRecordsModalVisible(true);
               setAptPage({
-                id: record.id,
+                id: record.wcid,
                 pageSize: 20,
                 page: 1,
               });
@@ -373,26 +365,21 @@ const User: FC = () => {
     { title: '备注', dataIndex: 'remark' },
   ];
   const aptRecordsColumns: ColumnProps<AptRecordsColumnsType>[] = [
-    { title: '预约用户', dataIndex: 'nikeName' },
-    { title: '预约门店', dataIndex: 'store' },
+    { title: '预约用户', dataIndex: 'wcName' },
+    { title: '预约门店', dataIndex: 'storeName' },
     {
       title: '预约状态',
-      dataIndex: 'status',
-      render: (status: number) => {
-        switch (status) {
-          case 0:
-            return '已预约';
-          case 1:
-            return '已过期';
-          case 2:
-            return '已完成';
-        }
-      },
+      dataIndex: 'state',
+      render: (state: number) => Utils.aptStatusDesc(state),
     },
-    { title: '预约时间', dataIndex: 'time' },
-    { title: '预约技师', dataIndex: 'technician' },
-    { title: '套餐名称', dataIndex: 'comboName' },
-    { title: '宠物类型', dataIndex: 'petType' },
+    { title: '预约时间', dataIndex: 'apptTime' },
+    { title: '预约技师', dataIndex: 'userName' },
+    { title: '套餐名称', dataIndex: 'mainComboName' },
+    {
+      title: '宠物类型',
+      dataIndex: 'petType',
+      render: (type: number) => Utils.petTypeDesc(type),
+    },
   ];
   return (
     <div className="page">

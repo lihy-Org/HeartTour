@@ -1,7 +1,7 @@
 /*
  * @Author: Li-HONGYAO
  * @Date: 2021-01-18 11:15:25
- * @LastEditTime: 2021-02-24 18:06:24
+ * @LastEditTime: 2021-03-10 10:17:58
  * @LastEditors: Li-HONGYAO
  * @Description:
  * @FilePath: /Admin/src/pages/Store/index.tsx
@@ -41,7 +41,10 @@ type ShopAssistantType = {
   gender: number /** 性别 */;
   age: number /** 年龄 */;
   phone: string /** 电话 */;
-  title: string[] /** 头衔 */;
+  titles: {
+    id: string;
+    title: string
+  }[] /** 头衔 */;
   post: string /** 职位 */;
   type: number /** 2:门店系统管理员（店长） 3:普通人员 */;
 };
@@ -80,6 +83,7 @@ const Store: FC = () => {
   const [storeForm] = Form.useForm();
   const [storeId, setStoreId] = useState<string | undefined>();
   const [addModalVisible, setAddModalVisible] = useState(false);
+  const [addModalTitle, setAddModalTitle] = useState('');
   const [shopAssistant, setShopAssistant] = useState<ShopAssistantType[]>([]);
   const [saModalVisible, setSAModalVisible] = useState(false);
   const [dataSource, setDataSource] = useState<ColumnsType[]>([]);
@@ -247,6 +251,7 @@ const Store: FC = () => {
                   moment(record.businessHourEnd, 'HH:mm'),
                 ],
               });
+              setAddModalTitle('编辑门店');
               setAddModalVisible(true);
             }}
           >
@@ -270,7 +275,7 @@ const Store: FC = () => {
       title: '头像',
       dataIndex: 'avatar',
       render: (avatarUrl) => (
-        <Image src={avatarUrl} style={{ width: 'auto', height: 30 }} />
+        <Image src={avatarUrl} style={{ width: 'auto', height: 50 }} />
       ),
     },
     { title: '姓名', dataIndex: 'name' },
@@ -284,13 +289,13 @@ const Store: FC = () => {
     { title: '职位', dataIndex: 'post' },
     {
       title: '头衔',
-      dataIndex: 'title',
-      render: (record: string[]) => (
+      dataIndex: 'titles',
+      render: (record: {title: string; id: string}[]) => (
         <Space size="small">
           {record &&
             record.map((title, i) => (
-              <Tag style={{ fontSize: 10 }} color="#87d068" key={`title__${i}`}>
-                {title}
+              <Tag style={{ fontSize: 10 }} color="#87d068" key={title.id}>
+                {title.title}
               </Tag>
             ))}
         </Space>
@@ -300,16 +305,21 @@ const Store: FC = () => {
       width: 90,
       title: '操作',
       key: 'action',
-      render: (record: ShopAssistantType) => (
-        <Button
-          disabled={record.type === 2}
-          type="primary"
-          size="small"
-          onClick={() => onSetShopManager(record.id, record.storeId)}
-        >
-          设为店长
-        </Button>
-      ),
+      render: (record: ShopAssistantType) =>
+        record.type === 2 ? (
+          <img
+            style={{ width: 20 }}
+            src="https://img.meituan.net/csc/890f8347fed492c0181c4bb31d45dc4e5363.png"
+          />
+        ) : (
+          <Button
+            type="primary"
+            size="small"
+            onClick={() => onSetShopManager(record.id, record.storeId)}
+          >
+            设为店长
+          </Button>
+        ),
     },
   ];
 
@@ -328,6 +338,7 @@ const Store: FC = () => {
           onClick={() => {
             storeForm.resetFields();
             setStoreId(undefined);
+            setAddModalTitle('添加门店');
             setAddModalVisible(true);
           }}
         >
@@ -414,7 +425,7 @@ const Store: FC = () => {
       </Modal>
       {/* 添加门店 */}
       <Modal
-        title="添加门店"
+        title={addModalTitle}
         visible={addModalVisible}
         maskClosable={false}
         onCancel={() => setAddModalVisible(false)}

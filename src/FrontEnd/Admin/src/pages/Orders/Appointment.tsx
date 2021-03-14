@@ -245,7 +245,7 @@ const Appointment: FC = () => {
       },
     },
     {
-      width: 270,
+      width: 220,
       title: '操作',
       key: 'action',
       render: (record: ColumnsType) => (
@@ -271,7 +271,7 @@ const Appointment: FC = () => {
               onModifyAppt();
             }}
           >
-            修改预约时间
+            改单
           </Button>
           <Button
             disabled={page.filters.state === 2}
@@ -281,7 +281,7 @@ const Appointment: FC = () => {
             icon={<CloseCircleOutlined />}
             onClick={onDeleteAppointment}
           >
-            取消
+            退单
           </Button>
         </Space>
       ),
