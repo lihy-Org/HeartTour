@@ -4,10 +4,9 @@ namespace App\Repositories;
 use App\Models\Store;
 use App\Models\User;
 use App\Models\UserTitle;
-use App\Models\UserWorktime;
 use App\Repositories\ConfigRepository;
-use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class UserRepository
 {
@@ -28,7 +27,7 @@ class UserRepository
                         'status' => 500,
                         'msg' => '无该职位信息!',
                         'data' => '');
-                }             
+                }
                 $user = User::create([
                     'name' => $data->name,
                     'phone' => $data->phone,
@@ -119,13 +118,28 @@ class UserRepository
     public function GetList($data)
     {
         $users = User::where('state', 0)->with(array('Titles' => function ($query) {
-            $query->select('id', 'uid','titleId', 'title');
+            $query->select('id', 'uid', 'titleId', 'title');
         }))->whereNotIn('type', [0, 1])->orderBy('created_at');
         if (isset($data->searchKey)) {
             $users = $users->where(function ($query) use ($data) {
                 $query->where('name', 'like', '%' . $data->searchKey . '%')
                     ->orWhere('phone', 'like', '%' . $data->searchKey . '%');
             });
+        }
+        if (isset($data->isDist) && $data->isDist == 1) {
+            $users = $users->where(function ($query) use ($data) {
+                $query->where('type', 3)
+                    ->orWhere('type', 4)
+                    ->orWhere('type', 5);
+            });
+        } else {
+            $users = $users->where(function ($query) use ($data) {
+                $query->where('type', 2)
+                    ->orWhere('type', 3);
+            });
+        }
+        if (isset($data->type)) {
+            $users = $users->where('type', $data->type);
         }
         if (isset($data->storeId)) {
             $users = $users->where('storeId', $data->storeId);
@@ -210,10 +224,28 @@ class UserRepository
                 'msg' => '失败!' . $ex->getMessage(),
                 'data' => '');
         }
-    }  
-    
+    }
+
     public function GetSelectList()
     {
-        return User::where('state', 0)->where('isBeautician',1)->select('id', 'name');
+        return User::where('state', 0)->where('isBeautician', 1)->select('id', 'name');
+    }
+
+    public function SetType($data)
+    {
+        $user = User::find($data->userId);
+        if ($user) {
+            $user->type = $data->type;
+            $user->lastdist = Carbon::now();
+            $user->save();
+            return array(
+                'status' => 200,
+                'msg' => '修改成功!',
+                'data' => '');
+        }
+        return array(
+            'status' => 500,
+            'msg' => '修改失败,找不到该人员!',
+            'data' => '');
     }
 }

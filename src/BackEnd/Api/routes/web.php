@@ -53,6 +53,7 @@ Route::prefix('api/admin')->middleware(['auth:sanctum', 'adminapi'])->group(func
     Route::post('/user/setStore', [AdminUserController::class, 'SetStore']);
     Route::post('/user/setManage', [AdminUserController::class, 'SetManage']);
     Route::get('/user/getSelectList', [AdminUserController::class, 'GetSelectList']);
+    Route::post('/user/setType', [AdminUserController::class, 'SetType']);
     //用户
     Route::post('/wechat/list', [AdminWechatUserController::class, 'GetList']);
     Route::post('/wechat/remove', [AdminWechatUserController::class, 'Remove']);
@@ -129,7 +130,7 @@ Route::prefix('api')->middleware(['web', 'wechatapi'])->group(function () {
 
     //宠物
     Route::post('/pet/addOrUpdate', [PetController::class, 'AddOrUpdate']);
-    Route::get('/pet/list', [PetController::class, 'GetList']);
+    Route::post('/pet/list', [PetController::class, 'GetList']);
     Route::get('/pet/{id}', [PetController::class, 'GetOne']);
     Route::post('/pet/remove', [PetController::class, 'Remove']);
 

@@ -11,9 +11,9 @@ class WechatUserRepository
     {
         $users = WechatUser::leftjoin(DB::raw('(SELECT wcId,count(1) count from pets WHERE deleted_at is NULL GROUP BY wcId) pets'),
             function ($join) {$join->on('pets.wcId', '=', 'wechatUser.id');
-            })->leftjoin(DB::raw('(SELECT wcId,sum(payMoney) payMoney from orders WHERE deleted_at is NULL and state BETWEEN 200 and 500 GROUP BY wcId) payMoney'),
+            })->leftjoin(DB::raw('(SELECT wcId,sum(payMoney) payMoney from orders WHERE deleted_at is NULL   GROUP BY wcId) payMoney'),
             function ($join) {$join->on('payMoney.wcId', '=', 'wechatUser.id');
-            })->leftjoin(DB::raw('(SELECT wcId,count(1) apptCount from orders WHERE deleted_at is NULL and state BETWEEN 200 and 500 and type=1 GROUP BY wcId) apptCount'),
+            })->leftjoin(DB::raw('(SELECT wcId,count(1) apptCount from orders WHERE deleted_at is NULL and  type=1 GROUP BY wcId) apptCount'),
             function ($join) {$join->on('apptCount.wcId', '=', 'wechatUser.id');
             })
             ->orderBy('lastlogin');

@@ -19,7 +19,7 @@ class ComboController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/api/admin/combo/list",
+     *     path="/api/storesys/combo/list",
      *     tags={"总台管理系统-套餐管理"},
      *     summary="套餐列表",
      *     @OA\Parameter(name="token", in="header", @OA\Schema(type="string"), required=true, description="token"),

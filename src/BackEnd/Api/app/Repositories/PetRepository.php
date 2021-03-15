@@ -10,7 +10,7 @@ class PetRepository
     public function AddOrUpdate($data)
     {
         $ConfigRepository = new ConfigRepository();
-        $pet = null;
+        $pet;
         if (isset($data->petId)) {
             $pet = Pet::find($data->petId);
         }
@@ -26,7 +26,7 @@ class PetRepository
                 $topvariety = $ConfigRepository->GetTopConfig($variety->id);
                 $pet = Pet::create([
                     'wcId' => $data->wcId,
-                    'avatar' => $data->avatar,
+                    'avatar' => isset($data->avatar) ? $data->avatar : "",
                     'nickname' => $data->nickname,
                     'gender' => $data->gender,
                     'typeId' => $topvariety->id,
@@ -45,10 +45,9 @@ class PetRepository
                     'data' => '');
 
             } catch (\Exception $exception) {
-                // dd($exception);
                 return array(
                     'status' => 500,
-                    'msg' => '保存失败!',
+                    'msg' => '保存失败!' . $exception->getMessage(),
                     'data' => '');
             }
         } else {
@@ -60,7 +59,7 @@ class PetRepository
                         'msg' => '无该品种信息!',
                         'data' => '');
                 }
-                $pet->avatar = $data->avatar;
+                $pet->avatar = isset($data->avatar) ? $data->avatar : "";
                 $pet->nickname = $data->nickname;
                 $pet->gender = $data->gender;
                 $pet->varietyId = $data->varietyId;
@@ -75,10 +74,10 @@ class PetRepository
                     'msg' => '添加信息成功!',
                     'data' => '');
             } catch (\Throwable $exception) {
-                // dd($exception);
+                //dd($exception);
                 return array(
                     'status' => 500,
-                    'msg' => '保存失败!',
+                    'msg' => '保存失败!' . $exception->getMessage(),
                     'data' => '');
             }
         }
@@ -105,4 +104,25 @@ class PetRepository
         return $pets;
     }
 
+    public function GetOne($data)
+    {
+        return Pet::where('wcId', $data->wcId)->where('id', $data->petId);
+    }
+
+    public function Remove($data)
+    {
+        $pet = Pet::where('wcId', $data->wcId)->where('id', $data->petId)->first();
+        if ($pet) {
+            $pet->delete();
+            return array(
+                'status' => 200,
+                'msg' => '操作成功!',
+                'data' => '');
+        }
+        return array(
+            'status' => 500,
+            'msg' => '操作失败，找不到数据!',
+            'data' => '');
+
+    }
 }

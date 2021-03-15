@@ -145,6 +145,8 @@ class AccountController extends Controller
                         'data' => '')
                 );
             }
+            $user->lastlogin=Carbon::now();
+            $user->save();
             return json_encode(
                 array(
                     'status' => 200,
