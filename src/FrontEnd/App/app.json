@@ -1,21 +1,27 @@
 {
   "pages": [
-    "pages/confirm-order/confirm-order",
     "pages/login/login",
     "pages/index/index",
+    
+    "pages/more-time/more-time",
+    "pages/add-pet/add-pet",
+    "pages/select-variety/select-variety",
+    "pages/pet/pet",
+    "pages/confirm-order/confirm-order",
     "pages/map/map",
     "pages/address-management/address-management",
-    "pages/add-pet/add-pet",
     "pages/my-pet/my-pet",
-    "pages/pet/pet",
     "pages/my-order/my-order",
-    
     "pages/mine/mine",
     "pages/goods/goods",
     "pages/rim/rim",
-    "pages/select-variety/select-variety",
     "pages/update-address/update-address"
   ],
+  "permission": {
+    "scope.userLocation": {
+      "desc": "你的位置信息将用于小程序位置接口的效果展示" 
+    }
+  },
   "window": {
     "backgroundTextStyle": "dark",
     "navigationBarBackgroundColor": "#FFFFFF",

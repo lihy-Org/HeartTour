@@ -1,4 +1,13 @@
 // pages/index/index.js
+import {
+  comboList
+} from '../../api/combo';
+import {
+  config
+} from '../../api/config';
+import {
+  getWorktime
+} from '../../api/worktime';
 Page({
   /**
    * 页面的初始数据
@@ -10,7 +19,7 @@ Page({
       },
       technicianName: {
         name: '刘博杭',
-        style:'vertical-align:middle;margin-right:20rpx;'
+        style: 'vertical-align:middle;margin-right:20rpx;'
       },
       technicianTitle: {
         title: '美容之星',
@@ -18,14 +27,14 @@ Page({
       },
       technicianTitle2: {
         title2: "终极美容师",
-        style: 'color:red'
+        // style: 'color:red'
       },
       praise: {
         praise: "好评率100%",
       },
-      show:true,
-      businessCard:'businessCard',
-      technicianHead:'technicianHead'
+      show: true,
+      businessCard: 'businessCard',
+      technicianHead: 'technicianHead'
     },
     praiseList: [{
         url: '../../assets/images/praise_sel.png'
@@ -72,71 +81,22 @@ Page({
       },
     },
     setMeal: false,
-    mockPet: [{
-        name: '洗护套餐A',
-        details: '8项护理',
-        details1: "360°全方位清洁服务360°360°全方位清洁服务360°360°全方位清洁服务360°360°全方位清洁服务360°",
-        price: '45.00',
-        id: '1'
-      },
-      {
-        name: '洗护套餐B',
-        details: '8项护理',
-        details1: "360°全方位清洁服务B",
-        price: '45.00',
-        id: '2'
-      },
-      {
-        name: '洗护套餐C',
-        details: '8项护理',
-        details1: "360°全方位清洁服务C",
-        price: '45.00',
-        id: '3'
-      },
-      {
-        name: '洗护套餐D',
-        details: '8项护理',
-        details1: "360°全方位清洁服务D",
-        price: '46.00',
-        id: '4'
-      },
+    mockPet: [
+      // {
+      //   name: '洗护套餐A',
+      //   details: '8项护理',
+      //   details1: "360°全方位清洁服务360°360°全方位清洁服务360°360°全方位清洁服务360°360°全方位清洁服务360°",
+      //   price: '45.00',
+      //   id: '1'
+      // }
     ],
-    addItem: [{
+    addItem: [
+      {
         name: '刷牙',
         price: `￥45':00`,
         id: '1',
         checked: ""
-      },
-      {
-        name: '洗澡',
-        price: `￥45:00`,
-        id: '2',
-        checked: ""
-      },
-      {
-        name: '按摩',
-        price: `￥45:00`,
-        id: '3',
-        checked: ""
-      },
-      {
-        name: '马杀鸡',
-        price: `￥45:00`,
-        id: '4',
-        checked: ""
-      },
-      {
-        name: '撕吧儿',
-        price: `￥45:00`,
-        id: '5',
-        checked: ""
-      },
-      {
-        name: '安逸安逸安逸',
-        price: `￥45:00`,
-        id: '6',
-        checked: ""
-      },
+      }
     ],
     timers: [{
         date: "今天",
@@ -172,156 +132,40 @@ Page({
     addPetShow: false,
     mainActiveIndex: 0,
     activeId: null,
-    items: [{
-        // 导航名称
-        text: '汪星人',
-        children: [{
-            // 名称
-            text: '小型犬',
-            // id，作为匹配选中状态的标识
-            children: [{
-                // 名称
-                text: '泰迪狗1',
-                // id，作为匹配选中状态的标识
-                src:'../../assets/images/shan.png',
-                id: 1,
-
-              },
-              {
-                text: '吉娃娃2',
-                id: 2,
-              },
-            ],
-          },
-          {
-            // 名称
-            text: '中型犬',
-            // id，作为匹配选中状态的标识
-            children: [{
-                // 名称
-                text: '哈巴狗3',
-                // id，作为匹配选中状态的标识
-                id: 3,
-
-              },
-              {
-                text: '比特4',
-                id: 4,
-              },
-            ],
-          },
-          {
-            // 名称
-            text: '大型犬',
-            // id，作为匹配选中状态的标识
-
-            children: [{
-                // 名称
-                text: '金毛5',
-                // id，作为匹配选中状态的标识
-                id: 5,
-
-              },
-              {
-                text: '2哈6',
-                id: 6,
-              },
-            ],
-          },
-        ],
-      },
-      {
-        // 导航名称
-        text: '喵星人',
-        // 导航名称右上角徽标，1.5.0 版本开始支持
-
-        // 该导航下所有的可选项
-        children: [{
-            // 名称
-            text: '长毛猫',
-            // id，作为匹配选中状态的标识
-
-            children: [{
-                // 名称
-                text: '蓝猫',
-                // id，作为匹配选中状态的标识
-                id: 7,
-              },
-              {
-                text: '绿毛',
-                id: 8,
-              },
-            ],
-          },
-          {
-            // 名称
-            text: '短毛猫',
-            // id，作为匹配选中状态的标识
-
-            children: [{
-              // 名称
-              text: '加肥猫',
-              // id，作为匹配选中状态的标识
-              id: 9,
-            }],
-          },
-          {
-            // 名称
-            text: '其他猫',
-            // id，作为匹配选中状态的标识
-
-            children: [{
-              // 名称
-              text: '比鲁斯',
-              // id，作为匹配选中状态的标识
-              id: 10,
-            }],
-          },
-        ],
-      },
-      {
-        // 导航名称
-        text: '其他',
-
-        children: [{
-          text: '其他',
-          children: [{
-              // 名称
-              text: '羊驼',
-              // id，作为匹配选中状态的标识
-              id: 11,
-            },
-            {
-              text: '蛇',
-              id: 12,
-            },
-          ]
-        }],
-      },
-    ],
-    radio:0,
+    items: [],
+    radio: 0,
     whichPet: [],
-    shopName:''
+    shopName: null,
+    petId:'',
+    petName:'',
+    totalPrice:'0.00',
+    zPrice:'',
+    fPricr:[]
   },
-  goMap:function(){
-    wx.navigateTo({
-      url: '../map/map',
-    });
+  goMap: function () {
+      wx.navigateTo({
+        url: '../map/map',
+      });
   },
-  goAddPet(){
+  goAddPet() {
     wx.navigateTo({
-      url:'../add-pet/add-pet'
+      url: '../add-pet/add-pet'
     })
   },
+
   initPet: function (e) {
     if (e) {
       this.data.items.forEach(item => {
         if (item.text === e.currentTarget.dataset.text) {
+          console.log(item.children[0]);
+          if(item.children[0].children[0]){
+            console.log(item);
           this.setData({
             whichPet: item.children,
             activeId: item.children[0].children[0].id,
             mainActiveIndex: 0
           })
+          }
         }
       });
     } else {
@@ -336,7 +180,7 @@ Page({
     this.initPet(e);
     console.log(e);
     this.setData({
-      radio:e.currentTarget.dataset.index
+      radio: e.currentTarget.dataset.index
     })
   },
   addPet: function () {
@@ -361,9 +205,14 @@ Page({
       activeId: e.currentTarget.dataset.items[detail.index].children[0].id,
     });
   },
-  onClickItem() {
-
-    console.log(this.data.activeId);
+  onClickItem(e) {
+    console.log(e);
+    this.setData({
+      petId:e.detail.id,
+      petName:e.detail.text,
+      addPetShow: false
+    })
+    this.getComboList()
   },
   a: function (e) {
     if (e.currentTarget.dataset.item.id === this.data.activeMeal) {
@@ -391,6 +240,20 @@ Page({
     }
   },
   selectMeal: function (e) {
+    
+    console.log(this.data.activeMeal!==e.currentTarget.dataset.item.id);
+    // 主套餐价格
+    if(e.currentTarget.dataset.item.id!==this.data.activeMeal){
+      this.setData({
+        zPrice:e.currentTarget.dataset.item.price
+      })
+      
+    this.sub(e.currentTarget.dataset.item.price,this.data.fPrice)
+    }else{
+      this.setData({
+        zPrice:0
+      })
+    }
     this.a(e)
     this.setData({
       setMeal: !this.data.setMeal,
@@ -422,7 +285,39 @@ Page({
       animationY: animationY.export(),
     })
   },
+  sub:function(priceZ,pirceF){
+    let sumValueF = 0
+    if(pirceF){
+    for (var i=pirceF.length-1; i>=0; i--) {
+      sumValueF += Number(pirceF[i]);
+    }
+    }else{
+      sumValueF=0
+    }
+    const sumValue=sumValueF+Number(priceZ)
+    console.log(sumValue);
+    this.setData({
+      totalPrice:sumValue
+    })
+  },
   suggestItem: function (e) {
+    console.log(e.currentTarget.dataset.item)
+    console.log(this.data.addItem);
+    wx.nextTick(()=>{
+      let priceArr=[];
+      this.data.addItem.forEach((item, index)=>{
+        if(item.checked){
+          priceArr.push(item.price)
+        }
+      })
+    console.log(priceArr);
+    this.setData({
+      fPrice:priceArr
+    })
+
+    this.sub(this.data.zPrice,priceArr)
+    });
+
     let that = this,
       index = e.currentTarget.dataset.index,
       id = e.currentTarget.dataset.id,
@@ -440,12 +335,18 @@ Page({
       }
     }
     items[index].checked = !val;
+    
     that.setData({
       addItem: items,
       suggestAdd: suggestAdd,
     })
+    
   },
-
+  goMoreTime(){
+    wx.navigateTo({
+      url:'../more-time/more-time'
+    })
+  },
   seletTime(e) {
     if (e.currentTarget.dataset.item.id === this.data.showTime) {
       this.setData({
@@ -458,13 +359,76 @@ Page({
     }
   },
 
+  getConfig(){
+    let that = this;
+    config().then(res => {
+      if (res.status === 200) {
+        let str = JSON.stringify(res.data)
+        let result = str.replace(/value/g,'text');
+        let newData = JSON.parse(result)
+        that.setData({
+          items:newData
+        } )
+        that.initPet();
+      }
+    })
+  },
+  getComboList(){
+    let that = this;
+    // let data =  {storeId:that.data.shopName.id,varietyId:that.data.petId}
+     comboList().then(res => {
+      let comboZ = [],comboC=[];
+      if(res&&res.status===200){
+        res.data.forEach(item =>{
+          if(item.comboType === 0){
+            comboZ.push(item)
+          }else if(item.comboType === 1){
+            comboC.push(item)
+          }
+        })
+      }
+      let arr = [], arrZ =[];
+      comboZ.forEach(item=>{
+        let obj = {
+          bgImg:item.bgImg,
+          id:item.id,
+          originPrice:item.originPrice,
+          price:item.salePrice,
+          nursingTime:item.nursingTime,
+          details1:item.desc,
+          name:item.name
+        }
+        arr.push(obj)
+        that.setData({
+          mockPet:arr
+        })
+      })
+      comboC.forEach(item=>{
+        let obj = {
+          name:item.name,
+          price:item.salePrice,
+          originPrice:item.originPrice,
+          checked:'',
+          id:item.id
+        }
+        arrZ.push(obj)
+        that.setData({
+          addItem:arrZ
+        })
+      })
+    })
+  },
+  goPay(){
+    wx.navigateTo({
+      url:'../confirm-order/confirm-order'
+    })
+  },
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-    this.initPet()
+    this.getConfig()
   },
-
   /**
    * 生命周期函数--监听页面初次渲染完成
    */
@@ -476,7 +440,18 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow: function () {
-
+    let that = this;
+    this.getComboList()
+    // if(!that.data.shopName){return}
+    // console.log(that.data.shopName.id);
+    // const storeId  = that.data.shopName.id;
+    // getWorktime(storeId ).then(res=>{
+    //   if(res&&res.status === 200){
+    //     console.log(res);
+    //   }
+    // }).catch(err=>{
+    //   console.log(err);
+    // })
   },
 
   /**

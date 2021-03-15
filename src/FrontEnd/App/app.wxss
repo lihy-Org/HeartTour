@@ -54,9 +54,13 @@ button::after {
 .bg-F63D24 { background-color: #F63D24; }
 .bg-FFD5D5 {background-color: #FFD5D5;}
 .bg-F7F8FA {background-color: #F7F8FA;}
+.bg-00499e { background-color: #00499e;}
+.bg-f8cb00 {background-color: #f8cb00;}
 .bg-cover { background-size: cover;}
 
 
+.color-00499e { color: #00499e; }
+.color-f8cb00 { color: #f8cb00; }
 .color-FFFFFF { color: #FFFFFF; }
 .color-FF9191 { color: #FF9191; }
 .color-2A2A2A { color: #2A2A2A; }
@@ -228,6 +232,7 @@ button::after {
 
 .px-0  { padding-left: 0rpx;  padding-right: 0rpx; }
 .px-4  { padding-left: 4rpx;  padding-right: 4rpx; }
+.py-6  { padding-left: 6rpx ; padding-right: 6rpx;}
 .px-12 { padding-left: 12rpx; padding-right: 12rpx;}
 .px-14 { padding-left: 14rpx; padding-right: 14rpx;}
 .px-15 { padding-left: 15rpx; padding-right: 15rpx;}
@@ -411,6 +416,7 @@ button::after {
 
 /* 边框 */
 .border { border: 2rpx solid #F5F5F5;}
+.border-red{border:2rpx solid #F63D24;}
 .border-top { border-top: 2rpx solid #F5F5F5 ;}
 .border-bottom { border-bottom: 2rpx solid #E1E1E1;}
 .border-left { border-left: 2rpx solid #F5F5F5;}

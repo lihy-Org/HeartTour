@@ -1,7 +1,8 @@
-// import {
-//   login,
-//   edit
-// } from '../../api/user'
+import {
+  login,
+  edit,
+  editPhone
+} from '../../api/user'
 import eventBus from '../../utils/eventBus'
 var appInst = getApp();
 
@@ -12,9 +13,11 @@ Page({
       if (!wx.getStorageSync("token")) {
         wx.login({
           complete: (res) => {
+            console.log(res);
             if (res.errMsg === 'login:ok') {
               // 调用登录接口
               login(res.code).then(response => {
+                console.log(response)
                 if (response.status === 200) {
                   const {
                     isBindPhone,
@@ -25,19 +28,42 @@ Page({
                   // 存储手机号绑定状态
                   appInst.globalData.isBindPhone = isBindPhone;
                   resolve();
-                }else {
+                } else {
                   reject();
                 }
+              }).catch(err => {
+                console.log(err);
               })
-            }else {
+            } else {
               reject();
             }
           },
         });
-      }else {
+      } else {
         resolve();
       }
     })
+  },
+  // 绑定手机号
+  onGetPhoneNumber({
+    detail: {
+      encryptedData,
+      iv,
+      errMsg
+    }
+  }) {
+    console.log(encryptedData,iv,errMsg);
+    if (/ok/.test(errMsg)) {
+      editPhone({
+        iv: encodeURIComponent(iv),
+        encryptedData: encodeURIComponent(encryptedData),
+      }).then(() => {
+        eventBus.$emit('PHONE_CHANGE');
+        appInst.globalData.isBindPhone = 1;
+      })
+    } else {
+      console.log('获取失败');
+    }
   },
   onGetUserInfo({
     detail
@@ -54,7 +80,9 @@ Page({
         }).then(() => {
           appInst.globalData.isAuth = true;
           eventBus.$emit('LOGGED');
-          wx.navigateBack();
+          wx.switchTab({
+            url: '../index/index',
+          });
         })
       })
     } else {
@@ -63,7 +91,6 @@ Page({
     }
   },
   onNoLogin() {
-    wx.navigateBack();
   },
   onPush({
     currentTarget: {

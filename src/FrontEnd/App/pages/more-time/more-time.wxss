@@ -1,0 +1,22 @@
+/* pages/more-time/more-time.wxss */
+.diyTabs span{
+  line-height: 36rpx;
+  display: inline;
+  width:120rpx;
+}
+
+.diyTabs{
+    width: 120rpx;
+display: flex;
+flex-wrap: wrap;
+justify-content: center; align-items: center; 
+}
+.diyTabs span:nth-child(2){
+    padding-bottom: 8rpx;
+    font-size: 24rpx;
+}
+.diyTabs span:nth-child(1){
+    padding-top: 8rpx;
+    font-size: 32rpx;
+    font-weight: bold;
+}

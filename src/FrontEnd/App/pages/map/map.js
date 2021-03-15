@@ -1,42 +1,21 @@
 // pages/map/map.js
+import {
+  storeList
+} from '../../api/map';
 Page({
 
   /**
    * 页面的初始数据
    */
   data: {
-    makers: [{
-        latitude: 30.5702,
-        longitude: 104.06476,
-        iconPath: '../../assets/images/1.png',
-        width: 20,
-        height: 20,
-        name: '金域蓝湾店',
-        des: '新店开展',
-        time: '10:00-22:00',
-        ass: '成都市成华区建设路68号金域蓝湾店附88号正16879号安逸店',
-        kilo: ''
-      },
-      {
-        latitude: 30.616867,
-        longitude: 104.09948,
-        iconPath: '../../assets/images/1.png',
-        width: 20,
-        height: 20,
-        name: '路大可店',
-        des: '新店开展',
-        time: '10:00-22:00',
-        ass: '成都市成华区建设路68号金域蓝湾店附88号正16879号安逸店',
-        kilo: ''
-      }
-    ],
+    makers: [],
     myLatitude: null,
     myLongitude: null,
     activeId: null,
     items: [{
       text: '成都',
     }, ],
-    shopName:''
+    shopName: ''
   },
   /**
    * 计算两点间直线距离
@@ -64,11 +43,9 @@ Page({
     let name = e.currentTarget.dataset.text;
     let pages = getCurrentPages();
     let prevPages = pages[pages.length - 2];
-
     prevPages.setData({
-      shopName:name
+      shopName: name
     });
-
     wx.navigateBack({
       delta: 1
     });
@@ -84,25 +61,51 @@ Page({
       }
     }
   },
-  
+
   onLoad: function () {
     let that = this;
-    wx.getLocation({
-      success: function (res) {
-        that.setData({
-          myLatitude: res.latitude,
-          myLongitude: res.longitude
-        })
-       let shops =  that.data.makers.map(item=>{
-          item.kilo = that.getDistance(that.data.myLatitude, that.data.myLongitude, item.latitude, item.longitude)
-          return item
-        })
-        shops.sort(that.compare('kilo'))
-        that.setData({
-          makers:shops
-        })
+    storeList().then(res => {
+      if (res && res.status === 200) {
+        let arr = [];
+        res.data.forEach(item => {
+          let obj = {
+            iconPath: '../../assets/images/1.png',
+            width: 20,
+            height: 20,
+            kilo: '',
+            ass: item.address,
+            hourEnd: item.businessHourEnd,
+            hourStart: item.businessHourStart,
+            latitude: item.lat,
+            longitude: item.lng,
+            name: item.name,
+            id:item.id
+          }
+          arr.push(obj)
+          that.setData({
+            makers: arr
+          })
+        });
       }
     });
+      wx.getLocation({
+        success: function (res) {
+          that.setData({
+            myLatitude: res.latitude,
+            myLongitude: res.longitude
+          })
+          let shops = that.data.makers.map(item => {
+            item.kilo = that.getDistance(Number(that.data.myLatitude), Number(that.data.myLongitude), Number(item.latitude), Number(item.longitude))
+            return item
+          })
+          shops.sort(that.compare('kilo'))
+          that.setData({
+            makers: shops
+          })
+        }
+      })
+
+      
   },
   /**
    * 生命周期函数--监听页面初次渲染完成
