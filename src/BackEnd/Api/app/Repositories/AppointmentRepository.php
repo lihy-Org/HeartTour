@@ -378,26 +378,22 @@ class AppointmentRepository
         try {
             DB::beginTransaction(); // 开启事务
             $user = User::find($data->userId);
-            $store = Store::find($user->storeId);
             $ConfigRepository = new ConfigRepository();
             $config = $ConfigRepository->GetOne('TimeSlot', 'TimeSlot')->first();
-            $startTime = $store->businessHourStart;
-            $endTime = $store->businessHourEnd;
             foreach ($data->days as $v) {
-                if (UserWorktime::where('workDay', $v)->where('uid', $user->id)->whereNotNull('orderId')->count() > 0) {
+                $day = $v['day'];
+                $startTime = $v['startTime'];
+                $endTime = $v['endTime'];
+                if (UserWorktime::where('workDay', $day)->where('uid', $user->id)->whereNotNull('orderId')->count() > 0) {
                     Db::rollback(); // 回滚事务
                     return array(
                         'status' => 500,
-                        'msg' => '设置失败，' . $v . '日该人员已被预约不可再进行排期!',
+                        'msg' => '设置失败，' . $day . '日该人员已被预约不可再进行排期!',
                         'data' => '');
                 }
-                UserWorktime::where('workDay', $v)->where('uid', $user->id)->delete();
-                if (isset($data->startTime) && isset($data->endTime)) {
-                    $startTime = $data->startTime;
-                    $endTime = $data->endTime;
-                }
-                $st = Carbon::parse($v . ' ' . $startTime . ':00');
-                $et = Carbon::parse($v . ' ' . $endTime . ':00');
+                UserWorktime::where('workDay', $day)->where('uid', $user->id)->forceDelete();
+                $st = Carbon::parse($day . ' ' . $startTime . ':00');
+                $et = Carbon::parse($day . ' ' . $endTime . ':00');
                 while ($et->gte($st)) {
                     UserWorktime::create(['workDay' => $st->format('Y-m-d'), 'workTime' => $st->format('H:i'), 'storeId' => $user->storeId, 'uid' => $user->id, 'uname' => $user->name]);
                     $st = $st->addMinutes($config->value);
@@ -409,6 +405,7 @@ class AppointmentRepository
                 'msg' => '设置成功!',
                 'data' => '');
         } catch (\Exception $ex) {
+            //dd($ex);
             Db::rollback(); // 回滚事务
             return array(
                 'status' => 500,

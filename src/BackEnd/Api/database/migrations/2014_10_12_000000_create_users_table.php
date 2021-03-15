@@ -27,6 +27,8 @@ class CreateUsersTable extends Migration
             $table->string('store')->nullable()->comment('所属门店名称'); 
             $table->integer('type')->default(3)->comment('0：1+2的集合 1:超管系统管理员，2:门店系统管理员（店长） 3:普通人员');            
             $table->tinyInteger('state')->default(0)->comment('状态0正常，1离职'); 
+            $table->timestamp('lastlogin')->comment('最后一次登录时间');
+            $table->timestamp('lastdist')->comment('最后一次分配时间');
             $table->timestamps();
             $table->softDeletes();
             $table->primary('id');

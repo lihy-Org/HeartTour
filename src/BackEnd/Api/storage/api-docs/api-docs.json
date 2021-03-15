@@ -2183,6 +2183,16 @@
                                         "description": "关键字",
                                         "type": "string",
                                         "default": ""
+                                    },
+                                    "isDist": {
+                                        "description": "是否角色分配 默认0否 1是",
+                                        "type": "number",
+                                        "default": ""
+                                    },
+                                    "type": {
+                                        "description": "人员类型 3 普通人员 4管理人员 5财务人员",
+                                        "type": "number",
+                                        "default": ""
                                     }
                                 },
                                 "type": "object"
@@ -2695,6 +2705,94 @@
                                         "data": {
                                             "type": "object",
                                             "example": "错误信息"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/user/setType": {
+            "post": {
+                "tags": [
+                    "总台管理系统-人员管理"
+                ],
+                "summary": "角色分配",
+                "operationId": "App\\Http\\Controllers\\Admin\\UserController::SetType",
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "header",
+                        "description": "token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "userId"
+                                ],
+                                "properties": {
+                                    "userId": {
+                                        "description": "用户ID",
+                                        "type": "number",
+                                        "default": "10"
+                                    },
+                                    "type": {
+                                        "description": "角色类型：3普通人员 4总端管理人员 5财务人员",
+                                        "type": "number",
+                                        "default": "10"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "状态码",
+                                            "type": "number",
+                                            "example": "200"
+                                        },
+                                        "msg": {
+                                            "type": "string",
+                                            "example": "成功!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "失败",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "状态码",
+                                            "type": "number",
+                                            "example": "500"
+                                        },
+                                        "msg": {
+                                            "type": "string",
+                                            "example": "失败!"
                                         }
                                     },
                                     "type": "object"
@@ -4450,6 +4548,122 @@
                                         "msg": {
                                             "type": "string",
                                             "example": "失败!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/storesys/combo/list": {
+            "post": {
+                "tags": [
+                    "总台管理系统-套餐管理"
+                ],
+                "summary": "套餐列表",
+                "operationId": "App\\Http\\Controllers\\StoreSystem\\ComboController::GetList",
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "header",
+                        "description": "token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [],
+                                "properties": {
+                                    "varietyId": {
+                                        "description": "宠物品种编号",
+                                        "type": "string",
+                                        "default": ""
+                                    },
+                                    "searchKey": {
+                                        "description": "关键字",
+                                        "type": "string",
+                                        "default": ""
+                                    },
+                                    "comboType": {
+                                        "description": "套餐类型：0-主套餐  1-增项套餐",
+                                        "type": "string",
+                                        "default": ""
+                                    },
+                                    "state": {
+                                        "description": "上架状态 0-待上架 1-已上架 2-已下架",
+                                        "type": "string",
+                                        "default": ""
+                                    },
+                                    "pageSize": {
+                                        "description": "条数",
+                                        "type": "number",
+                                        "default": "10"
+                                    },
+                                    "page": {
+                                        "description": "页数",
+                                        "type": "number",
+                                        "default": "1"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "状态码",
+                                            "type": "number",
+                                            "example": "200"
+                                        },
+                                        "msg": {
+                                            "description": "提示信息",
+                                            "type": "string",
+                                            "example": "获取列表成功!"
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "example": ""
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "失败",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "状态码",
+                                            "type": "number",
+                                            "example": "500"
+                                        },
+                                        "msg": {
+                                            "description": "提示信息",
+                                            "type": "string",
+                                            "example": "获取列表失败!"
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "example": "{'page':['\\u8bf7\\u8f93\\u5165\\u5355\\u4f4d\\u540d\\u79f0\\uff01']}"
                                         }
                                     },
                                     "type": "object"

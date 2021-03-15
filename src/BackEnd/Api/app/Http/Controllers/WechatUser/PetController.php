@@ -7,6 +7,7 @@ use App\Models\Pet;
 use App\Repositories\PetRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class PetController extends Controller
 {
@@ -86,21 +87,19 @@ class PetController extends Controller
     {
 
         $rules = [
-            'avatar' => ['required', 'string'],
+            'petId' => ['nullable', Rule::exists('pets', 'id')->where(function ($query) use ($request) {
+                $query->where('wcId', $request->user->id)->whereNull('deleted_at');
+            })],
             'nickname' => ['required', 'string'],
-            'birthday'=>['required','date_format:"Y-m-d"'],
-            'gender' => ['nullable','integer', Rule::in([0, 1, 2])], //宠物性别
+            'gender' => ['required', 'integer', Rule::in([0, 1, 2])], //宠物性别
             'varietyId' => ['required', 'string'], //品种
+            'birthday' => ['nullable', 'date_format:"Y-m-d"'],
+            'avatar' => ['nullable', 'string'],
+            'color' => ['nullable', 'string'],
             'shoulderHeight' => ['integer', 'gt:0'], //肩高
             'is_sterilization' => ['integer', 'gt:0'], //是否绝育
         ];
-        $messages = [
-            'avatar.required' => '请上传宠物头像!',
-            'nickname.required' => '请填写宠物昵称!',
-            'varietyId.required' => '请填写宠物品种!',
-            'gender.required' => '请填写宠物性别!',
-            'shoulderHeight.integer' => '肩高数据不正确!',
-        ];
+        $messages = [];
         $validator = Validator::make($request->all(), $rules, $messages);
         if ($validator->fails()) {
             return json_encode(array(
@@ -116,11 +115,23 @@ class PetController extends Controller
     }
 
     /**
-     * @OA\Get(
+     * @OA\Post(
      *     path="/api/pet/list",
      *     tags={"小程序-宠物"},
-     *     summary="获取宠物列表",
+     *     summary="宠物列表",
      *     @OA\Parameter(name="token", in="header", @OA\Schema(type="string"), required=true, description="token"),
+     *     @OA\RequestBody(
+     *     @OA\MediaType(
+     *       mediaType="multipart/form-data",
+     *         @OA\Schema(     *
+     *           @OA\Property(description="宠物品种编号", property="varietyId", type="string", default=""),
+     *           @OA\Property(description="关键字", property="searchKey", type="string", default=""),
+     *           @OA\Property(description="性别 0未知 1男 2女", property="gender", type="string", default=""),
+     *           @OA\Property(description="条数", property="pageSize", type="number", default="10"),
+     *           @OA\Property(description="页数", property="page", type="number", default="1"),
+     *           required={})
+     *       )
+     *     ),
      *     @OA\Response(
      *         response=200,
      *         description="成功",
@@ -133,22 +144,61 @@ class PetController extends Controller
      *                   type="number",
      *               ),
      *            @OA\Property(
-     *                  type="string",
-     *                  property="msg",
-     *                  example="获取宠物列表成功!",
+     *                   example="获取列表成功!",
+     *                   property="msg",
+     *                   description="提示信息",
+     *                   type="string",
      *              ),
-     *            @OA\Property(
+     *             @OA\Property(
      *                  type="object",
      *                  property="data",
-     *                  example="[{'id':1,'avatar':'11','nickname':'11','breed':'11','gender':'11'}]",
+     *                  example="",
      *              )
-     *         ),
-     *    )
+     *         )),
+     *       @OA\Response(
+     *         response=500,
+     *         description="失败",
+     *         @OA\JsonContent(
+     *            type="object",
+     *            @OA\Property(
+     *                   example="500",
+     *                   property="status",
+     *                   description="状态码",
+     *                   type="number",
+     *               )   ,
+     *          @OA\Property(
+     *                  type="string",
+     *                  property="msg",
+     *                  description="提示信息",
+     *                  example="获取列表失败!",
+     *              ),
+     *          @OA\Property(
+     *                  type="object",
+     *                  property="data",
+     *                  example="{'page':['\u8bf7\u8f93\u5165\u5355\u4f4d\u540d\u79f0\uff01']}",
+     *              )
+     *         )
+     *     )
      * )
      */
     public function GetList(Request $request)
     {
-        // ->select('id as petId', 'avatar', 'nickname', 'breed', 'gender')->get()->toArray();
+        $rules = [
+            'varietyId' => ['nullable'],
+            'searchKey' => ['nullable', 'string'],
+            'pageSize' => ['integer', 'gt:0'],
+            'page' => ['integer', 'gt:0'],
+            'gender' => ['nullable', 'integer', Rule::in([0, 1, 2])],
+        ];
+        $messages = [];
+        $validator = Validator::make($request->all(), $rules, $messages);
+        if ($validator->fails()) {
+            return json_encode(array(
+                'status' => 500,
+                'msg' => '验证失败!',
+                'data' => $validator->errors(),
+            ));
+        }
         $data = (object) $request->all();
         $data->wcId = $request->user->id;
         $pets = $this->petRepository->GetList($data)->get();
@@ -167,7 +217,7 @@ class PetController extends Controller
      *     tags={"小程序-宠物"},
      *     summary="获取宠物详细信息",
      *     @OA\Parameter(name="token", in="header", @OA\Schema(type="string"), required=true, description="token"),
-     *     @OA\Parameter(name="petId", in="query", @OA\Schema(type="int"), required=true, description="petId"),
+     *     @OA\Parameter(name="petId", in="query", @OA\Schema(type="string"), required=true, description="petId"),
      *     @OA\Response(
      *         response=200,
      *         description="成功",
@@ -195,9 +245,10 @@ class PetController extends Controller
      */
     public function GetOne(Request $request)
     {
-        // ->select('id as petId', 'avatar', 'nickname', 'breed', 'gender',
-        //     'birthday', 'grade', 'is_sterilization as isSterilization')
-        $pet = Pet::where('wcId', $request->user->id)->where('id', $request->id)->first();
+        $data = (object) $request->all();
+        $data->wcId = $request->user->id;
+        $data->petId = $request->id;
+        $pet = $this->petRepository->GetOne($data)->first();
         return json_encode(
             array(
                 'status' => 200,
@@ -212,7 +263,15 @@ class PetController extends Controller
      *     tags={"小程序-宠物"},
      *     summary="删除宠物信息",
      *     @OA\Parameter(name="token", in="header", @OA\Schema(type="string"), required=true, description="token"),
-     *     @OA\Parameter(name="petId", in="query", @OA\Schema(type="int"), required=true, description="petId"),
+     *     @OA\RequestBody(
+     *     @OA\MediaType(
+     *       mediaType="multipart/form-data",
+     *         @OA\Schema(
+     *           @OA\Property(description="宠物ID", property="petId", type="string", default="10"),
+     *           required={"petId"}
+     *           )
+     *       )
+     *     ),
      *     @OA\Response(
      *         response=200,
      *         description="成功",
@@ -227,29 +286,50 @@ class PetController extends Controller
      *            @OA\Property(
      *                  type="string",
      *                  property="msg",
-     *                  example="删除宠物信息成功!",
+     *                  example="禁用/启用成功!",
      *              )
      *         ),
-     *    )
+     *     ),
+     *      @OA\Response(
+     *         response=500,
+     *         description="失败",
+     *         @OA\JsonContent(
+     *            type="object",
+     *            @OA\Property(
+     *                   example="500",
+     *                   property="status",
+     *                   description="状态码",
+     *                   type="number",
+     *               ),
+     *           @OA\Property(
+     *                  type="string",
+     *                  property="msg",
+     *                  example="禁用/启用失败!",
+     *               )
+     *           )
+     *       ),
      * )
      */
     public function Remove(Request $request)
     {
-        $pet = Pet::where('wcId', $request->user->id)->where('id', $request->petId)->first();
-        if ($pet) {
-            $pet->delete();
-            return json_encode(
-                array(
-                    'status' => 200,
-                    'msg' => '删除宠物信息成功!',
-                    'data' => '')
-            );
-        }
-        return json_encode(
-            array(
+        $rules = [
+            'petId' => ['required', Rule::exists('pets', 'id')->where(function ($query) use ($request) {
+                $query->where('wcId', $request->user->id);
+            })],
+        ];
+        $messages = [];
+        $validator = Validator::make($request->all(), $rules, $messages);
+        if ($validator->fails()) {
+            return json_encode(array(
                 'status' => 500,
-                'msg' => '删除宠物信息失败!',
-                'data' => '')
-        );
+                'msg' => '验证失败!',
+                'data' => $validator->errors(),
+            ));
+        }
+
+        $data = (object) $request->all();
+        $data->wcId = $request->user->id;
+
+        return json_encode($this->petRepository->Remove($data));
     }
 }

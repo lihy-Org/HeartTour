@@ -188,12 +188,12 @@ class UserController extends Controller
      * )
      */
     public function SetWorktime(Request $request)
-    {
+    {        
         $rules = [
             'days' => ['required', 'array'],
-            'days.*' => ['date_format:"Y-m-d"', 'after_or_equal:today'],
-            'startTime' => ['nullable', 'date_format:"H:i"'],
-            'endTime' => ['nullable', 'date_format:"H:i"'],
+            'days.*.day' => ['date_format:"Y-m-d"', 'after_or_equal:today'],
+            'days.*.startTime' => ['nullable', 'date_format:"H:i"'],
+            'days.*.endTime' => ['nullable', 'date_format:"H:i"'],
             'userId' => ['required', Rule::exists('users', 'id')->where(function ($query) use ($request) {
                 $query->where('state', 0)->whereNotIn('type', [0, 1])->where('isBeautician', 1)->where('storeId', $request->user->storeId);
             })],
