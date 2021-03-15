@@ -1,10 +1,10 @@
 /*
  * @Author: Li-HONGYAO
  * @Date: 2021-01-18 11:15:25
- * @LastEditTime: 2021-03-15 14:55:05
+ * @LastEditTime: 2021-03-15 23:19:31
  * @LastEditors: Li-HONGYAO
  * @Description:
- * @FilePath: \Admin\src\pages\Personnel\index.tsx
+ * @FilePath: /Admin/src/pages/Personnel/index.tsx
  */
 import React, { FC, useState, useEffect } from 'react';
 import {
@@ -23,6 +23,7 @@ import {
   InputNumber,
   Row,
   Col,
+  Avatar,
 } from 'antd';
 import {
   SearchOutlined,
@@ -217,14 +218,12 @@ const Personnel: FC = () => {
   }, []);
   // columns
   const columns: ColumnProps<ColumnsType>[] = [
-    { title: '姓名', dataIndex: 'name' },
     {
       title: '头像',
       dataIndex: 'avatar',
-      render: (avatarUrl) => (
-        <Image src={avatarUrl} style={{ width: 'auto', height: 50 }} />
-      ),
+      render: (record: string) => <Avatar src={record} size={64} />,
     },
+    { title: '姓名', dataIndex: 'name' },
     {
       title: '所属门店',
       dataIndex: 'store',

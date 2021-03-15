@@ -1,13 +1,13 @@
 // @ts-nocheck
 import React from 'react';
-import initialState from 'E:/心之旅/HeartTour/src/FrontEnd/Admin/src/.umi/plugin-initial-state/models/initialState';
+import initialState from '/Users/lihongyao/Desktop/外包项目/心之旅/HeartTour/src/FrontEnd/Admin/src/.umi/plugin-initial-state/models/initialState';
 
 // @ts-ignore
-import Dispatcher from 'E:/心之旅/HeartTour/src/FrontEnd/Admin/node_modules/@umijs/plugin-model/lib/helpers/dispatcher';
+import Dispatcher from '/Users/lihongyao/Desktop/外包项目/心之旅/HeartTour/src/FrontEnd/Admin/node_modules/@umijs/plugin-model/lib/helpers/dispatcher';
 // @ts-ignore
-import Executor from 'E:/心之旅/HeartTour/src/FrontEnd/Admin/node_modules/@umijs/plugin-model/lib/helpers/executor';
+import Executor from '/Users/lihongyao/Desktop/外包项目/心之旅/HeartTour/src/FrontEnd/Admin/node_modules/@umijs/plugin-model/lib/helpers/executor';
 // @ts-ignore
-import { UmiContext } from 'E:/心之旅/HeartTour/src/FrontEnd/Admin/node_modules/@umijs/plugin-model/lib/helpers/constant';
+import { UmiContext } from '/Users/lihongyao/Desktop/外包项目/心之旅/HeartTour/src/FrontEnd/Admin/node_modules/@umijs/plugin-model/lib/helpers/constant';
 
 export const models = { '@@initialState': initialState,  };
 

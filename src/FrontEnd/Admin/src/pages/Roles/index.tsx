@@ -1,45 +1,55 @@
 /*
  * @Author: Li-HONGYAO
  * @Date: 2021-03-15 17:23:50
- * @LastEditTime: 2021-03-15 18:28:35
+ * @LastEditTime: 2021-03-15 23:13:41
  * @LastEditors: Li-HONGYAO
  * @Description:
- * @FilePath: \Admin\src\pages\Roles\index.tsx
+ * @FilePath: /Admin/src/pages/Roles/index.tsx
  */
 
 import { ColumnProps } from 'antd/es/table';
 import React, { FC, useEffect, useState } from 'react';
-import { Table, Form, Input, Button, Select, Space, Modal, Switch } from 'antd';
 import {
-  SearchOutlined,
-  StopOutlined,
-  DownloadOutlined,
-} from '@ant-design/icons';
+  Table,
+  Form,
+  Input,
+  Button,
+  Select,
+  message,
+  Modal,
+  Radio,
+  Avatar,
+} from 'antd';
+import { SearchOutlined } from '@ant-design/icons';
+import Api from '@/Api';
+import HT from '@/constants/interface';
 // 筛选条件
 type FilterParamsType = {
-  status?: number;
+  type?: number;
   searchKey?: string;
 };
 
 type ColumnsType = {
   id: string /** 用户id */;
-  username: string /** 用户名 */;
-  account: string /** 账号 */;
-  status: number /** 用户状态 0-禁用  1-正常 */;
-  createTime: string /** 创建时间 */;
-  lastLoginTime: string /** 上次登录时间 */;
+  avatar: string /** 头像 */;
+  name: string /** 用户名 */;
+  phone: string /** 账号 */;
+  type: number /** 3-普通人员 4-管理人员 5-财务人员 */;
+  lastdist: string /** 创建时间 */;
+  lastlogin: string /** 上次登录时间 */;
+};
+
+type RoleType = {
+  userId: string;
+  type: number;
 };
 
 const { Option } = Select;
-const layout = {
-  labelCol: { span: 4 },
-  wrapperCol: { span: 20 },
-};
 const Roles: FC = () => {
   // state
+  const [role, setRole] = useState<RoleType>({} as RoleType);
   const [visible, setVisible] = useState(false);
   const [form] = Form.useForm();
-  const [roleForm] = Form.useForm();
   const [dataSource, setDataSource] = useState<ColumnsType[]>([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState<HT.TablePageDataType<FilterParamsType>>(
@@ -49,50 +59,88 @@ const Roles: FC = () => {
       filters: {},
     }),
   );
+  // methods
+  const getDataSource = (loading: boolean) => {
+    loading && message.loading('数据加载中...');
+    Api.personnel
+      .list<HT.BaseResponse<ColumnsType[]>>({
+        ...page.filters,
+        isDist: 1,
+        page: page.page,
+        pageSize: page.pageSize,
+      })
+      .then((res) => {
+        if (res && res.status === 200) {
+          setDataSource(res.data);
+          setTotal(res.page.total);
+        }
+      });
+  };
+  // events
+  const onSetType = () => {
+    Api.personnel.setType<HT.BaseResponse<any>>(role).then((res) => {
+      if (res && res.status === 200) {
+        getDataSource(false);
+        setVisible(false);
+      }
+    });
+  };
   // effects
   useEffect(() => {
-    const arr = [];
-    for (let i = 0; i < 10; i++) {
-      arr.push({
-        id: i + '',
-        username: '木子李',
-        account: 'lihy',
-        status: i % 4 === 0 ? 0 : 1,
-        createTime: '2021/03/14 16:30',
-        lastLoginTime: '2021/03/14 16:30',
-      });
-    }
-    setDataSource(arr);
-  }, []);
+    getDataSource(true);
+  }, [page.filters]);
   // render
   const columns: ColumnProps<ColumnsType>[] = [
-    { title: '用户名', dataIndex: 'username' },
-    { title: '用户账号', dataIndex: 'account' },
     {
-      title: '用户状态',
-      dataIndex: 'status',
-      render: (status: number) => (status ? '正常' : '禁用'),
+      title: '头像',
+      dataIndex: 'avatar',
+      render: (record: string) => <Avatar size={64} src={record} />,
     },
-    { title: '创建时间', dataIndex: 'createTime' },
-    { title: '上次登录时间', dataIndex: 'lastLoginTime' },
+    { title: '姓名', dataIndex: 'name' },
+    { title: '手机号', dataIndex: 'phone' },
     {
-      width: 90,
+      title: '角色',
+      dataIndex: 'type',
+      render: (status: number) => {
+        switch (status) {
+          case 3:
+            return <span style={{ color: '#A9A9A9' }}>普通人员</span>;
+          case 4:
+            return <span style={{ color: '#F4A460' }}>管理人员</span>;
+          case 5:
+            return <span style={{ color: '#8FBC8F' }}>财务人员</span>;
+          default:
+            return '-';
+        }
+      },
+    },
+    {
+      title: '创建时间',
+      dataIndex: 'lastdist',
+      render: (record) => record || '-',
+    },
+    {
+      title: '上次登录时间',
+      dataIndex: 'lastlogin',
+      render: (record) => record || '-',
+    },
+    {
       title: '操作',
       key: 'action',
-      render: (record: ColumnsType) => {
-        return (
-          <Space>
-            <Button type="primary">编辑</Button>
-            {record.status === 0 ? (
-              <Button type="primary">解禁</Button>
-            ) : (
-              <Button type="primary" danger>
-                禁用
-              </Button>
-            )}
-          </Space>
-        );
-      },
+      render: (record: ColumnsType) => (
+        <Button
+          type="primary"
+          onClick={() => {
+            setRole({
+              type: record.type,
+              userId: record.id,
+            });
+            setVisible(true);
+          }}
+        >
+          分配角色
+        </Button>
+      ),
     },
   ];
   return (
@@ -100,11 +148,8 @@ const Roles: FC = () => {
       {/* 顶栏 */}
       <div className="site-top-bar">
         <section>
-          <span className="site-top-bar__title">角色管理</span>
+          <span className="site-top-bar__title">角色分配</span>
         </section>
-        <Button type="primary" size="small" shape="round">
-          创建角色
-        </Button>
       </div>
       {/* 过滤栏 */}
       <div className="site-filter-bar">
@@ -121,10 +166,11 @@ const Roles: FC = () => {
           }
         >
           {/* 性别 */}
-          <Form.Item label="状态：" name="status">
-            <Select placeholder="全部" allowClear>
-              <Option value={0}>禁用</Option>
-              <Option value={1}>正常</Option>
+          <Form.Item label="角色" name="type">
+            <Select placeholder="全部" allowClear style={{ width: 100 }}>
+              <Option value={3}>普通人员</Option>
+              <Option value={4}>管理人员</Option>
+              <Option value={5}>财务人员</Option>
             </Select>
           </Form.Item>
           {/* 搜索 */}
@@ -146,35 +192,28 @@ const Roles: FC = () => {
         {/* 右侧内容 */}
       </div>
       {/* 内容 */}
-      <Table columns={columns} dataSource={dataSource} />
-      {/* 编辑/修改 */}
+      <Table columns={columns} dataSource={dataSource} rowKey="id" />
+      {/* 分配角色 */}
       <Modal
-        title="角色信息"
-        visible={!visible}
+        visible={visible}
+        title="分配角色"
         onCancel={() => setVisible(false)}
+        onOk={onSetType}
+        destroyOnClose={true}
       >
-        <Form {...layout} form={roleForm} autoComplete="off">
-          {/* 用户名 */}
-          <Form.Item
-            label="用户名"
-            rules={[{ required: true }]}
-            name="username"
-          >
-            <Input placeholder="请输入用户姓名"></Input>
-          </Form.Item>
-          {/* 账号 */}
-          <Form.Item label="账号" rules={[{ required: true }]} name="account">
-            <Input placeholder="请输入用户账号"></Input>
-          </Form.Item>
-          {/* 密码 */}
-          <Form.Item label="密码" rules={[{ required: true }]} name="password">
-            <Input placeholder="请输入用户密码"></Input>
-          </Form.Item>
-          {/* 是否禁用 */}
-          <Form.Item label="是否禁用" rules={[{ required: true }]} name="status">
-            <Switch checkedChildren="是" unCheckedChildren="否" defaultChecked ></Switch>
-          </Form.Item>
-        </Form>
+        <Radio.Group
+          onChange={(e: any) => {
+            setRole((prev) => ({
+              ...prev,
+              type: e.target.value,
+            }));
+          }}
+          value={role.type}
+        >
+          <Radio value={3}>普通人员</Radio>
+          <Radio value={4}>管理人员</Radio>
+          <Radio value={5}>财务人员</Radio>
+        </Radio.Group>
       </Modal>
     </div>
   );

@@ -1,10 +1,10 @@
 /*
  * @Author: Li-HONGYAO
  * @Date: 2021-01-04 15:41:47
- * @LastEditTime: 2021-03-15 17:28:15
+ * @LastEditTime: 2021-03-15 21:40:42
  * @LastEditors: Li-HONGYAO
  * @Description:
- * @FilePath: \Admin\src\layouts\Menus\index.tsx
+ * @FilePath: /Admin/src/layouts/Menus/index.tsx
  */
 import React, { FC } from 'react';
 import { Menu, Layout } from 'antd';
@@ -124,7 +124,7 @@ const menus: MenuItemType[] = [
   },
   {
     path: '/roles',
-    title: '角色管理',
+    title: '角色分配',
     icon: <SecurityScanOutlined />,
   },
 ];

@@ -1,7 +1,7 @@
 /*
  * @Author: Li-HONGYAO
  * @Date: 2021-01-18 11:35:12
- * @LastEditTime: 2021-03-02 11:12:54
+ * @LastEditTime: 2021-03-15 23:41:33
  * @LastEditors: Li-HONGYAO
  * @Description:
  * @FilePath: /Admin/src/pages/User/index.tsx
@@ -10,7 +10,6 @@ import React, { FC, useEffect, useState } from 'react';
 import {
   Input,
   Table,
-  Image,
   Modal,
   Button,
   Form,
@@ -20,6 +19,7 @@ import {
   Row,
   Col,
   Space,
+  Avatar,
 } from 'antd';
 import {
   SearchOutlined,
@@ -68,11 +68,11 @@ type ColumnsType = {
   nickname: string /** 微信昵称 */;
   phone: string /** 手机号 */;
   gender: string /** 性别 0-未知 1-男性 2-女性 */;
-  appointmentCount: number /** 预约次数 */;
+  apptCount: number /** 预约次数 */;
   count: number /** 宠物数量 */;
   consumes: ConsumeRecordsType /** 消费总额 */;
   state: number /** 账户状态 0-正常 1-禁用 */;
-  wcid: string /** 查看宠物信息时用到的用户id值 */;
+  wcId: string /** 查看宠物信息时用到的用户id值 */;
 };
 
 // 用户预约记录
@@ -152,6 +152,9 @@ const User: FC = () => {
     Api.user.pets<HT.BaseResponse<PetColumnsType[]>>(wcId).then((res) => {
       message.destroy();
       if (res.status === 200) {
+        if (res.data.length === 0) {
+          return message.info('当前用户暂未添加宠物信息');
+        }
         setPets(res.data);
         setPetModalVisible(true);
       }
@@ -168,8 +171,12 @@ const User: FC = () => {
       })
       .then((res) => {
         if (res && res.status === 200) {
+          if (res.data.length === 0) {
+            return message.info('当前用户暂无预约记录');
+          }
           setAptRecords(res.data);
           setAptTotal(res.page.total);
+          setAptRecordsModalVisible(true);
         }
       });
   };
@@ -219,7 +226,7 @@ const User: FC = () => {
       dataIndex: 'avatar',
       render: (record) =>
         record ? (
-          <Image style={{ height: 50, width: 'auto' }} src={record} />
+          <Avatar src={record} size={64} />
         ) : (
           <span className="color-C5C5C5">暂无</span>
         ),
@@ -255,8 +262,8 @@ const User: FC = () => {
       render: (petNum, record: ColumnsType) =>
         record ? (
           <>
-            <div>数量：{petNum}</div>
-            <div style={buttonStyle} onClick={() => getPets(record.wcid)}>
+            <div>数量：{petNum || 0}</div>
+            <div style={buttonStyle} onClick={() => getPets(record.id)}>
               查看宠物
             </div>
           </>
@@ -291,13 +298,12 @@ const User: FC = () => {
       sorter: true,
       render: (_: any, record: ColumnsType) => (
         <>
-          <div>预约次数：{record.appointmentCount}</div>
+          <div>预约次数：{record.apptCount || 0}</div>
           <div
             style={buttonStyle}
             onClick={() => {
-              setAptRecordsModalVisible(true);
               setAptPage({
-                id: record.wcid,
+                id: record.id,
                 pageSize: 20,
                 page: 1,
               });
@@ -343,7 +349,7 @@ const User: FC = () => {
       dataIndex: 'avatar',
       render: (record) =>
         record ? (
-          <Image style={{ height: 50, width: 'auto' }} src={record} />
+          <Avatar src={record} size={64} />
         ) : (
           <span className="color-C5C5C5">暂无</span>
         ),
@@ -378,7 +384,7 @@ const User: FC = () => {
     {
       title: '宠物类型',
       dataIndex: 'petType',
-      render: (type: number) => Utils.petTypeDesc(type),
+      render: (type: number) => Utils.petTypeDesc(+type),
     },
   ];
   return (

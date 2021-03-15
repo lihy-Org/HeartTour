@@ -1,9 +1,9 @@
 /*
  * @Author: Li-HONGYAO
  * @Date: 2021-01-17 23:30:37
- * @LastEditTime: 2021-02-23 15:12:27
+ * @LastEditTime: 2021-03-15 22:30:30
  * @LastEditors: Li-HONGYAO
- * @Description: 
+ * @Description:
  * @FilePath: /Admin/src/app.tsx
  */
 import Cookie from 'lg-cookie';
@@ -18,4 +18,3 @@ export function render(oldRender: any) {
     oldRender();
   }
 }
-

@@ -1,10 +1,10 @@
 /*
  * @Author: Li-HONGYAO
  * @Date: 2020-11-23 10:38:41
- * @LastEditTime: 2021-03-15 16:50:46
+ * @LastEditTime: 2021-03-15 22:16:41
  * @LastEditors: Li-HONGYAO
  * @Description:
- * @FilePath: \Admin\src\constants\interface.d.ts
+ * @FilePath: /Admin/src/constants/interface.d.ts
  */
 // 提示：全局ts类型定义，使用时需将XXX修改为项目名称，如DDOUH5，将‘XXX’ 修改为 ‘DDOUH5’
 // 访问：DDOUH5.BaseResponse

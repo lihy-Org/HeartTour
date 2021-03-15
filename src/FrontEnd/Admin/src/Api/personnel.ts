@@ -1,7 +1,7 @@
 /*
  * @Author: Li-HONGYAO
  * @Date: 2021-02-23 16:44:42
- * @LastEditTime: 2021-02-26 15:44:29
+ * @LastEditTime: 2021-03-15 22:40:40
  * @LastEditors: Li-HONGYAO
  * @Description:
  * @FilePath: /Admin/src/Api/personnel.ts
@@ -17,6 +17,8 @@ export function list<T>(data: {
   post?: string /** 职位 */;
   gender?: number /** 1-男  2-女 */;
   searchKey?: string;
+  isDist?: number /** 0-人员管理，1-角色管理  */;
+  type?: number /** 3-普通人员 4-管理人员 5-财务人员 */;
   pageSize: number;
   page: number;
 }) {
@@ -79,4 +81,18 @@ export function setManage<T>(userId: string) {
  */
 export function getSelectList<T>() {
   return request.get<T>('/admin/user/getSelectList');
+}
+
+/**
+ * 角色分配
+ * @param data
+ * @returns
+ */
+export function setType<T>(data: {
+  userId: string;
+  type: number /** 角色类型：3普通人员 4总端管理人员 5财务人员 */;
+}) {
+  return request.post<T>('/admin/user/setType', {
+    data,
+  });
 }
