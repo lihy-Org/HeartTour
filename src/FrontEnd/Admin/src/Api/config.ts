@@ -1,10 +1,10 @@
 /*
  * @Author: Li-HONGYAO
  * @Date: 2021-02-23 18:04:53
- * @LastEditTime: 2021-02-25 15:15:59
+ * @LastEditTime: 2021-03-15 16:45:08
  * @LastEditors: Li-HONGYAO
  * @Description:
- * @FilePath: /Admin/src/Api/config.ts
+ * @FilePath: \Admin\src\Api\config.ts
  */
 import request from './request';
 

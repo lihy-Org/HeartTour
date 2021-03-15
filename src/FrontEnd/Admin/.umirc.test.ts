@@ -1,10 +1,10 @@
 /*
  * @Author: Li-HONGYAO
  * @Date: 2020-11-19 20:00:28
- * @LastEditTime: 2021-01-07 15:42:11
+ * @LastEditTime: 2021-03-15 14:19:42
  * @LastEditors: Li-HONGYAO
  * @Description: 
- * @FilePath: /umijs-template__admin/.umirc.test.ts
+ * @FilePath: \Admin\.umirc.test.ts
  */
 import { defineConfig } from 'umi';
 export default defineConfig({

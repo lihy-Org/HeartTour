@@ -1,10 +1,10 @@
 /*
  * @Author: Li-HONGYAO
  * @Date: 2021-01-04 15:41:47
- * @LastEditTime: 2021-02-01 20:10:58
+ * @LastEditTime: 2021-03-15 17:28:15
  * @LastEditors: Li-HONGYAO
  * @Description:
- * @FilePath: /Admin/src/layouts/Menus/index.tsx
+ * @FilePath: \Admin\src\layouts\Menus\index.tsx
  */
 import React, { FC } from 'react';
 import { Menu, Layout } from 'antd';
@@ -19,6 +19,7 @@ import {
   AccountBookOutlined,
   SettingOutlined,
   OrderedListOutlined,
+  SecurityScanOutlined
 } from '@ant-design/icons';
 import './index.less';
 
@@ -121,6 +122,11 @@ const menus: MenuItemType[] = [
     title: '配置相关',
     icon: <SettingOutlined />,
   },
+  {
+    path: '/roles',
+    title: '角色管理',
+    icon: <SecurityScanOutlined />,
+  },
 ];
 
 const Menus: FC<IProps> = (props) => {
@@ -131,7 +137,7 @@ const Menus: FC<IProps> = (props) => {
         <div className="layout-logo__wrapper">
           {props.collapsed ? (
             <img
-              src={require('../../assets/images/icon_logo.png')}
+              src="https://img.meituan.net/csc/bb050c546852726b7c6453ce3b782f6535684.png"
               className="logo"
               alt=""
             />

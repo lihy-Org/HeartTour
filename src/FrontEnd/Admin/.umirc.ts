@@ -1,10 +1,10 @@
 /*
  * @Author: Li-HONGYAO
  * @Date: 2020-11-19 17:24:26
- * @LastEditTime: 2021-02-01 20:09:36
+ * @LastEditTime: 2021-03-15 17:25:36
  * @LastEditors: Li-HONGYAO
  * @Description: 路由
- * @FilePath: /Admin/.umirc.ts
+ * @FilePath: \Admin\.umirc.ts
  */
 
 // ref: https://umijs.org/zh-CN/config
@@ -44,6 +44,7 @@ export default defineConfig({
         { path: '/accounts/shop', component: '@/pages/Accounts/Shop'}, // 账目管理 - 商城
         { path: '/accounts/store', component: '@/pages/Accounts/Store'}, // 账目管理 - 门店
         { path: '/configs', component: '@/pages/Configs'}, // 配置相关 - 杂项配置
+        { path: '/roles', component: '@/pages/Roles'}, // 角色管理
         { path: '*', component: '@/pages/404' }, // 404
       ],
     },

@@ -1,10 +1,10 @@
 /*
  * @Author: Li-HONGYAO
  * @Date: 2021-01-18 11:15:25
- * @LastEditTime: 2021-03-14 22:14:35
+ * @LastEditTime: 2021-03-15 14:55:05
  * @LastEditors: Li-HONGYAO
  * @Description:
- * @FilePath: /Admin/src/pages/Personnel/index.tsx
+ * @FilePath: \Admin\src\pages\Personnel\index.tsx
  */
 import React, { FC, useState, useEffect } from 'react';
 import {
@@ -26,7 +26,7 @@ import {
 } from 'antd';
 import {
   SearchOutlined,
-  DeleteOutlined,
+  StopOutlined,
   DownloadOutlined,
 } from '@ant-design/icons';
 import { ColumnProps } from 'antd/es/table';
@@ -124,7 +124,7 @@ const Personnel: FC = () => {
         pageSize: page.pageSize,
       })
       .then((res) => {
-        if (res.status === 200) {
+        if (res && res.status === 200) {
           setDataSource(res.data);
           setTotal(res.page.total);
         }
@@ -151,16 +151,16 @@ const Personnel: FC = () => {
     } catch (err) {}
   };
 
-  // 删除人员
+  // 禁用人员
   const onDeletePersonnel = (id: string) => {
     Modal.confirm({
-      content: '您确定要要删除该人员么？',
+      content: '您确定要要禁用该人员么？',
       cancelText: '点错了',
       okText: '确定',
       onOk: () => {
         Api.personnel.remove<HT.BaseResponse<any>>(id).then((res) => {
           if (res && res.status === 200) {
-            message.success('删除成功');
+            message.success('禁用成功');
             getDataSource(false);
           }
         });
@@ -298,10 +298,10 @@ const Personnel: FC = () => {
             type="primary"
             size="small"
             danger
-            icon={<DeleteOutlined />}
+            icon={<StopOutlined />}
             onClick={() => onDeletePersonnel(record.id)}
           >
-            删除
+            禁用
           </Button>
         </Space>
       ),

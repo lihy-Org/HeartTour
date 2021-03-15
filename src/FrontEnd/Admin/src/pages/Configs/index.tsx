@@ -1,17 +1,18 @@
 /*
  * @Author: Li-HONGYAO
  * @Date: 2021-01-22 12:36:49
- * @LastEditTime: 2021-03-10 09:33:56
+ * @LastEditTime: 2021-03-15 17:16:12
  * @LastEditors: Li-HONGYAO
  * @Description:
- * @FilePath: /Admin/src/pages/Configs/index.tsx
+ * @FilePath: \Admin\src\pages\Configs\index.tsx
  */
 import React, { FC, useState } from 'react';
-import { Card, Button, Col, Row } from 'antd';
+import { Card, Button, Col, Row, Modal } from 'antd';
 import { EditOutlined } from '@ant-design/icons';
 import TagModal from '@/components/TagModal';
 import { kGOODS_CLASSIFY, kPOST, kTITLE, kVARIETIES } from '@/constants';
 import ConfigTree from '../../components/ConfigTree';
+import ReturnReason from './ReturnReason';
 
 const { Meta } = Card;
 
@@ -21,6 +22,7 @@ const Banner: FC = () => {
   const [titleVisible, setTitleVisible] = useState(false);
   const [varietiesVisible, setVarietiesVisible] = useState(false);
   const [goodsClassifyVisible, setGoodsClassifyVisible] = useState(false);
+  const [returnReasonVisible, setReturnReasonVisible] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
 
   // list datas
@@ -73,6 +75,23 @@ const Banner: FC = () => {
         </Button>,
       ],
     },
+    {
+      cover:
+        'https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=3062556219,1093566700&fm=26&gp=0.jpg',
+      title: '退单理由管理',
+      description: '退单默认理由管理',
+      actions: [
+        <Button
+          type="primary"
+          size="small"
+          icon={<EditOutlined key="edit" />}
+          onClick={() => setReturnReasonVisible(true)}
+        >
+          查看编辑
+        </Button>,
+      ],
+    },
+    
     // {
     //   cover:
     //     'https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=3062556219,1093566700&fm=26&gp=0.jpg',
@@ -91,6 +110,9 @@ const Banner: FC = () => {
     // },
   ];
 
+  // methods
+
+  // render
   return (
     <div className="page">
       {/* 顶栏 */}
@@ -103,7 +125,7 @@ const Banner: FC = () => {
       <div className="contents">
         <Row gutter={16}>
           {datas.map((item, i) => (
-            <Col span={6}>
+            <Col span={6} key={item.title}>
               <Card
                 key={`card__${i}`}
                 cover={<img alt="example" src={item.cover} />}
@@ -147,6 +169,11 @@ const Banner: FC = () => {
         type={kGOODS_CLASSIFY}
         visible={goodsClassifyVisible}
         onCancel={() => setGoodsClassifyVisible(false)}
+      />
+      {/* 退单理由 */}
+      <ReturnReason
+        visible={returnReasonVisible}
+        onCancel={() => setReturnReasonVisible(false)}
       />
     </div>
   );
