@@ -1,7 +1,7 @@
 /*
  * @Author: Li-HONGYAO
  * @Date: 2021-02-24 20:43:13
- * @LastEditTime: 2021-02-26 12:32:08
+ * @LastEditTime: 2021-03-02 11:02:31
  * @LastEditors: Li-HONGYAO
  * @Description:
  * @FilePath: /Admin/src/Api/appt.ts
@@ -18,6 +18,7 @@ export function list<T>(data: {
   startDate?: string /** 预约开始时间 */;
   endDate?: string /** 预约结束时间 */;
   searchKey?: string;
+  wcId?: string; /** 查看用户预约记录时的id */
   page: number;
   pageSize: number;
 }) {

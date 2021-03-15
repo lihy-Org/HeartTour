@@ -1,7 +1,7 @@
 /*
  * @Author: Li-HONGYAO
  * @Date: 2021-01-30 22:07:01
- * @LastEditTime: 2021-02-02 10:36:13
+ * @LastEditTime: 2021-03-03 17:11:00
  * @LastEditors: Li-HONGYAO
  * @Description:
  * @FilePath: /Admin/src/pages/Shop/Living.tsx
@@ -27,6 +27,9 @@ import { ColumnProps } from 'antd/es/table';
 import UploadFile from '@/components/UploadFile';
 import VarietiesCascader from '@/components/VarietiesCascader';
 import { RuleObject } from 'antd/lib/form';
+import HT from '@/constants/interface';
+import Api from '@/Api';
+import Utils from '@/utils/utils';
 
 const { Option } = Select;
 const { TextArea } = Input;
@@ -56,19 +59,21 @@ type ColumnsType = {
   certificate: string[] /** 证书 */;
 };
 type LivingFormType = {
-  type: string /** 活体类型 */;
-  gender: string /** 性别 1-弟弟 2-妹妹 */;
-  vaccine: string /** 是否疫苗 1-已打疫苗 0-未打疫苗 */;
-  number: string /** 编号 */;
-  colour: string /** 毛色 */;
-  varieties: string /** 品种 */;
-  price: number /** 价格 */;
+  liveId?: string /** 活体id */;
+  typeId: string /** 活体类型id */;
+  gender: number /** 性别 0未知，1男，2女 */;
+  vaccine: number /** 是否疫苗 1-已打疫苗 0-未打疫苗 */;
+  number: string /** 活体编号 */;
+  color: string /** 毛色 */;
+  varietyId: string[] /** 品种id */;
+  originPrice: string /** 原价 */;
+  salePrice: string /** 售价 */;
   age: number /** 年龄 */;
   shoulderHeight: number /** 肩高 */;
   note: string /** 备注 */;
-  avatar: string[] /** 头像 */;
-  details: string[] /** 详情图 */;
-  certificate: string[] /** 证书 */;
+  avatar: string /** 头像 */;
+  certificates: string[] /** 证书 */;
+  detailImgs: string[] /** 详情图 */;
 };
 
 const Living: FC = () => {
@@ -79,7 +84,7 @@ const Living: FC = () => {
   const [livingForm] = Form.useForm();
   const [dataSource, setDataSource] = useState<ColumnsType[]>([]);
   const [total, setTotal] = useState(0);
-  const [page, setPage] = useState<DP.TablePageDataType<FilterParamsType>>(
+  const [page, setPage] = useState<HT.TablePageDataType<FilterParamsType>>(
     () => ({
       pageSize: 20,
       page: 1,
@@ -90,52 +95,58 @@ const Living: FC = () => {
     }),
   );
   // methods
-  const getDataSource = () => {
-    console.log(page);
-    message.loading('数据加载中...');
-    const tempArr: ColumnsType[] = [];
-    for (let i = 0; i < 88; i++) {
-      tempArr.push({
-        id: i + '',
-        status: page.filters.status,
-        type: page.filters.type,
-        gender: i % 6 === 0 ? 0 : 1,
-        vaccine: i % 6 === 0 ? 0 : 1,
-        number: 'No.00' + i,
-        colour: '黑色',
-        varieties: '雪纳瑞',
-        price: 1800,
-        age: 12,
-        shoulderHeight: 35,
-        note: '非常可爱哟~',
-        avatar:
-          'https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=1824697989,253349800&fm=26&gp=0.jpg',
-        details: [],
-        certificate: [],
+  const getDataSource = (loading: boolean) => {
+    loading && message.loading('数据加载中...');
+    Api.live
+      .list<HT.BaseResponse<ColumnsType[]>>({
+        page: page.page,
+        pageSize: page.pageSize,
+      })
+      .then((res) => {
+        if (res && res.status === 200) {
+          setDataSource(res.data);
+          setTotal(res.page.total);
+        }
       });
-    }
-    setTimeout(() => {
-      setDataSource(tempArr);
-      setTotal(tempArr.length);
-      message.destroy();
-    }, 500);
   };
   // events
-  const onAddLiving = async () => {
+  const addOrUpdate = async () => {
     const values: LivingFormType = (await livingForm.validateFields()) as LivingFormType;
-    console.log(values);
+
+    if (values) {
+      Api.live
+        .addOrUpdate<HT.BaseResponse<any>>({
+          ...values,
+          varietyId: values.varietyId.join('.'),
+          avatar:
+            'https://lh3.googleusercontent.com/proxy/JRSiw-Pp9yFjBmUmkvcPuAU9KX6vEOHxqzC0vZKuCrswlsR7mue6opftxM6jsgAaSteX01jcJXyG1wOIOezZ9QlHZHr7IbuFhJSzTZjcQ2vAFoD6',
+          detailImgs: [
+            'https://www.zhifure.com/upload/images/2018/7/16151413537.jpg',
+          ],
+          certificates: [
+            'https://pic2.zhimg.com/v2-eecbbede9f461678194433c1ffca5298_1440w.jpg?source=172ae18b',
+          ],
+        })
+        .then((res) => {
+          if (res && res.status === 200) {
+            getDataSource(false);
+            setModalVisible(false);
+            console.log(res);
+          }
+        });
+    }
   };
   const validator = (rule: RuleObject, value: any, callback: any) => {
-    console.log(rule, value);
-    if (value === undefined) {
-      return Promise.reject('请完善信息');
-    } else {
-      return Promise.resolve();
-    }
+    return Promise.resolve();
+    // if (value === undefined) {
+    //   return Promise.reject('请完善信息');
+    // } else {
+    //   return Promise.resolve();
+    // }
   };
   // effects
   useEffect(() => {
-    getDataSource();
+    getDataSource(true);
   }, [page]);
   // render
   const columns: ColumnProps<ColumnsType>[] = [
@@ -147,20 +158,11 @@ const Living: FC = () => {
         <Image src={avatar} style={{ height: 50, width: 'auto' }} />
       ),
     },
-    { title: '类型', dataIndex: 'type' },
+    { title: '类型', dataIndex: 'typeName' },
     {
       title: '状态',
-      dataIndex: 'status',
-      render: (record: number) => {
-        switch (record) {
-          case 0:
-            return '待上架';
-          case 1:
-            return '已上架';
-          case 2:
-            return '已下架';
-        }
-      },
+      dataIndex: 'state',
+      render: (record: number) => Utils.livingStatusDesc(record),
     },
     {
       title: '性别',
@@ -173,33 +175,32 @@ const Living: FC = () => {
       render: (record) => (record === 1 ? '是' : '否'),
     },
 
-    { title: '毛色', dataIndex: 'colour' },
-    { title: '品种', dataIndex: 'varieties' },
-    { title: '售价', dataIndex: 'price' },
+    { title: '毛色', dataIndex: 'color' },
+    { title: '品种', dataIndex: 'variety' },
+    { title: '售价', dataIndex: 'salePrice' },
     {
       title: '肩高',
       dataIndex: 'shoulderHeight',
       render: (record) => `${record}cm`,
     },
     {
-      width: 210  ,
+      width: 210,
       title: '操作',
       key: 'action',
       render: (record: ColumnsType) => (
-        <Space size="small" >
+        <Space size="small">
           <Button
             disabled={record.status === 2}
             type="primary"
             size="small"
-            onClick={() => setModalVisible(true)}
+            onClick={() => {
+              livingForm.setFieldsValue({ ...record });
+              setModalVisible(true);
+            }}
           >
             详情/编辑
           </Button>
-          <Button
-            disabled={record.status !== 0}
-            type="primary"
-            size="small"
-          >
+          <Button disabled={record.status !== 0} type="primary" size="small">
             上架
           </Button>
           <Button
@@ -323,22 +324,29 @@ const Living: FC = () => {
             type="primary"
             key="submit"
             htmlType="submit"
-            onClick={onAddLiving}
+            onClick={addOrUpdate}
           >
             保存
           </Button>,
         ]}
       >
         <Form form={livingForm} autoComplete="off">
-          <Row gutter={20}>
-            <Col span={8}>
-              <Form.Item label="类型" name="type" rules={[{ validator }]}>
-                <Radio.Group>
-                  <Radio value={'猫猫'}>猫猫</Radio>
-                  <Radio value={'狗狗'}>狗狗</Radio>
-                </Radio.Group>
+          <Row>
+            <Col span={12}>
+              <Form.Item label="品种" name="varietyId" rules={[{ validator }]}>
+                <VarietiesCascader />
               </Form.Item>
             </Col>
+          </Row>
+          <Row gutter={20}>
+            {/* <Col span={8}>
+              <Form.Item label="类型" name="typeId" rules={[{ validator }]}>
+                <Radio.Group>
+                  <Radio value={0}>猫猫</Radio>
+                  <Radio value={1}>狗狗</Radio>
+                </Radio.Group>
+              </Form.Item>
+            </Col> */}
             <Col span={8}>
               <Form.Item label="性别" name="gender" rules={[{ validator }]}>
                 <Radio.Group>
@@ -360,6 +368,7 @@ const Living: FC = () => {
               </Form.Item>
             </Col>
           </Row>
+
           <Row gutter={20}>
             <Col span={8}>
               <Form.Item label="编号" name="number" rules={[{ validator }]}>
@@ -367,21 +376,8 @@ const Living: FC = () => {
               </Form.Item>
             </Col>
             <Col span={8}>
-              <Form.Item label="毛色" name="colour" rules={[{ validator }]}>
+              <Form.Item label="毛色" name="color" rules={[{ validator }]}>
                 <Input />
-              </Form.Item>
-            </Col>
-            <Col span={8}>
-              <Form.Item label="品种" name="varieties" rules={[{ validator }]}>
-                <VarietiesCascader />
-              </Form.Item>
-            </Col>
-          </Row>
-
-          <Row gutter={20}>
-            <Col span={8}>
-              <Form.Item label="价格" name="price" rules={[{ validator }]}>
-                <InputNumber style={{ width: '100%' }} />
               </Form.Item>
             </Col>
             <Col span={8}>
@@ -389,13 +385,30 @@ const Living: FC = () => {
                 <InputNumber style={{ width: '100%' }} />
               </Form.Item>
             </Col>
+          </Row>
+
+          <Row gutter={20}>
             <Col span={8}>
               <Form.Item
                 label="肩高"
                 name="shoulderHeight"
                 rules={[{ validator }]}
               >
-                <InputNumber style={{ width: '100%' }} />
+                <InputNumber style={{ width: '100%' }} placeholder="0cm" />
+              </Form.Item>
+            </Col>
+            <Col span={8}>
+              <Form.Item
+                label="原价"
+                name="originPrice"
+                rules={[{ validator }]}
+              >
+                <InputNumber style={{ width: '100%' }} placeholder="0.00元" />
+              </Form.Item>
+            </Col>
+            <Col span={8}>
+              <Form.Item label="售价" name="salePrice" rules={[{ validator }]}>
+                <InputNumber style={{ width: '100%' }} placeholder="0.00元" />
               </Form.Item>
             </Col>
           </Row>
@@ -406,10 +419,10 @@ const Living: FC = () => {
           <Form.Item label="头像" name="avatar" rules={[{ validator }]}>
             <UploadFile />
           </Form.Item>
-          <Form.Item label="详情" name="details">
+          <Form.Item label="详情" name="detailImgs">
             <UploadFile />
           </Form.Item>
-          <Form.Item label="证书" name="certificate" rules={[{ validator }]}>
+          <Form.Item label="证书" name="certificates" rules={[{ validator }]}>
             <UploadFile />
           </Form.Item>
         </Form>

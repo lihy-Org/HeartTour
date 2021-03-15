@@ -1,7 +1,7 @@
 /*
  * @Author: Li-HONGYAO
  * @Date: 2021-01-17 23:30:37
- * @LastEditTime: 2021-01-18 15:28:00
+ * @LastEditTime: 2021-03-14 17:32:33
  * @LastEditors: Li-HONGYAO
  * @Description:
  * @FilePath: /Admin/src/pages/Dashboard/index.tsx
@@ -17,6 +17,7 @@ import 'echarts/lib/component/tooltip';
 import 'echarts/lib/component/title';
 import 'echarts/lib/component/legend';
 import './index.less';
+import UploadFile from '@/components/UploadFile';
 
 const Dashboard: FC = () => {
   const echartsRef = useRef<HTMLDivElement | null>(null);

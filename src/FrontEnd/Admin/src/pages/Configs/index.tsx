@@ -1,13 +1,13 @@
 /*
  * @Author: Li-HONGYAO
  * @Date: 2021-01-22 12:36:49
- * @LastEditTime: 2021-03-01 17:21:58
+ * @LastEditTime: 2021-03-10 09:33:56
  * @LastEditors: Li-HONGYAO
  * @Description:
  * @FilePath: /Admin/src/pages/Configs/index.tsx
  */
 import React, { FC, useState } from 'react';
-import { Card, Button } from 'antd';
+import { Card, Button, Col, Row } from 'antd';
 import { EditOutlined } from '@ant-design/icons';
 import TagModal from '@/components/TagModal';
 import { kGOODS_CLASSIFY, kPOST, kTITLE, kVARIETIES } from '@/constants';
@@ -25,22 +25,6 @@ const Banner: FC = () => {
 
   // list datas
   const datas = [
-    {
-      cover:
-        'https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=3062556219,1093566700&fm=26&gp=0.jpg',
-      title: '预约须知',
-      description: '商品详情预约须知',
-      actions: [
-        <Button
-          type="primary"
-          size="small"
-          icon={<EditOutlined key="edit" />}
-          onClick={() => setModalVisible(true)}
-        >
-          查看编辑
-        </Button>,
-      ],
-    },
     {
       cover:
         'https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=3062556219,1093566700&fm=26&gp=0.jpg',
@@ -89,38 +73,22 @@ const Banner: FC = () => {
         </Button>,
       ],
     },
-    {
-      cover:
-        'https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=3062556219,1093566700&fm=26&gp=0.jpg',
-      title: '商品分类',
-      description: '商品分类管理',
-      actions: [
-        <Button
-          type="primary"
-          size="small"
-          icon={<EditOutlined key="edit" />}
-          onClick={() => setGoodsClassifyVisible(true)}
-        >
-          查看编辑
-        </Button>,
-      ],
-    },
-    {
-      cover:
-        'https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=3062556219,1093566700&fm=26&gp=0.jpg',
-      title: 'banner配置',
-      description: '头衔相关管理',
-      actions: [
-        <Button
-          type="primary"
-          size="small"
-          icon={<EditOutlined key="edit" />}
-          onClick={() => setModalVisible(true)}
-        >
-          查看编辑
-        </Button>,
-      ],
-    },
+    // {
+    //   cover:
+    //     'https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=3062556219,1093566700&fm=26&gp=0.jpg',
+    //   title: '商品分类',
+    //   description: '商品分类管理',
+    //   actions: [
+    //     <Button
+    //       type="primary"
+    //       size="small"
+    //       icon={<EditOutlined key="edit" />}
+    //       onClick={() => setGoodsClassifyVisible(true)}
+    //     >
+    //       查看编辑
+    //     </Button>,
+    //   ],
+    // },
   ];
 
   return (
@@ -133,18 +101,19 @@ const Banner: FC = () => {
       </div>
       {/* 内容 */}
       <div className="contents">
-        <div className="d-flex flex-wrap ">
+        <Row gutter={16}>
           {datas.map((item, i) => (
-            <Card
-              key={`card__${i}`}
-              style={{ width: 230, marginRight: 16, marginBottom: 16 }}
-              cover={<img alt="example" src={item.cover} />}
-              actions={item.actions}
-            >
-              <Meta title={item.title} description={item.description} />
-            </Card>
+            <Col span={6}>
+              <Card
+                key={`card__${i}`}
+                cover={<img alt="example" src={item.cover} />}
+                actions={item.actions}
+              >
+                <Meta title={item.title} description={item.description} />
+              </Card>
+            </Col>
           ))}
-        </div>
+        </Row>
       </div>
       {/* modals */}
       {/* 职位管理 */}
