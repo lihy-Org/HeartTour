@@ -1,0 +1,30 @@
+<!-- pages/more-time/more-time.wxml -->
+<view class="bg-F7F8FA container" hover-class="none" hover-stop-propagation="false">
+    <view class="px-24 py-34 flex-between-top ">
+        <view class="flex-center">
+            <image style="width:120rpx;height:120rpx" class="rounded-24" src="../../assets/images/shan.png"></image>
+            <view class="ml-24">
+                <h2 class="d-block f32 f-bold">陈林浩</h2>
+                <p class="color-999999 f24">中级美容师</p>
+            </view>
+        </view>
+        <p class='px-12 py-12 d-inline color-FFFFFF bg-00499e f28 f-lighter text-center lh-40 rounded-8' style="width:220rpx;height:40rpx;">
+            其他美容师时间
+        </p>
+    </view>
+    <view class="" hover-class="none" hover-stop-propagation="false">
+        <van-tabs active="{{ active }}" swipeable animated type="line" title-active-color="red" line-height="6rpx">
+            <block wx:for="{{dayTitle}}">
+                <van-tab title="{{item.name}}" nextTitle="{{item.date}}">
+                        <view class="py-24" style="display: flex;display: -webkit-flex;justify-content: space-between;flex-direction: row;flex-wrap: wrap;">
+                         <block wx:for="{{showTime}}">
+                            <span class="d-inline-block border-red rounded-10 f42" style="width:200rpx;height:100rpx;margin:20rpx;line-height: 100rpx;text-align: center;color:#333">
+                                {{item}}
+                            </span>
+                            </block>
+                        </view>
+                </van-tab>
+            </block>
+        </van-tabs>
+    </view>
+</view>

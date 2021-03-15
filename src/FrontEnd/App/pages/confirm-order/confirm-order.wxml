@@ -60,7 +60,7 @@
     </view>
 </view>
 <view class="position-fixed bg-FFFFFF w-100 flex-center" style="bottom:0; height:166rpx; left:0;">
-    <van-button type="primary" custom-style="width:700rpx; background:#4BC065;height:100rpx;border-radius:27rpx;" block>
+    <van-button type="primary" bind:tap='goOrderList' custom-style="width:700rpx; background:#4BC065;height:100rpx;border-radius:27rpx;" block>
         <span class="f32 mx-10">支付</span>
         <span class="f24">限时送粮饷540</span>
     </van-button>
