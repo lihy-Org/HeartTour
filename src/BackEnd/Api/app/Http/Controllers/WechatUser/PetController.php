@@ -325,7 +325,6 @@ class PetController extends Controller
 
         $data = (object) $request->all();
         $data->wcId = $request->user->id;
-
         return json_encode($this->petRepository->Remove($data));
     }
 }

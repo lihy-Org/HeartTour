@@ -43,4 +43,21 @@ class AddressRepository
         return Address::where('wcId', $data->wcId);
     }
 
+    public function Remove($data)
+    {
+        $addr = Address::where('wcId', $data->wcId)->where('id', $data->addrId)->first();
+        if ($addr) {
+            $addr->delete();
+            return array(
+                'status' => 200,
+                'msg' => '操作成功!',
+                'data' => '');
+        }
+        return array(
+            'status' => 500,
+            'msg' => '操作失败，找不到数据!',
+            'data' => '');
+
+    }
+
 }

@@ -21,7 +21,7 @@ class CreateUserWorktimeTable extends Migration
             $table->string('uname')->comment('人员名称');
             $table->string('storeId')->comment('门店编号');
             $table->string('orderId')->nullable()->comment('订单编号');
-            $table->string('orderPrice')->nullable()->comment('订单价格');
+            $table->unsignedDecimal('orderPrice',11,2)->nullable()->comment('订单价格');
             $table->timestamps();
             $table->softDeletes();
             $table->primary('id');

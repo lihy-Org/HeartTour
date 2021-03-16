@@ -3,10 +3,11 @@ namespace App\Repositories;
 
 use App\Models\Store;
 use App\Models\User;
+use App\Models\UserKpi;
 use App\Models\UserTitle;
 use App\Repositories\ConfigRepository;
-use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class UserRepository
 {
@@ -247,5 +248,66 @@ class UserRepository
             'status' => 500,
             'msg' => '修改失败,找不到该人员!',
             'data' => '');
+    }
+
+    public function SetKpi($data)
+    {
+        $kpi = UserKpi::where('userId', $data->userId)->where('month', $data->month);
+        try {
+            DB::beginTransaction(); // 开启事务
+
+            if ($kpi) {
+                $kpi->delete();
+            }
+            $user = User::find($data->userId);
+            UserKpi::create([
+                'storeId' => $data->storeId,
+                'userId' => $data->userId,
+                'userName' => $user->name,
+                'month' => $data->month,
+                'kpi' => $data->kpi,
+                'setId' => $data->setId,
+                'setName' => $data->setName,
+            ]);
+            Db::commit(); // 提交事务
+            return array(
+                'status' => 200,
+                'msg' => '设置成功!',
+                'data' => '');
+        } catch (\Exception $ex) {
+            Db::rollback(); // 回滚事务
+            return array(
+                'status' => 500,
+                'msg' => '失败!' . $ex->getMessage(),
+                'data' => '');
+        }
+    }
+
+    public function GetKpiList($data)
+    {
+        $user = DB::table('users')->where('isBeautician', 1);
+        if (isset($data->storeId)) {
+            $user = $user->where('users.storeId', $data->storeId);
+        }
+        if (isset($data->userId)) {
+            $user = $user->where('users.id', $data->userId);
+        }
+        if (isset($data->searchKey)) {
+            $user = $user->where(function ($query) use ($data) {
+                $query->where('name', 'like', '%' . $data->searchKey . '%')
+                    ->orWhere('phone', 'like', '%' . $data->searchKey . '%');
+            });
+        }
+        $kpis = $user->leftJoin('userkpis', function ($join) use ($data) {
+            $join->on('users.id', '=', 'userkpis.userId')
+                ->on('users.storeId', '=', 'userkpis.storeId')
+                ->whereNull('userkpis.deleted_at');
+            if (isset($data->month)) {
+                $join = $join->where('month', $data->month);
+            }
+        });
+        $kpis = $kpis->orderBy('users.id')->orderBy('month')->select(DB::raw('users.id as userId'), DB::raw('users.name as userName'), 'post', 'month', 'kpi');
+       
+        return $kpis;
     }
 }

@@ -94,7 +94,8 @@ Route::prefix('api/storesys')->middleware(['auth:sanctum', 'storeapi'])->group(f
     Route::post('/user/list', [StoreSysUserController::class, 'GetList']);
     Route::post('/user/setWorktime', [StoreSysUserController::class, 'SetWorktime']);
     Route::post('/user/tranStore', [StoreSysUserController::class, 'TranStore']);
-
+    Route::post('/user/setKpi', [StoreSysUserController::class, 'SetKpi']);
+    Route::post('/user/kpiList', [StoreSysUserController::class, 'GetKpiList']);
     //预约管理
     Route::post('/appt/list', [StoreSysAppointmentController::class, 'GetList']);
     Route::post('/appt/getWorktime', [StoreSysAppointmentController::class, 'GetWorktime']);
@@ -142,7 +143,7 @@ Route::prefix('api')->middleware(['web', 'wechatapi'])->group(function () {
 
     //收货地址
     Route::post('/address/addOrUpdate', [AddressController::class, 'AddOrUpdate']);
-    Route::get('/address/list', [AddressController::class, 'GetList']);
+    Route::post('/address/list', [AddressController::class, 'GetList']);
     Route::post('/address/remove', [AddressController::class, 'Remove']);
 
     //预约

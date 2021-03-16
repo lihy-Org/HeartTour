@@ -5154,6 +5154,207 @@
                 }
             }
         },
+        "/api/storesys/user/SetKpi": {
+            "post": {
+                "tags": [
+                    "门店管理系统-人员管理"
+                ],
+                "summary": "设置月度目标",
+                "operationId": "App\\Http\\Controllers\\StoreSystem\\UserController::SetKpi",
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "header",
+                        "description": "token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "userId",
+                                    "month",
+                                    "kpi"
+                                ],
+                                "properties": {
+                                    "userId": {
+                                        "description": "用户ID",
+                                        "type": "string",
+                                        "default": "10"
+                                    },
+                                    "month": {
+                                        "description": "月度 格式 2022-02",
+                                        "type": "string",
+                                        "default": "10"
+                                    },
+                                    "kpi": {
+                                        "description": "目标 1111.11",
+                                        "type": "string",
+                                        "default": "10"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "状态码",
+                                            "type": "number",
+                                            "example": "200"
+                                        },
+                                        "msg": {
+                                            "type": "string",
+                                            "example": "成功!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "失败",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "状态码",
+                                            "type": "number",
+                                            "example": "500"
+                                        },
+                                        "msg": {
+                                            "type": "string",
+                                            "example": "失败!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/storesys/user/kpiList": {
+            "post": {
+                "tags": [
+                    "门店管理系统-人员管理"
+                ],
+                "summary": "人员目标列表",
+                "operationId": "App\\Http\\Controllers\\StoreSystem\\UserController::GetKpiList",
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "header",
+                        "description": "token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [],
+                                "properties": {
+                                    "month": {
+                                        "description": "月份",
+                                        "type": "number",
+                                        "default": "10"
+                                    },
+                                    "pageSize": {
+                                        "description": "条数",
+                                        "type": "number",
+                                        "default": "10"
+                                    },
+                                    "page": {
+                                        "description": "页数",
+                                        "type": "number",
+                                        "default": "1"
+                                    },
+                                    "searchKey": {
+                                        "description": "关键字",
+                                        "type": "string",
+                                        "default": ""
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "状态码",
+                                            "type": "number",
+                                            "example": "200"
+                                        },
+                                        "msg": {
+                                            "description": "提示信息",
+                                            "type": "string",
+                                            "example": "获取列表成功!"
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "example": ""
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "失败",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "状态码",
+                                            "type": "number",
+                                            "example": "500"
+                                        },
+                                        "msg": {
+                                            "description": "提示信息",
+                                            "type": "string",
+                                            "example": "获取列表失败!"
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "example": "{'page':['\\u8bf7\\u8f93\\u5165\\u5355\\u4f4d\\u540d\\u79f0\\uff01']}"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/storesys/wechat/list": {
             "post": {
                 "tags": [
@@ -5449,7 +5650,7 @@
             }
         },
         "/api/address/list": {
-            "get": {
+            "post": {
                 "tags": [
                     "小程序-收货地址"
                 ],
@@ -5500,7 +5701,7 @@
                 "tags": [
                     "小程序-收货地址"
                 ],
-                "summary": "删除收货地址信息",
+                "summary": "删除收货地址",
                 "operationId": "App\\Http\\Controllers\\WechatUser\\AddressController::Remove",
                 "parameters": [
                     {
@@ -5511,17 +5712,27 @@
                         "schema": {
                             "type": "string"
                         }
-                    },
-                    {
-                        "name": "addrId",
-                        "in": "query",
-                        "description": "addrId",
-                        "required": true,
-                        "schema": {
-                            "type": "int"
-                        }
                     }
                 ],
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "petId"
+                                ],
+                                "properties": {
+                                    "addrId": {
+                                        "description": "收货地址编号",
+                                        "type": "string",
+                                        "default": "10"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
                 "responses": {
                     "200": {
                         "description": "成功",
@@ -5536,7 +5747,28 @@
                                         },
                                         "msg": {
                                             "type": "string",
-                                            "example": "删除收货地址成功!"
+                                            "example": "禁用/启用成功!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "失败",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "状态码",
+                                            "type": "number",
+                                            "example": "500"
+                                        },
+                                        "msg": {
+                                            "type": "string",
+                                            "example": "禁用/启用失败!"
                                         }
                                     },
                                     "type": "object"
@@ -6403,16 +6635,6 @@
                                         "description": "性别 0未知 1男 2女",
                                         "type": "string",
                                         "default": ""
-                                    },
-                                    "pageSize": {
-                                        "description": "条数",
-                                        "type": "number",
-                                        "default": "10"
-                                    },
-                                    "page": {
-                                        "description": "页数",
-                                        "type": "number",
-                                        "default": "1"
                                     }
                                 },
                                 "type": "object"
