@@ -3,6 +3,7 @@ namespace App\Repositories;
 
 use App\Models\Pet;
 use App\Repositories\ConfigRepository;
+use Carbon\Carbon;
 
 class PetRepository
 {
@@ -10,7 +11,7 @@ class PetRepository
     public function AddOrUpdate($data)
     {
         $ConfigRepository = new ConfigRepository();
-        $pet;
+        $pet=null;
         if (isset($data->petId)) {
             $pet = Pet::find($data->petId);
         }
@@ -33,7 +34,7 @@ class PetRepository
                     'type' => $topvariety->value,
                     'varietyId' => $data->varietyId,
                     'variety' => $variety->value,
-                    'birthday' => isset($data->birthday) ? $data->birthday : "",
+                    'birthday' => isset($data->birthday) ? $data->birthday : Carbon::now()->format('y-m-d'),
                     'color' => isset($data->color) ? $data->color : "",
                     'shoulderHeight' => isset($data->shoulderHeight) ? $data->shoulderHeight : 0,
                     'is_sterilization' => 0,
@@ -91,7 +92,7 @@ class PetRepository
                 $query->where('nickname', 'like', '%' . $data->searchKey . '%')
                     ->orWhere('variety', 'like', '%' . $data->searchKey . '%');
             });
-        }
+        }  
         if (isset($data->wcId)) {
             $pets = $pets->where('wcId', $data->wcId);
         }
@@ -101,6 +102,7 @@ class PetRepository
         if (isset($data->gender)) {
             $pets = $pets->where('gender', $data->gender);
         }
+      
         return $pets;
     }
 

@@ -26,6 +26,8 @@ class CreateOrderTable extends Migration
             $table->string('petType')->nullable()->comment('宠物种类');
             $table->uuid('userId')->nullable()->comment('预约技师id');
             $table->string('userName')->nullable()->comment('预约技师姓名');
+            $table->uuid('slaveUserId')->nullable()->comment('辅助预约技师id');
+            $table->string('slaveUserName')->nullable()->comment('辅助预约技师姓名');
             $table->uuid('storeId')->nullable()->comment('预约门店id');
             $table->string('storeName')->nullable()->comment('预约门店名称');
             $table->string('mainComboName')->nullable()->comment('主套餐名称');

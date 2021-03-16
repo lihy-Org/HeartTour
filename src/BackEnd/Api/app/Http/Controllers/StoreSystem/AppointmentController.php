@@ -339,6 +339,7 @@ class AppointmentController extends Controller
      *           @OA\Property(description="预约日期 2020-01-01", property="workDay", type="string", default="dd"),
      *           @OA\Property(description="预约时间 9:00 必须是规定的整点", property="workTime", type="string", default="dd"),
      *           @OA\Property(description="技师ID", property="userId", type="string", default="dd"),
+     *           @OA\Property(description="辅助技师ID", property="slaveUserId", type="string", default="dd"),     * 
      *           required={"comboIds","workDay","workTime","petId","userId","storeId"})
      *       )
      *     ),
@@ -382,12 +383,15 @@ class AppointmentController extends Controller
      */
     public function TransferAppt(Request $request)
     {
-        $rules = [
+        $rules = [            
             'workDay' => ['required', 'date_format:"Y-m-d"', 'after_or_equal:today'],
             'workTime' => ['required', 'date_format:"H:i"'],
             'userId' => ['required', Rule::exists('users', 'id')->where(function ($query) use ($request) {
                 $query->where('state', 0)->whereNotIn('type', [0, 1])->where('isBeautician', 1)->where('storeId', $request->user->storeId);
             })],
+            'slaveUserId' => ['nullable', Rule::exists('users', 'id')->where(function ($query) use ($request) {
+                $query->where('state', 0)->whereNotIn('type', [0, 1])->where('isBeautician', 1)->where('storeId', $request->user->storeId);
+            })],  
             'orderId' => ['required', Rule::exists('orders', 'id')->where(function ($query) use ($request) {
                 $query->where('state', 200)->where('storeId', $request->user->storeId);
             })],
@@ -660,6 +664,7 @@ class AppointmentController extends Controller
      *           @OA\Property(description="预约宠物备注", property="petRemark", type="string", default="dd"),
      *           @OA\Property(description="预约宠物颜色", property="color", type="string", default="dd"),
      *           @OA\Property(description="技师ID", property="userId", type="string", default="dd"),
+     *           @OA\Property(description="辅助技师ID", property="slaveUserId", type="string", default="dd"),
      *           @OA\Property(description="套餐总额", property="totalMoney", type="number", default="dd"),
      *           @OA\Property(description="备注", property="remark", type="string", default="dd"),
      *           required={"comboIds","userId","storeId"})
@@ -734,6 +739,9 @@ class AppointmentController extends Controller
             'userId' => ['required', Rule::exists('users', 'id')->where(function ($query) use ($request) {
                 $query->where('state', 0)->whereNotIn('type', [0, 1])->where('isBeautician', 1)->where('storeId', $request->user->storeId);
             })],
+            'slaveUserId' => ['nullable', Rule::exists('users', 'id')->where(function ($query) use ($request) {
+                $query->where('state', 0)->whereNotIn('type', [0, 1])->where('isBeautician', 1)->where('storeId', $request->user->storeId);
+            })],            
             'totalMoney' => ['required', 'numeric'],
             'comboIds' => ['required', 'array', Rule::exists('combos', 'id')->where(function ($query) {
                 $query->where('state', 0);

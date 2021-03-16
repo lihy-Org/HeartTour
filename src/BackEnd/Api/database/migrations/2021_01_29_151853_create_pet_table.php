@@ -25,7 +25,7 @@ class CreatePetTable extends Migration
             $table->string('variety')->comment('宠物品种名称');
             $table->timestamp('birthday')->comment('宠物生日');
             $table->string('color')->nullable()->default('')->comment('毛色');
-            $table->integer('shoulderHeight')->nullable()->default(0)->comment('肩高');
+            $table->string('shoulderHeight')->nullable()->default(0)->comment('肩高');
             $table->unsignedTinyInteger('is_sterilization')->default(1)->comment('是否绝育，0：未绝育，1：已绝育');
             $table->string('remark')->nullable()->default('')->comment('备注');
             $table->primary('id');

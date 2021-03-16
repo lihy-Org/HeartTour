@@ -38,7 +38,7 @@ class PetController extends Controller
      *           @OA\Property(description="肩高", property="shoulderHeight", type="string", default="dd"),
      *           @OA\Property(description="是否绝育，0：未绝育，1：已绝育", property="is_sterilization", type="int", default="dd"),
      *           @OA\Property(description="备注", property="remark", type="string", default="dd"),
-     *           required={"avatar","nickname","gender","varietyId"})
+     *           required={"nickname","gender","varietyId"})
      *       )
      *     ),
      *     @OA\Response(
@@ -96,8 +96,8 @@ class PetController extends Controller
             'birthday' => ['nullable', 'date_format:"Y-m-d"'],
             'avatar' => ['nullable', 'string'],
             'color' => ['nullable', 'string'],
-            'shoulderHeight' => ['integer', 'gt:0'], //肩高
-            'is_sterilization' => ['integer', 'gt:0'], //是否绝育
+            'shoulderHeight' => ['nullable', 'string'], //肩高
+            'is_sterilization' => ['integer', Rule::in([0, 1])], //是否绝育
         ];
         $messages = [];
         $validator = Validator::make($request->all(), $rules, $messages);
@@ -127,8 +127,6 @@ class PetController extends Controller
      *           @OA\Property(description="宠物品种编号", property="varietyId", type="string", default=""),
      *           @OA\Property(description="关键字", property="searchKey", type="string", default=""),
      *           @OA\Property(description="性别 0未知 1男 2女", property="gender", type="string", default=""),
-     *           @OA\Property(description="条数", property="pageSize", type="number", default="10"),
-     *           @OA\Property(description="页数", property="page", type="number", default="1"),
      *           required={})
      *       )
      *     ),
@@ -185,9 +183,7 @@ class PetController extends Controller
     {
         $rules = [
             'varietyId' => ['nullable'],
-            'searchKey' => ['nullable', 'string'],
-            'pageSize' => ['integer', 'gt:0'],
-            'page' => ['integer', 'gt:0'],
+            'searchKey' => ['nullable', 'string'],           
             'gender' => ['nullable', 'integer', Rule::in([0, 1, 2])],
         ];
         $messages = [];

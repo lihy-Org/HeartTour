@@ -2738,7 +2738,8 @@
                         "multipart/form-data": {
                             "schema": {
                                 "required": [
-                                    "userId"
+                                    "userId",
+                                    "type"
                                 ],
                                 "properties": {
                                     "userId": {
@@ -4042,6 +4043,11 @@
                                         "description": "技师ID",
                                         "type": "string",
                                         "default": "dd"
+                                    },
+                                    "slaveUserId": {
+                                        "description": "辅助技师ID",
+                                        "type": "string",
+                                        "default": "dd"
                                     }
                                 },
                                 "type": "object"
@@ -4493,6 +4499,11 @@
                                     },
                                     "userId": {
                                         "description": "技师ID",
+                                        "type": "string",
+                                        "default": "dd"
+                                    },
+                                    "slaveUserId": {
+                                        "description": "辅助技师ID",
                                         "type": "string",
                                         "default": "dd"
                                     },
@@ -6243,7 +6254,6 @@
                         "multipart/form-data": {
                             "schema": {
                                 "required": [
-                                    "avatar",
                                     "nickname",
                                     "gender",
                                     "varietyId"
@@ -6356,11 +6366,11 @@
             }
         },
         "/api/pet/list": {
-            "get": {
+            "post": {
                 "tags": [
                     "小程序-宠物"
                 ],
-                "summary": "获取宠物列表",
+                "summary": "宠物列表",
                 "operationId": "App\\Http\\Controllers\\WechatUser\\PetController::GetList",
                 "parameters": [
                     {
@@ -6373,6 +6383,43 @@
                         }
                     }
                 ],
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [],
+                                "properties": {
+                                    "varietyId": {
+                                        "description": "宠物品种编号",
+                                        "type": "string",
+                                        "default": ""
+                                    },
+                                    "searchKey": {
+                                        "description": "关键字",
+                                        "type": "string",
+                                        "default": ""
+                                    },
+                                    "gender": {
+                                        "description": "性别 0未知 1男 2女",
+                                        "type": "string",
+                                        "default": ""
+                                    },
+                                    "pageSize": {
+                                        "description": "条数",
+                                        "type": "number",
+                                        "default": "10"
+                                    },
+                                    "page": {
+                                        "description": "页数",
+                                        "type": "number",
+                                        "default": "1"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
                 "responses": {
                     "200": {
                         "description": "成功",
@@ -6386,12 +6433,39 @@
                                             "example": "200"
                                         },
                                         "msg": {
+                                            "description": "提示信息",
                                             "type": "string",
-                                            "example": "获取宠物列表成功!"
+                                            "example": "获取列表成功!"
                                         },
                                         "data": {
                                             "type": "object",
-                                            "example": "[{'id':1,'avatar':'11','nickname':'11','breed':'11','gender':'11'}]"
+                                            "example": ""
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "失败",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "状态码",
+                                            "type": "number",
+                                            "example": "500"
+                                        },
+                                        "msg": {
+                                            "description": "提示信息",
+                                            "type": "string",
+                                            "example": "获取列表失败!"
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "example": "{'page':['\\u8bf7\\u8f93\\u5165\\u5355\\u4f4d\\u540d\\u79f0\\uff01']}"
                                         }
                                     },
                                     "type": "object"
@@ -6425,7 +6499,7 @@
                         "description": "petId",
                         "required": true,
                         "schema": {
-                            "type": "int"
+                            "type": "string"
                         }
                     }
                 ],
@@ -6474,17 +6548,27 @@
                         "schema": {
                             "type": "string"
                         }
-                    },
-                    {
-                        "name": "petId",
-                        "in": "query",
-                        "description": "petId",
-                        "required": true,
-                        "schema": {
-                            "type": "int"
-                        }
                     }
                 ],
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "petId"
+                                ],
+                                "properties": {
+                                    "petId": {
+                                        "description": "宠物ID",
+                                        "type": "string",
+                                        "default": "10"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
                 "responses": {
                     "200": {
                         "description": "成功",
@@ -6499,7 +6583,28 @@
                                         },
                                         "msg": {
                                             "type": "string",
-                                            "example": "删除宠物信息成功!"
+                                            "example": "禁用/启用成功!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "失败",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "状态码",
+                                            "type": "number",
+                                            "example": "500"
+                                        },
+                                        "msg": {
+                                            "type": "string",
+                                            "example": "禁用/启用失败!"
                                         }
                                     },
                                     "type": "object"
