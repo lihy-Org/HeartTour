@@ -243,6 +243,15 @@ export default {
           }
         },
         {
+          label: '辅助技师',
+          prop: 'slaveUserName',
+          formatter: row => {
+            if (!row.userRemark) {
+              return '-'
+            }
+          }
+        },
+        {
           label: '店铺备注',
           prop: 'storeRemark'
         },
@@ -607,6 +616,7 @@ export default {
         }
         refund(data).then(res => {
           if (res.status === 200) {
+            this.getBookingList()
             this.$message({
               type: 'success',
               message: '已成功发起退单申请'
@@ -636,6 +646,7 @@ export default {
         }
         changeState(data).then(res => {
           if (res.status === 200) {
+            this.getBookingList()
             this.$message({
               type: 'success',
               message: '删除成功!'
@@ -665,6 +676,7 @@ export default {
             return false
           }
         },
+        inputPlaceholder: `当前备注: ${row.storeRemark}`,
         inputErrorMessage: '请输入备注'
       }).then(({ value }) => {
         const data = {
@@ -673,6 +685,7 @@ export default {
         }
         remarks(data).then(res => {
           if (res.status === 200) {
+            this.getBookingList()
             this.$message({
               type: 'success',
               message: '备注成功'

@@ -24,16 +24,6 @@ const staffRouter = {
     }
   },
   {
-    path: 'booking',
-    component: () => import('@/views/staff/booking/index'),
-    name: 'Booking',
-    meta: {
-      title: 'booking',
-      keepAlive: false,
-      keepComponentPages: []
-    }
-  },
-  {
     path: 'performance',
     component: () => import('@/views/staff/performance/index'),
     name: 'Performance',

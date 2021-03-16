@@ -27,24 +27,31 @@
               :label="item.label"
               :type="item.type"
               :width="item.width"
+              :min-width="item.minWidth"
               :formatter="item.formatter"
               show-overflow-tooltip
               :fixed="item.fixed"
               :align="item.align"
             >
               <!-- 是否有可选择的下拉框 -->
-              <template v-if="isSelect && item.canEdit">
+              <template v-if="isSelect && item.canEdit" v-slot="{row}">
                 <el-select
-                  v-model="item.dateTime"
+                  v-model="row[item.value]"
                   popper-class="role-option"
-                  placeholder="请选择"
+                  :placeholder="item.rotaName"
                   size="small"
-                  @change="dateHandleChange"
+                  :disabled="item.isDisabled"
+                  :clearable="item.clearable"
+                  @change="
+                    typeof item.change === 'function' ? item.change($event) : () => {}
+                  "
                 >
                   <el-option
-                    v-for="(ele, index) in item.optionData"
+                    v-for="(ele, index) in typeof item.optionData === 'function'
+                      ? item.optionData()
+                      : item.optionData"
                     :key="index"
-                    :label="ele.name"
+                    :label="ele.label"
                     :value="ele.value"
                   />
                 </el-select>
@@ -174,11 +181,6 @@ export default {
       required: true
     },
     selectedChange: {
-      type: Function,
-      /* eslint-disable-next-line */
-      default: () => { },
-    },
-    dateHandleChange: {
       type: Function,
       /* eslint-disable-next-line */
       default: () => { },
