@@ -1,9 +1,13 @@
 <template>
   <div class="btns">
     <el-button
-      v-for="(button, index) in buttons"
+      v-for="(button, index) in buttons.filter(button => typeof button.notRender ==='function' ? !button.notRender(button) : !button.notRender)"
       :key="index"
-      :type="button.type"
+      :type="
+        typeof button.type === 'function'
+          ? button.type()
+          : button.type
+      "
       :size="button.size"
       :icon="button.icon"
       :disabled="

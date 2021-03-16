@@ -51,6 +51,7 @@ import Form from '@/components/Form/index'
 import Btns from '@/components/Btns/index'
 import Table from '@/components/Table/index'
 import { getStatsWorktime, getUsersList } from '@/api/personManage'
+// import { getStatsWorktime, getUsersList, setStaffShiftList } from '@/api/personManage'
 import moment from 'moment'
 import 'moment/locale/zh-cn'
 
@@ -118,14 +119,26 @@ export default {
           clearable: true,
           list: () => this.usersList,
           change: () => this.currentChange(1),
-          filterable: true,
           style: 'width: 120px'
         }
       ],
 
       usersList: [],
+      // 班次list
+      rotaList: [
+        {
+          value: '9:00-19:00',
+          label: '9:00-19:00'
+        }, {
+          value: '14:00-24:00',
+          label: '14:00-24:00'
+        }, {
+          value: '9:00-24:00',
+          label: '9:00-24:00'
+        }
+      ],
 
-      // 是否table展示下拉框
+      // 是否table展示下拉框、即是否为编辑班表
       isSelect: false,
 
       // 调店
@@ -143,14 +156,23 @@ export default {
           type: 'success',
           size: 'small',
           value: '查询',
+          disabled: () => this.isSelect,
           click: () => this.seachList(),
           icon: 'el-icon-search'
         },
         {
-          type: 'success',
+          type: () => this.isSelect ? 'danger' : 'success',
           size: 'small',
           value: '编辑人员班表',
           click: () => this.setRota(),
+          icon: 'el-icon-setting'
+        },
+        {
+          type: 'primary',
+          size: 'small',
+          value: '提交班表',
+          disabled: () => !this.isSelect,
+          click: () => this.submitRota(),
           icon: 'el-icon-setting'
         }
       ],
@@ -159,6 +181,7 @@ export default {
        * table属性
        * @param tableLoading 动画
        * @param tableData 列表数据
+       * @param setTableData 编辑班表时，拷贝的table，清空数据时会用（只为了传递给后端的数据是修改的、并非所有的）
        * @param columns 列表展示项
        * @param pagination 分页
        * @param total 数据总量
@@ -167,6 +190,7 @@ export default {
       tableHeight: 'height: calc(100vh - 184px)',
       tableLoading: false,
       tableData: [],
+      setTableData: [],
       columns: [
         {
           label: '姓名',
@@ -232,7 +256,13 @@ export default {
       total: 0
     }
   },
-  computed: {},
+  watch: {
+    isSelect: {
+      handler(n, o) {
+        console.log('isSelect值： ' + this.isSelect)
+      }
+    }
+  },
   created() {
     console.log('排班')
     this.setTimeFn()
@@ -306,6 +336,8 @@ export default {
                   obj.post = ele.post
                   obj.uid = ele.uid
                   obj.uname = ele.uname
+                }
+                if (ele.workDay) {
                   obj[`${ele.workDay}`] = ele.times
                 }
               })
@@ -322,10 +354,16 @@ export default {
             for (let i = 0; i < timeDifference; i++) {
               const dateStamp = moment(val[0] + i * 1000 * 60 * 60 * 24)
               const obj = {
-                label: `${dateStamp.format('MM-DD')} / ${this.getWeek(dateStamp.day())}`,
+                label: `${dateStamp.format('YYYY-MM-DD')} / ${this.getWeek(dateStamp.day())}`,
                 prop: `${dateStamp.format('YYYY-MM-DD')}`,
                 canEdit: true,
-                dateTime: ''
+                value: `${dateStamp.format('YYYY-MM-DD')}`,
+                rotaName: '请选择班次',
+                optionData: () => this.rotaList,
+                clearable: true,
+                isDisabled: moment().startOf('day') > moment(dateStamp).startOf('day'),
+                minWidth: '160px',
+                change: val => this.changeDateTable(val)
               }
               dateArr.push(obj)
             }
@@ -341,6 +379,7 @@ export default {
                   type: 'primary',
                   size: 'mini',
                   label: '调店',
+                  disabled: () => this.isSelect,
                   click: row => this.transferStore(row)
                 }
               ]
@@ -359,9 +398,63 @@ export default {
 
     // 编辑人员班表
     setRota() {
-      this.isSelect = !this.isSelect
-      this.isFirstIn = true
-      this.getRota(this.searchForm.workDay)
+      if (this.isSelect) {
+        this.$confirm('班表尚未提交, 此操作将退出编辑, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.isSelect = !this.isSelect
+          this.operationBtns[1].value = this.isSelect ? '取消编辑' : '编辑人员班表'
+          this.isFirstIn = true
+          this.getRota(this.searchForm.workDay)
+          this.$message({
+            type: 'info',
+            message: '退出编辑'
+          })
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消退出'
+          })
+        })
+      } else {
+        this.setTableData = []
+        this.isSelect = !this.isSelect
+        this.operationBtns[1].value = this.isSelect ? '取消编辑' : '编辑人员班表'
+        // setTableData 只保留tableData中的非班次的数据
+        this.tableData.forEach((item) => {
+          this.setTableData.push({
+            post: item.post,
+            uid: item.uid,
+            uname: item.uname
+          }
+          )
+        })
+        console.log(this.setTableData)
+        this.isFirstIn = true
+        this.getRota(this.searchForm.workDay)
+      }
+    },
+
+    // 编辑班表-下拉框选择班次
+    changeDateTable(val) {
+      console.log(val)
+      console.log(this.setTableData)
+      console.log(this.tableData)
+    },
+
+    // 提交班表
+    submitRota() {
+      console.log(this.tableData)
+      // const data = {
+
+      // }
+      // setStaffShiftList(data).then(res => {
+      //   console.log(res.data)
+      // }).catch(err => {
+      //   console.log(err)
+      // })
     },
 
     // 调店

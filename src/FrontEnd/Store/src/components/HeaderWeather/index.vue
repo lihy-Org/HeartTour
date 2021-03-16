@@ -48,7 +48,7 @@ export default {
   methods: {
     // 获取定位，因为天气是基于用户定位的
     getGeolocation() {
-      const that = this
+      // const that = this
       return new Promise(function(resolve, reject) {
         const mapObj = new AMap.Map('iCenter')
         mapObj.plugin('AMap.Geolocation', function() {
@@ -72,7 +72,8 @@ export default {
             resolve(data)
           }) // 返回定位信息
           AMap.event.addListener(geolocation, 'error', (err) => {
-            that.$message.error(err)
+            // 定位信息-因为是第三方的，不可控，因此不做失败提示，直接在页面上是否展示即可。
+            // that.$message.error(err)
             reject(err)
           }) // 返回定位出错信息
         })
