@@ -1,10 +1,10 @@
 /*
  * @Author: Li-HONGYAO
  * @Date: 2021-01-18 11:35:12
- * @LastEditTime: 2021-03-15 23:41:33
+ * @LastEditTime: 2021-03-16 15:54:32
  * @LastEditors: Li-HONGYAO
  * @Description:
- * @FilePath: /Admin/src/pages/User/index.tsx
+ * @FilePath: \Admin\src\pages\User\index.tsx
  */
 import React, { FC, useEffect, useState } from 'react';
 import {
@@ -23,8 +23,9 @@ import {
 } from 'antd';
 import {
   SearchOutlined,
-  AlertOutlined,
+  StopOutlined,
   ReloadOutlined,
+  DownloadOutlined
 } from '@ant-design/icons';
 import { ColumnProps } from 'antd/es/table';
 import Api from '@/Api';
@@ -333,7 +334,7 @@ const User: FC = () => {
             disabled={!!record.state}
             type="primary"
             size="small"
-            icon={<AlertOutlined />}
+            icon={<StopOutlined />}
             danger
             onClick={() => onUpdateState(record.id, 1)}
           >
@@ -437,6 +438,11 @@ const User: FC = () => {
           <Form.Item>
             <Button htmlType="submit" icon={<SearchOutlined />} type="primary">
               搜索
+            </Button>
+          </Form.Item>
+          <Form.Item>
+            <Button type="primary" icon={<DownloadOutlined />}>
+              导出
             </Button>
           </Form.Item>
         </Form>

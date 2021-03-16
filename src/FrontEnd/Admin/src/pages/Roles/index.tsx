@@ -1,10 +1,10 @@
 /*
  * @Author: Li-HONGYAO
  * @Date: 2021-03-15 17:23:50
- * @LastEditTime: 2021-03-15 23:13:41
+ * @LastEditTime: 2021-03-16 15:14:55
  * @LastEditors: Li-HONGYAO
  * @Description:
- * @FilePath: /Admin/src/pages/Roles/index.tsx
+ * @FilePath: \Admin\src\pages\Roles\index.tsx
  */
 
 import { ColumnProps } from 'antd/es/table';
@@ -88,7 +88,7 @@ const Roles: FC = () => {
   // effects
   useEffect(() => {
     getDataSource(true);
-  }, [page.filters]);
+  }, [page]);
   // render
   const columns: ColumnProps<ColumnsType>[] = [
     {
@@ -192,7 +192,34 @@ const Roles: FC = () => {
         {/* 右侧内容 */}
       </div>
       {/* 内容 */}
-      <Table columns={columns} dataSource={dataSource} rowKey="id" />
+      <Table
+        columns={columns}
+        dataSource={dataSource}
+        rowKey="id"
+        size="middle"
+        scroll={{ y: 'calc(100vh - 280px)' }}
+        pagination={{
+          current: page.page /** 当前页数 */,
+          hideOnSinglePage: false /** 只有一页时是否隐藏分页器 */,
+          pageSize: page.pageSize /** 每页条数 */,
+          showSizeChanger: true /** 是否展示 pageSize 切换器，当 total 大于 50 时默认为 true */,
+          showQuickJumper: false /** 是否可以快速跳转至某页 */,
+          total: total,
+          showTotal: (total: number, range: [number, number]) =>
+            `共 ${total} 条`,
+          onChange: (page: number) =>
+            setPage((prev) => ({
+              ...prev,
+              page,
+            })),
+          onShowSizeChange: (current: number, size: number) =>
+            setPage((prev) => ({
+              ...prev,
+              pageSize: size,
+              page: current,
+            })),
+        }}
+      />
       {/* 分配角色 */}
       <Modal
         visible={visible}

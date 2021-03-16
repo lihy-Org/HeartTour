@@ -1,7 +1,7 @@
 /*
  * @Author: Li-HONGYAO
  * @Date: 2021-01-22 12:36:49
- * @LastEditTime: 2021-03-15 17:16:12
+ * @LastEditTime: 2021-03-16 15:45:13
  * @LastEditors: Li-HONGYAO
  * @Description:
  * @FilePath: \Admin\src\pages\Configs\index.tsx
@@ -91,7 +91,6 @@ const Banner: FC = () => {
         </Button>,
       ],
     },
-    
     // {
     //   cover:
     //     'https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=3062556219,1093566700&fm=26&gp=0.jpg',
