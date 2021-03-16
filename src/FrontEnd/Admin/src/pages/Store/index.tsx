@@ -1,10 +1,10 @@
 /*
  * @Author: Li-HONGYAO
  * @Date: 2021-01-18 11:15:25
- * @LastEditTime: 2021-03-10 10:17:58
+ * @LastEditTime: 2021-03-16 15:58:16
  * @LastEditors: Li-HONGYAO
  * @Description:
- * @FilePath: /Admin/src/pages/Store/index.tsx
+ * @FilePath: \Admin\src\pages\Store\index.tsx
  */
 import React, { FC, useState, useEffect } from 'react';
 import {
@@ -19,7 +19,7 @@ import {
   Tag,
   TimePicker,
 } from 'antd';
-import { SearchOutlined, DeleteOutlined } from '@ant-design/icons';
+import { SearchOutlined, StopOutlined } from '@ant-design/icons';
 import { ColumnProps } from 'antd/es/table';
 import { RuleObject } from 'antd/lib/form';
 import Validator from 'lg-validator';
@@ -163,17 +163,17 @@ const Store: FC = () => {
       }
     } catch (err) {}
   };
-  // 删除门店
+  // 禁用门店
   const onDeleteStore = (id: string) => {
     Modal.info({
-      content: '您确定删除该门店么？',
+      content: '您确定禁用该门店么？',
       okText: '确定',
       closable: true,
       onOk: () => {
         Api.store.remove<HT.BaseResponse<any>>(id).then((res) => {
           if (res && res.status === 200) {
             console.log(res);
-            message.success('删除成功');
+            message.success('禁用成功');
             getDataSource(false);
           }
         });
@@ -234,7 +234,7 @@ const Store: FC = () => {
         `${record.businessHourStart} ~ ${record.businessHourEnd}`,
     },
     {
-      width: 170,
+      width: 140,
       title: '操作',
       key: 'action',
       render: (record: ColumnsType) => (
@@ -255,16 +255,16 @@ const Store: FC = () => {
               setAddModalVisible(true);
             }}
           >
-            详情/编辑
+            编辑
           </Button>
           <Button
             type="primary"
             size="small"
-            icon={<DeleteOutlined />}
+            icon={<StopOutlined />}
             danger
             onClick={() => onDeleteStore(record.id)}
           >
-            删除
+            禁用
           </Button>
         </Space>
       ),
