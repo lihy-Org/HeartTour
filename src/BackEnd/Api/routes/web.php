@@ -10,10 +10,11 @@ use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Admin\WechatUserController as AdminWechatUserController;
 use App\Http\Controllers\Beautician\AccountController as BeautAccountController;
 use App\Http\Controllers\Beautician\AppointmentController as BeautAppointmentController;
+use App\Http\Controllers\Beautician\UserController as BeautUserController;
 use App\Http\Controllers\StoreSystem\AccountController as StoreSysAccountController;
 use App\Http\Controllers\StoreSystem\AppointmentController as StoreSysAppointmentController;
-use App\Http\Controllers\StoreSystem\UserController as StoreSysUserController; 
 use App\Http\Controllers\StoreSystem\ComboController as StoreSysComboController;
+use App\Http\Controllers\StoreSystem\UserController as StoreSysUserController;
 use App\Http\Controllers\TestController;
 use App\Http\Controllers\WechatUser\AddressController;
 use App\Http\Controllers\WechatUser\AppointmentController;
@@ -168,6 +169,9 @@ Route::get('api/beaut/login', function (Request $request) {
 Route::post('api/beaut/GetVerifCode', [AdminAccountController::class, 'GetVerifCode']);
 Route::prefix('api/beaut')->middleware(['auth:sanctum', 'beautapi'])->group(function () {
 
+    //人员信息
+    Route::get('/user/info', [BeautUserController::class, 'GetInfo']);
+    Route::get('/user/kpi', [BeautUserController::class, 'GetKpi']);
     //预约管理
     Route::post('/appt/list', [BeautAppointmentController::class, 'GetList']);
     Route::post('/appt/changeState', [BeautAppointmentController::class, 'ChangeState']);

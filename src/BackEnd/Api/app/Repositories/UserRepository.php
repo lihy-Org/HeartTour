@@ -154,6 +154,33 @@ class UserRepository
         return $users;
     }
 
+    //获取个人信息
+    public function GetInfo($userId)
+    {
+        return User::where('state', 0)->with(array('Titles' => function ($query) {
+            $query->select('id', 'uid', 'titleId', 'title');
+        }))->whereNotIn('type', [0, 1])->where('id', $userId)->first();
+    }
+
+    //获取个人kpi
+    public function GetKpi($userId)
+    {
+        $user = DB::table('users')->where('users.id', $userId);
+        $kpis = $user->leftJoin('userkpis', function ($join) {
+            $join->on('users.id', '=', 'userkpis.userId')
+                ->on('users.storeId', '=', 'userkpis.storeId')
+                ->whereNull('userkpis.deleted_at');
+        });
+        $kpis = $kpis->leftJoin(DB::raw('(select userId,ifnull(sum(payMoney),0) money from orders where state=500 and type=1 and userId=\'' . $userId .
+            '\' and  DATE_FORMAT(finishTime, \'%Y%m\') = DATE_FORMAT(CURDATE() , \'%Y%m\')) done'),
+            function ($join) {
+                $join->on('users.id', '=', 'done.userId');
+            });
+        $kpis = $kpis->where('month', Carbon::now()->format('Y-m'))->select('kpi',DB::raw('ifnull(done.money,0) as finished'),DB::raw('kpi-ifnull(done.money,0) as needs')
+        ,DB::raw('convert((kpi-ifnull(done.money,0))/DATEDIFF(DATE_FORMAT(ADDDATE(CURDATE(),INTERVAL \'1\' MONTH),\'%Y-%m-01\'),CURDATE())-1,decimal(15,2)) AS dailykpi'));
+
+        return $kpis->first();
+    }
     public function Remove($userId)
     {
         $user = User::find($userId);
@@ -307,7 +334,8 @@ class UserRepository
             }
         });
         $kpis = $kpis->orderBy('users.id')->orderBy('month')->select(DB::raw('users.id as userId'), DB::raw('users.name as userName'), 'post', 'month', 'kpi');
-       
+
         return $kpis;
     }
+
 }
