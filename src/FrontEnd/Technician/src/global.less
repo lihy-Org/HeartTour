@@ -17,10 +17,10 @@ html, body, #app, .page {
 	background: #fff;
 }
 .page, .tab-page {
-	background-color: #F1F1F1;
 	font-family: PingFang SC;
 	overflow-y: scroll;
 	font-size: 14px;
+	overflow-x: hidden;
 }
 .tab-page {
 	height: calc(100% - 50PX);
@@ -470,7 +470,13 @@ strong { font-weight: bold; }
 .text-break    { word-break: break-all; }
 .text-ellipsis { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
 
-
+.line-clamp-1 {
+	text-overflow: ellipsis;
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 2;
+	overflow: hidden;
+}
 .line-clamp-2 {
 	text-overflow: ellipsis;
 	display: -webkit-box;
@@ -508,6 +514,7 @@ strong { font-weight: bold; }
 
 
 /** 图标尺寸 */
+.icon-10x10 { width: 10px; height: 10px; }
 .icon-90x90 { width: 90px; height: 90px; }
 
 /* 气泡框 */

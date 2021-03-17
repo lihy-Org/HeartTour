@@ -1,13 +1,13 @@
 <!--
  * @Author: Li-HONGYAO
  * @Date: 2021-03-07 22:59:19
- * @LastEditTime: 2021-03-16 23:39:11
+ * @LastEditTime: 2021-03-17 13:32:48
  * @LastEditors: Li-HONGYAO
  * @Description: 
- * @FilePath: /Technician/src/views/Index/Index.vue
+ * @FilePath: \Technician\src\views\Index\Index.vue
 -->
 <template>
-  <div class="page">
+  <div class="page bg-F9F9F9">
     <!-- 顶部 -->
     <div class="top-bar position-relative">
       <img
@@ -32,117 +32,184 @@
           <img
             class="performan"
             src="https://img.meituan.net/csc/1c46c7f9b58d8388679429b2db1233222814.png"
+            @click="$router.push('/performance')"
           />
         </section>
       </div>
     </div>
-    <!-- 内容 -->
+    <!-- 统计数据 -->
     <div class="statistics">
-      <div class="picker-res" @click="aDatePickerVisible = true">
-        {{ aSelDateStr || "请选择" }}
-        <img
-          class="icon-down"
-          src="https://img.meituan.net/csc/3f819a1472f3360208aab38098e4f3a0790.png"
-        />
+      <!-- 月目标 -->
+      <div class="wrapper">
+        <!-- 拾取器唤醒按钮 -->
+        <div class="picker-res" @click="pickerForTarVisible = true">
+          {{ dateStrForTar }}
+          <img
+            class="icon-down"
+            src="https://img.meituan.net/csc/3f819a1472f3360208aab38098e4f3a0790.png"
+          />
+        </div>
+        <!-- 模块 -->
+        <div class="sta-list tar">
+          <div class="item">
+            <div class="label">当月目标</div>
+            <div class="value">13232</div>
+          </div>
+          <div class="item">
+            <div class="label">已完成</div>
+            <div class="value">13232</div>
+          </div>
+          <div class="item">
+            <div class="label">差额</div>
+            <div class="value">32132</div>
+          </div>
+          <div class="item">
+            <div class="label">需每日完成</div>
+            <div class="value">321321</div>
+          </div>
+        </div>
       </div>
-      <p />
-      <div class="picker-res" @click="bDatePickerVisible = true">
-        {{ bSelDateStr || "请选择" }}
-        <img
-          class="icon-down"
-          src="https://img.meituan.net/csc/3f819a1472f3360208aab38098e4f3a0790.png"
-        />
+      <!-- 当日预约量 -->
+      <div>
+        <!-- 拾取器唤醒按钮 -->
+        <div class="picker-res" @click="pickerForAptVisible = true">
+          {{ dateStrForApt }}
+          <img
+            class="icon-down"
+            src="https://img.meituan.net/csc/3f819a1472f3360208aab38098e4f3a0790.png"
+          />
+        </div>
+        <!-- 模块 -->
+        <div class="sta-list">
+          <div class="item">
+            <div class="label">当日预约</div>
+            <div class="value">10</div>
+          </div>
+          <div class="item">
+            <div class="label">已服务</div>
+            <div class="value">3</div>
+          </div>
+          <div class="item">
+            <div class="label">待服务</div>
+            <div class="value" style="color: #ffbd5c">8</div>
+          </div>
+          <div class="item">
+            <div class="label">已取消/改约</div>
+            <div class="value" style="color: #ffbd5c">6</div>
+          </div>
+        </div>
       </div>
     </div>
+    <!-- 列表数据 -->
+    <view class="list">
+      <list-item :status="1"/>
+      <list-item :status="2" />
+      <list-item :status="3" />
+      <div class="no-more">没有更多啦~</div>
+    </view>
     <!-- 拾取器 -->
     <div
-      v-show="aDatePickerVisible || bDatePickerVisible"
+      v-show="pickerForTarVisible || pickerForAptVisible"
       class="picker-wrapper"
     >
-      <van-picker
-        v-show="aDatePickerVisible"
+      <van-datetime-picker
         class="date-picker"
-        :columns="aColumns"
-        @confirm="onDatePickerConfirm($event, 1)"
-        @cancel="aDatePickerVisible = false"
+        v-show="pickerForTarVisible"
+        v-model="curDateForTar"
+        type="year-month"
+        title="选择年月"
+        :min-date="minDate"
+        :max-date="maxDate"
+        :formatter="formatter"
+        @confirm="onPickerConfirm($event, 'tar')"
+        @cancel="pickerForTarVisible = false"
       />
-      <van-picker
-        v-show="bDatePickerVisible"
+      <van-datetime-picker
         class="date-picker"
-        :columns="bColumns"
-        @confirm="onDatePickerConfirm"
-        @cancel="bDatePickerVisible = false"
+        v-show="pickerForAptVisible"
+        v-model="curDateForApt"
+        type="date"
+        title="选择年月日"
+        :min-date="minDate"
+        :max-date="maxDate"
+        :formatter="formatter"
+        @confirm="onPickerConfirm($event, 'tar')"
+        @cancel="pickerForAptVisible = false"
       />
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, ref } from "vue";
-import Tools from "lg-tools";
-import Child from "./components/Child.vue";
+import { computed, defineComponent, reactive, ref } from "vue";
+import ListItem from "../../components/ListItem/ListItem.vue";
 export default defineComponent({
   name: "index",
   setup() {
-    // constants
-    const years: Array<string> = Tools.getYears();
-    const months: Array<string> = Tools.getMonths();
-    const days: Array<string> = Tools.getDays();
-    const aColumns = [
-      { values: years, defaultIndex: 0 },
-      { values: months, defaultIndex: 0 },
-    ];
-    const bColumns = [
-      { values: years, defaultIndex: 0 },
-      { values: months, defaultIndex: 0 },
-      { values: days, defaultIndex: 0 },
-    ];
     // state
-    const aSelDate = ref<string[]>([]);
-    const aDatePickerVisible = ref(false);
-    const bSelDate = ref<string[]>([]);
-    const bDatePickerVisible = ref(false);
+    const curDateForTar = ref(new Date());
+    const curDateForApt = ref(new Date());
+    const pickerForTarVisible = ref(false);
+    const pickerForAptVisible = ref(false);
 
     // hooks
     // methods
+    const formatter = (type: string, val: string) => {
+      if (type === "year") {
+        return `${val}年`;
+      }
+      if (type === "month") {
+        return `${val}月`;
+      }
+      if (type === "day") {
+        return `${val}日`;
+      }
+      return val;
+    };
+    const numformatter = (val: number) => (val < 10 ? `0${val}` : val);
     // events
-    const onDatePickerConfirm = (values: string[], flag: number) => {
-      if (flag === 1) {
-        aSelDate.value = values;
-        aDatePickerVisible.value = false;
+    const onPickerConfirm = ($event: Date, flag: string) => {
+      if (flag === "tar") {
+        curDateForTar.value = $event;
       } else {
-        bSelDate.value = values;
-        bDatePickerVisible.value = false;
+        curDateForApt.value = $event;
       }
     };
     // computed
-    const aSelDateStr = computed(() => {
-      const s = aSelDate.value.join("").replace(/[\u4e00-\u9fa5]/g, "/");
-      return s.slice(0, s.length - 1);
+    const dateStrForTar = computed(() => {
+      const year = curDateForTar.value.getFullYear();
+      const month = curDateForTar.value.getMonth() + 1;
+      return `${year}/${numformatter(month)}`;
     });
-    const bSelDateStr = computed(() => {
-      const s = bSelDate.value.join("").replace(/[\u4e00-\u9fa5]/g, "/");
-      return s.slice(0, s.length - 1);
+    const dateStrForApt = computed(() => {
+      const year = curDateForApt.value.getFullYear();
+      const month = curDateForApt.value.getMonth() + 1;
+      const day = curDateForApt.value.getDay();
+      return `${year}/${numformatter(month)}/${numformatter(day)}`;
     });
     // data
     return {
-      aColumns,
-      bColumns,
-      aDatePickerVisible,
-      bDatePickerVisible,
-      aSelDateStr,
-      bSelDateStr,
-      onDatePickerConfirm,
+      curDateForTar,
+      curDateForApt,
+      pickerForTarVisible,
+      pickerForAptVisible,
+      dateStrForTar,
+      dateStrForApt,
+      minDate: new Date(1970, 0, 1),
+      maxDate: new Date(new Date()),
+      formatter,
+      onPickerConfirm,
     };
   },
   components: {
-    Child,
+    ListItem,
   },
 });
 </script>
 
 
 <style lang="less" scoped>
+// 顶栏
 .top-bar {
   color: #fff;
   .wrapper {
@@ -208,6 +275,11 @@ export default defineComponent({
   position: relative;
   padding: 17px 22.5px;
   z-index: 1;
+  .wrapper {
+    padding-bottom: 14px;
+    margin-bottom: 14px;
+    border-bottom: 1px solid #ebebeb;
+  }
   .picker-res {
     display: inline-block;
     padding: 0 6px;
@@ -223,8 +295,53 @@ export default defineComponent({
     height: 5px;
     margin-left: 5px;
   }
+
+  // 列表数据
+  .sta-list {
+    margin-top: 16px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    text-align: center;
+    &.tar .value {
+      font-weight: normal;
+      font-size: 14px;
+    }
+    &.tar .value::before {
+      content: "";
+      display: inline-block;
+      width: 10px;
+      height: 11px;
+      background-image: url("https://img.meituan.net/csc/b36d024c3f198a0532d8c84300b923353219.png");
+      background-size: 100% 100%;
+      margin-right: 2px;
+    }
+  }
+  .title {
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 20px;
+    color: #333333;
+    margin-bottom: 5px;
+  }
+  .value {
+    font-size: 18px;
+    font-weight: bold;
+    line-height: 25px;
+    color: #1946bb;
+  }
 }
 
+// 没有更多提示
+.no-more {
+  line-height: 80px;
+  text-align: center;
+  font-size: 12px;
+  color: #868686;
+  letter-spacing: 2px;
+}
+
+// 拾取器
 .picker-wrapper {
   width: 100%;
   height: 100%;
@@ -234,10 +351,10 @@ export default defineComponent({
   left: 0;
   z-index: 2;
   .date-picker {
+    width: 100%;
     position: absolute;
     left: 0;
     bottom: 0;
-    width: 100%;
   }
 }
 </style>

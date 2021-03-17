@@ -5215,8 +5215,8 @@ lg-cookie@^1.0.1:
 
 lg-tools@^1.0.15:
   version "1.0.15"
-  resolved "https://registry.npmjs.org/lg-tools/-/lg-tools-1.0.15.tgz#04f25639ca67fe249ffd82b57ec720e35f5ee42a"
-  integrity sha512-muuwvfLu7O7cINBsjhDqtmxQz6maQeiaQQdEzQ1cxOTqIQ/hvkNZabapWFtS2mtlyUEWM8/Xhxl1bVa0NQCcMw==
+  resolved "https://registry.npm.taobao.org/lg-tools/download/lg-tools-1.0.15.tgz#04f25639ca67fe249ffd82b57ec720e35f5ee42a"
+  integrity sha1-BPJWOcpn/iSf/YK1fscg419e5Co=
 
 lg-validator@^1.0.2:
   version "1.0.2"

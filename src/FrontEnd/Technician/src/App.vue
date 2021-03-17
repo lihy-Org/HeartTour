@@ -1,10 +1,10 @@
 <!--
  * @Author: Li-HONGYAO
  * @Date: 2021-03-07 22:58:33
- * @LastEditTime: 2021-03-09 17:37:41
+ * @LastEditTime: 2021-03-17 14:42:32
  * @LastEditors: Li-HONGYAO
  * @Description: 
- * @FilePath: /Technician/src/App.vue
+ * @FilePath: \Technician\src\App.vue
 -->
 <template>
   <!-- 微信环境 -->
@@ -24,7 +24,6 @@ import TabBar from "@/components/@lgs/TabBar/TabBar.vue";
 import NotWeixin from "@/components/@lgs/NotWeixin/NotWeixin.vue";
 export default defineComponent({
   setup() {
-    console.log(process.env.VUE_APP_HOST);
     // state
     const env = ref(Validator.weixin());
 

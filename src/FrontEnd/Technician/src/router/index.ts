@@ -1,7 +1,7 @@
 /*
  * @Author: Li-HONGYAO
  * @Date: 2021-03-07 22:58:33
- * @LastEditTime: 2021-03-16 16:22:20
+ * @LastEditTime: 2021-03-17 17:32:59
  * @LastEditors: Li-HONGYAO
  * @Description: 
  * @FilePath: \Technician\src\router\index.ts
@@ -16,7 +16,7 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/login',
     name: 'Login',
-    component: () => import(/* webpackChunkName: "index" */ '../views/Login/Login.vue'),
+    component: () => import(/* webpackChunkName: "login" */ '../views/Login/Login.vue'),
     meta: {
       title: '心之旅美容师管理平台'
     }
@@ -29,7 +29,22 @@ const routes: Array<RouteRecordRaw> = [
       title: '心之旅美容师管理平台'
     }
   },
- 
+  {
+    path: '/performance',
+    name: 'Performance',
+    component: () => import(/* webpackChunkName: "performance" */ '../views/Performance/Performance.vue'),
+    meta: {
+      title: '我的业绩'
+    }
+  },
+  {
+    path: '/apt-details',
+    name: 'AptDetails',
+    component: () => import(/* webpackChunkName: "aptDetails" */ '../views/AptDetails/AptDetails.vue'),
+    meta: {
+      title: '预约详情'
+    }
+  },
 ]
 
 const router = createRouter({
