@@ -1,14 +1,14 @@
 <!--
  * @Author: Li-HONGYAO
  * @Date: 2021-03-17 10:33:45
- * @LastEditTime: 2021-03-17 18:08:11
+ * @LastEditTime: 2021-03-18 09:41:34
  * @LastEditors: Li-HONGYAO
  * @Description: 
  * @FilePath: \Technician\src\components\ListItem\ListItem.vue
 -->
 
 <template>
-  <div class="list-item" @click="onClick">
+  <div class="list-item" @click="$emit('tap')">
     <!-- 头像 -->
     <div class="avatar"></div>
     <!-- 右侧信息 -->
@@ -53,12 +53,14 @@
           class="action-button"
           src="https://img.meituan.net/csc/7ea57e96eda8e2203d0a1434ae1bb3ba2236.png"
           alt="开始服务"
+          @click.stop="$emit('startService')"
         />
         <img
           v-else
           class="action-button"
           src="https://img.meituan.net/csc/b016762c02322c725ccb9cbc9ccb35a11660.png"
           alt="完成"
+          @click.stop="$emit('complete')"
         />
       </div>
       <!-- 时间 -->
@@ -103,9 +105,7 @@ export default defineComponent({
   }, 
   setup() {
     // events
-    const onClick = () => {
-
-    }
+   
     
   },
   components: {

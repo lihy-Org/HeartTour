@@ -1,7 +1,7 @@
 <!--
  * @Author: Li-HONGYAO
  * @Date: 2021-03-07 22:59:19
- * @LastEditTime: 2021-03-17 13:32:48
+ * @LastEditTime: 2021-03-18 09:42:58
  * @LastEditors: Li-HONGYAO
  * @Description: 
  * @FilePath: \Technician\src\views\Index\Index.vue
@@ -102,7 +102,7 @@
     </div>
     <!-- 列表数据 -->
     <view class="list">
-      <list-item :status="1"/>
+      <list-item :status="1" @tap="onAptItemTap" @startService="onStartService" @complete="onComplete" />
       <list-item :status="2" />
       <list-item :status="3" />
       <div class="no-more">没有更多啦~</div>
@@ -141,6 +141,7 @@
 </template>
 
 <script lang="ts">
+import { useRouter } from "vue-router";
 import { computed, defineComponent, reactive, ref } from "vue";
 import ListItem from "../../components/ListItem/ListItem.vue";
 export default defineComponent({
@@ -153,6 +154,7 @@ export default defineComponent({
     const pickerForAptVisible = ref(false);
 
     // hooks
+    const router = useRouter();
     // methods
     const formatter = (type: string, val: string) => {
       if (type === "year") {
@@ -175,6 +177,16 @@ export default defineComponent({
         curDateForApt.value = $event;
       }
     };
+    const onAptItemTap = () => {
+      console.log('onAptItemTap');
+      router.push('/apt-details')
+    }
+    const onStartService = () => {
+      console.log('onStartService')
+    }
+    const onComplete = () => {
+      console.log('onComplete')
+    }
     // computed
     const dateStrForTar = computed(() => {
       const year = curDateForTar.value.getFullYear();
@@ -199,6 +211,9 @@ export default defineComponent({
       maxDate: new Date(new Date()),
       formatter,
       onPickerConfirm,
+      onAptItemTap,
+      onStartService,
+      onComplete,
     };
   },
   components: {
