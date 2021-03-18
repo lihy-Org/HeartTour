@@ -163,24 +163,59 @@ class UserRepository
     }
 
     //获取个人kpi
-    public function GetKpi($userId)
+    public function GetKpi($data)
     {
-        $user = DB::table('users')->where('users.id', $userId);
+        $user = DB::table('users')->where('users.id', $data->userId);
         $kpis = $user->leftJoin('userkpis', function ($join) {
             $join->on('users.id', '=', 'userkpis.userId')
                 ->on('users.storeId', '=', 'userkpis.storeId')
                 ->whereNull('userkpis.deleted_at');
         });
-        $kpis = $kpis->leftJoin(DB::raw('(select userId,ifnull(sum(payMoney),0) money from orders where state=500 and type=1 and userId=\'' . $userId .
+        $kpis = $kpis->leftJoin(DB::raw('(select userId,ifnull(sum(payMoney),0) money from orders where state=500 and type=1 and userId=\'' . $data->userId .
             '\' and  DATE_FORMAT(finishTime, \'%Y%m\') = DATE_FORMAT(CURDATE() , \'%Y%m\')) done'),
             function ($join) {
                 $join->on('users.id', '=', 'done.userId');
             });
-        $kpis = $kpis->where('month', Carbon::now()->format('Y-m'))->select('kpi',DB::raw('ifnull(done.money,0) as finished'),DB::raw('kpi-ifnull(done.money,0) as needs')
-        ,DB::raw('convert((kpi-ifnull(done.money,0))/DATEDIFF(DATE_FORMAT(ADDDATE(CURDATE(),INTERVAL \'1\' MONTH),\'%Y-%m-01\'),CURDATE())-1,decimal(15,2)) AS dailykpi'));
+        $kpis = $kpis->where('month', $data->month)->select('kpi', DB::raw('ifnull(done.money,0) as finished'), DB::raw('kpi-ifnull(done.money,0) as needs')
+            , DB::raw('convert((kpi-ifnull(done.money,0))/DATEDIFF(DATE_FORMAT(ADDDATE(CURDATE(),INTERVAL \'1\' MONTH),\'%Y-%m-01\'),CURDATE())-1,decimal(15,2)) AS dailykpi'));
 
         return $kpis->first();
     }
+
+    //获取个人kpi
+    public function GetApptData($data)
+    {
+        $user = DB::table('users')->where('users.id', $data->userId);
+
+        //当日预约
+        $user = $user->leftJoin(DB::raw('(select userId,count(1) num from orders where apptTime like \'' . $data->day
+            . '%\' and userId=\'' . $data->userId . '\' and type=1 and state between 200 and 500 group by userId) alla'),
+            function ($join) {
+                $join->on('users.id', '=', 'alla.userId');
+            });
+        //已服务
+        $user = $user->leftJoin(DB::raw('(select userId,count(1) num from orders where apptTime like \'' . $data->day
+            . '%\' and userId=\'' . $data->userId . '\' and type=1 and state=500  group by userId) done'),
+            function ($join) {
+                $join->on('users.id', '=', 'done.userId');
+            });
+        //待服务
+        $user = $user->leftJoin(DB::raw('(select userId,count(1) num from orders where apptTime like \'' . $data->day
+            . '%\' and userId=\'' . $data->userId . '\' and type=1 and state between 200 and 400  group by userId) will'),
+            function ($join) {
+                $join->on('users.id', '=', 'will.userId');
+            });
+        //已取消
+        $user = $user->leftJoin(DB::raw('(select userId,count(1) num from orders where apptTime like \'' . $data->day
+            . '%\' and userId=\'' . $data->userId . '\' and type=1 and state=502  group by userId) cancel'),
+            function ($join) {
+                $join->on('users.id', '=', 'cancel.userId');
+            });
+        $user = $user->select('users.id', DB::raw('alla.num as allNum'), DB::raw('done.num as doneNum'), DB::raw('will.num as willNum'), DB::raw('cancel.num as cancelNum'));
+
+        return $user->first();
+    }
+
     public function Remove($userId)
     {
         $user = User::find($userId);

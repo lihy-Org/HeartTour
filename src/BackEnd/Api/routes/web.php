@@ -172,6 +172,7 @@ Route::prefix('api/beaut')->middleware(['auth:sanctum', 'beautapi'])->group(func
     //人员信息
     Route::get('/user/info', [BeautUserController::class, 'GetInfo']);
     Route::get('/user/kpi', [BeautUserController::class, 'GetKpi']);
+    Route::get('/user/appt', [BeautUserController::class, 'GetApptData']);
     //预约管理
     Route::post('/appt/list', [BeautAppointmentController::class, 'GetList']);
     Route::post('/appt/changeState', [BeautAppointmentController::class, 'ChangeState']);
