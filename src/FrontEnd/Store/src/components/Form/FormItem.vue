@@ -106,6 +106,9 @@
       :start-placeholder="item.startPlaceholder"
       :end-placeholder="item.endPlaceholder"
       :picker-options="item.pickerOptions"
+      :disabled="
+        typeof item.disabled === 'function' ? item.disabled() : item.disabled
+      "
       @change="
         typeof item.change === 'function' ? item.change($event) : () => {}
       "
@@ -122,6 +125,9 @@
       :end-placeholder="item.endPlaceholder"
       :picker-options="item.pickerOptions"
       :default-time="item.defaultTime||['00:00:00', '23:59:59']"
+      :disabled="
+        typeof item.disabled === 'function' ? item.disabled() : item.disabled
+      "
       @change="
         typeof item.change === 'function' ? item.change($event) : () => {}
       "
