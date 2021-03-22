@@ -17,7 +17,7 @@ import { ColumnProps } from 'antd/es/table';
 import StoreSelect from '@/components/StoreSelect';
 import moment from 'moment';
 import Api from '@/Api';
-import HT from '@/constants/interface';
+
 
 // 过滤条件
 type FilterParamsType = {
@@ -78,7 +78,7 @@ const Appointment: FC = () => {
   const [aptTimeForm] = Form.useForm();
   const [dataSource, setDataSource] = useState<ColumnsType[]>([]);
   const [total, setTotal] = useState(0);
-  const [page, setPage] = useState<HT.TablePageDataType<FilterParamsType>>(
+  const [page, setPage] = useState<HT.TablePageData<FilterParamsType>>(
     () => ({
       pageSize: 20,
       page: 1,

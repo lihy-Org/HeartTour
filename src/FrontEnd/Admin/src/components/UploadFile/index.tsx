@@ -12,7 +12,7 @@ import { Upload, Modal, message } from 'antd';
 import { UploadOutlined, LoadingOutlined } from '@ant-design/icons';
 import OSS from 'ali-oss';
 import Api from '@/Api';
-import HT from '@/constants/interface';
+
 import Tools from 'lg-tools';
 
 interface IProps {

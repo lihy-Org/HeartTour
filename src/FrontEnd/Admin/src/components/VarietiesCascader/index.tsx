@@ -11,7 +11,7 @@ import { CascaderValueType } from 'antd/es/cascader';
 import { Cascader } from 'antd';
 import Api from '@/Api';
 import { kVARIETIES } from '@/constants';
-import HT from '@/constants/interface';
+
 
 type OptionsType = {
   value: string;

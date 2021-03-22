@@ -1,7 +1,7 @@
 /*
  * @Author: Li-HONGYAO
  * @Date: 2021-03-15 15:35:48
- * @LastEditTime: 2021-03-15 16:50:38
+ * @LastEditTime: 2021-03-22 10:26:03
  * @LastEditors: Li-HONGYAO
  * @Description:
  * @FilePath: \Admin\src\pages\Configs\ReturnReason.tsx
@@ -17,7 +17,7 @@ import React, {
 import { Modal, Button, List, Input, message } from 'antd';
 import Api from '@/Api';
 import { kRETURN_REASON } from '@/constants';
-import HT from '@/constants/interface';
+
 
 interface IProps {
   visible: boolean;
@@ -78,13 +78,11 @@ const ReturnReason: FC<IProps> = (props) => {
       okText: '确定',
       cancelText: '点错了',
       onOk: () => {
-        Api.config
-          .remove<HT.BaseResponse<any>>(id)
-          .then((res) => {
-            if (res && res.status === 200) {
-              getConfigs();
-            }
-          });
+        Api.config.remove<HT.BaseResponse<any>>(id).then((res) => {
+          if (res && res.status === 200) {
+            getConfigs();
+          }
+        });
       },
     });
   };
@@ -121,13 +119,18 @@ const ReturnReason: FC<IProps> = (props) => {
                   <Button type="link" danger onClick={() => onDelete(item.id)}>
                     删除
                   </Button>,
-                  <Button type="link" onClick={() => {
-                    setVisible(true);
-                    setValue({
-                      id: item.id,
-                      value: item.value
-                    })
-                  }}>编辑</Button>,
+                  <Button
+                    type="link"
+                    onClick={() => {
+                      setVisible(true);
+                      setValue({
+                        id: item.id,
+                        value: item.value,
+                      });
+                    }}
+                  >
+                    编辑
+                  </Button>,
                 ]}
               >
                 {index + 1}. {item.value}

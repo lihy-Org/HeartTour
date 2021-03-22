@@ -53,7 +53,7 @@ const Ambitus: FC = () => {
   const [form] = Form.useForm();
   const [dataSource, setDataSource] = useState<ColumnsType[]>([]);
   const [total, setTotal] = useState(0);
-  const [page, setPage] = useState<DP.TablePageDataType<FilterParamsType>>(
+  const [page, setPage] = useState<DP.TablePageData<FilterParamsType>>(
     () => ({
       pageSize: 20,
       page: 1,

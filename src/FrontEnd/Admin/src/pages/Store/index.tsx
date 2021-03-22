@@ -24,7 +24,7 @@ import { ColumnProps } from 'antd/es/table';
 import { RuleObject } from 'antd/lib/form';
 import Validator from 'lg-validator';
 import moment from 'moment';
-import HT from '@/constants/interface';
+
 import Api from '@/Api';
 
 // 筛选条件
@@ -88,7 +88,7 @@ const Store: FC = () => {
   const [saModalVisible, setSAModalVisible] = useState(false);
   const [dataSource, setDataSource] = useState<ColumnsType[]>([]);
   const [total, setTotal] = useState(0);
-  const [page, setPage] = useState<HT.TablePageDataType<FilterParamsType>>(
+  const [page, setPage] = useState<HT.TablePageData<FilterParamsType>>(
     () => ({
       pageSize: 20,
       page: 1,

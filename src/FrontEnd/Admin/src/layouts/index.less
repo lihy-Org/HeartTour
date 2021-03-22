@@ -83,11 +83,10 @@
     .ant-form-item {
       margin-top: 8px;
       margin-right: 16px;
-      margin-bottom: 0 ;
+      margin-bottom: 0;
     }
   }
 }
-
 
 // 描述符标题样式
 .descriptions-wrapper {
@@ -101,7 +100,6 @@
   color: #888888;
 }
 
-
 // 非表格页内容样式
 .contents {
   overflow-y: scroll;
@@ -110,4 +108,20 @@
   width: 100%;
   height: calc(100vh - 140px);
   background-color: #ffffff;
+}
+
+// 标题样式
+.group-title {
+  font-weight: bold;
+  display: flex;
+  align-items: baseline;
+  margin-bottom: 16px;
+  &:before {
+    content: '';
+    display: inline-block;
+    width: 6px;
+    height: 12px;
+    background: #1890ff;
+    margin-right: 12px;
+  }
 }
