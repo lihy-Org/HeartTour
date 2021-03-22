@@ -1,33 +1,20 @@
 <!-- pages/my-pet/my-pet.wxml -->
 <view class="bg-F7F8FA" style="padding-bottom:200rpx" hover-class="none" hover-stop-propagation="false">
-    <view class="py-12 px-24 rounded-16" hover-class="none" hover-stop-propagation="false">
-        <business-card options="{{options}}"></business-card>
-    </view>
-    <view class="py-12 px-24 rounded-16" hover-class="none" hover-stop-propagation="false">
-        <business-card options="{{options}}"></business-card>
-    </view>
-        <view class="py-12 px-24 rounded-16" hover-class="none" hover-stop-propagation="false">
-        <business-card options="{{options}}"></business-card>
-    </view>
-        <view class="py-12 px-24 rounded-16" hover-class="none" hover-stop-propagation="false">
-        <business-card options="{{options}}"></business-card>
-    </view>
-        <view class="py-12 px-24 rounded-16" hover-class="none" hover-stop-propagation="false">
-        <business-card options="{{options}}"></business-card>
-    </view>
-        <view class="py-12 px-24 rounded-16" hover-class="none" hover-stop-propagation="false">
-        <business-card options="{{options}}"></business-card>
-    </view>
-        <view class="py-12 px-24 rounded-16" hover-class="none" hover-stop-propagation="false">
-        <business-card options="{{options}}"></business-card>
-    </view>
-        <view class="py-12 px-24 rounded-16" hover-class="none" hover-stop-propagation="false">
-        <business-card options="{{options}}"></business-card>
-    </view>
-        <view class="py-12 px-24 rounded-16" hover-class="none" hover-stop-propagation="false">
-        <business-card options="{{options}}"></business-card>
-    </view>
+    <block wx:for="{{options}}" wx:key='index'>
+        <van-swipe-cell id="swipe-cell" right-width="{{ 65 }}"  async-close data-id="{{item.id}}"   bind:close="onClose">
+            <view class="my-12  rounded-16" hover-class="none" hover-stop-propagation="false">
+                <business-card  options="{{item}}" data-id="{{item.id}}" bind:tap="onDesUp"></business-card>
+            </view>
+            <view slot="right">删除</view>
+        </van-swipe-cell>
+    </block>
     <view class="position-fixed" style="bottom:60rpx;left:25rpx; z-index:1000" hover-class="none" hover-stop-propagation="false">
-        <van-button icon="add-o" color="#F63D24" class="add-pet" type="primary">添加宠物</van-button>
+        <van-button icon="add-o" bind:tap='upOrAddPet' color="#F63D24" class="add-pet" type="primary">
+            添加宠物
+        </van-button>
     </view>
+    <van-dialog id="van-dialog" class="delete-dialog" />
 </view>
+<!-- <lg-loading wx:else /> -->
+
+

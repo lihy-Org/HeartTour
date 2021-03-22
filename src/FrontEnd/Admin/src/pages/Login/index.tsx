@@ -9,7 +9,7 @@ import Tools from 'lg-tools';
 import { RuleObject } from 'rc-field-form/lib/interface';
 import Validator from 'lg-validator';
 import Api from '@/Api';
-import HT from '@/constants/interface';
+
 
 interface IProps {
   updateUserModel: (values: UserModelState) => void;

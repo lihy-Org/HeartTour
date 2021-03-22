@@ -22,7 +22,7 @@ import {
 } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 import Api from '@/Api';
-import HT from '@/constants/interface';
+
 // 筛选条件
 type FilterParamsType = {
   type?: number;
@@ -52,7 +52,7 @@ const Roles: FC = () => {
   const [form] = Form.useForm();
   const [dataSource, setDataSource] = useState<ColumnsType[]>([]);
   const [total, setTotal] = useState(0);
-  const [page, setPage] = useState<HT.TablePageDataType<FilterParamsType>>(
+  const [page, setPage] = useState<HT.TablePageData<FilterParamsType>>(
     () => ({
       pageSize: 20,
       page: 1,

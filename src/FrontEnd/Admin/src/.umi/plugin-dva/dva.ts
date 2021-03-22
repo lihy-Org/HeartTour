@@ -3,9 +3,9 @@ import { Component } from 'react';
 import { ApplyPluginsType } from 'umi';
 import dva from 'dva';
 // @ts-ignore
-import createLoading from 'E:/心之旅/HeartTour/src/FrontEnd/Admin/node_modules/dva-loading/dist/index.esm.js';
+import createLoading from '/Users/lihongyao/Desktop/外包项目/心之旅/HeartTour/src/FrontEnd/Admin/node_modules/dva-loading/dist/index.esm.js';
 import { plugin, history } from '../core/umiExports';
-import ModelUser0 from 'E:/心之旅/HeartTour/src/FrontEnd/Admin/src/models/user.ts';
+import ModelUser0 from '/Users/lihongyao/Desktop/外包项目/心之旅/HeartTour/src/FrontEnd/Admin/src/models/user.ts';
 
 let app:any = null;
 

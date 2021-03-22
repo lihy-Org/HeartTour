@@ -27,7 +27,7 @@ import { ColumnProps } from 'antd/es/table';
 import UploadFile from '@/components/UploadFile';
 import VarietiesCascader from '@/components/VarietiesCascader';
 import { RuleObject } from 'antd/lib/form';
-import HT from '@/constants/interface';
+
 import Api from '@/Api';
 import Utils from '@/utils/utils';
 
@@ -84,7 +84,7 @@ const Living: FC = () => {
   const [livingForm] = Form.useForm();
   const [dataSource, setDataSource] = useState<ColumnsType[]>([]);
   const [total, setTotal] = useState(0);
-  const [page, setPage] = useState<HT.TablePageDataType<FilterParamsType>>(
+  const [page, setPage] = useState<HT.TablePageData<FilterParamsType>>(
     () => ({
       pageSize: 20,
       page: 1,

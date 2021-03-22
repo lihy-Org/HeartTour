@@ -1,5 +1,6 @@
 {
   "navigationBarTitleText": "预约",
+  "navigationStyle": "custom",
   "usingComponents": {
       "business-card":"../../components/business-card/business-card",
       "van-action-sheet":"../../miniprogram_npm/@vant/weapp/action-sheet/",
@@ -7,6 +8,9 @@
       "van-collapse-item": "../../miniprogram_npm/@vant/weapp/collapse-item/index",
       "van-tree-select": "../../miniprogram_npm/@vant/weapp/tree-select/index",
       "van-radio": "../../miniprogram_npm/@vant/weapp/radio/index",
-      "van-radio-group": "../../miniprogram_npm/@vant/weapp/radio-group/index"
+      "van-radio-group": "../../miniprogram_npm/@vant/weapp/radio-group/index",
+      "van-icon": "@vant/weapp/icon/index",
+      "van-checkbox": "@vant/weapp/checkbox/index",
+      "van-checkbox-group": "@vant/weapp/checkbox-group/index"
   }
 }

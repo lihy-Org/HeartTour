@@ -21,8 +21,8 @@ Page({
       });
       o.name = name[bukn]
       o.pinyin = ken.split(',').join('')
-      o.src = arr[bukn].src,
-      o.petId =arr[bukn].petId
+      o.avatar = arr[bukn].avatar,
+      o.varietyId =arr[bukn].varietyId
       pinyinArray.push(o)
     }
     // pinyinArray = pinyinArray.sort(compare("pinyin"))
@@ -40,8 +40,8 @@ Page({
       map[item.pinyin[0].toUpperCase()].datas.push({
         name: item.name,
         pinyin: item.pinyin,
-        src:item.src,
-        petId:item.petId
+        avatar:item.avatar,
+        varietyId:item.varietyId
       })
     }
     )
@@ -63,8 +63,9 @@ Page({
     let pages =  getCurrentPages();
     let prevPage = pages[pages.length - 2];
     prevPage.setData({
-      [`values.breed`] : petName,
-      petId:e.currentTarget.dataset.text.petId
+      breed: petName,
+      [`values.varietyId`]:e.currentTarget.dataset.text.varietyId,
+      [`values.avatar`]:e.currentTarget.dataset.text.avatar
     }) 
     wx.navigateBack({
       delta: 1
@@ -74,14 +75,15 @@ Page({
     let that = this;
     config().then(res => {
       if (res.status === 200) {
+        console.log(res.data);
         let arr1 = [];
         res.data.forEach(item=>{
           item.children.forEach(item=>{
             item.children.forEach(item=>{
               let obj = {
                 name:item.value,
-                src:'https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=3160107510,784197751&fm=26&gp=0.jpg',
-                petId:item.id
+                avatar:'https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=3160107510,784197751&fm=26&gp=0.jpg',
+                varietyId:item.id
               }
               arr1.push(obj);
               that.setData({

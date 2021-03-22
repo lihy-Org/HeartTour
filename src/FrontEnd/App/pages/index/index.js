@@ -36,51 +36,22 @@ Page({
       businessCard: 'businessCard',
       technicianHead: 'technicianHead'
     },
-    praiseList: [{
-        url: '../../assets/images/praise_sel.png'
-      },
-      {
-        url: '../../assets/images/praise_sel.png'
-      },
-      {
-        url: '../../assets/images/praise_sel.png'
-      },
-      {
-        url: '../../assets/images/praise.png'
-      },
-      {
-        url: '../../assets/images/praise.png'
-      },
-      {
-        url: '../../assets/images/praise.png'
-      },
-      {
-        url: '../../assets/images/praise.png'
-      },
-      {
-        url: '../../assets/images/praise.png'
-      },
-      {
-        url: '../../assets/images/praise.png'
-      },
-      {
-        url: '../../assets/images/praise.png'
-      }
-    ],
     banners: [{
       image: '../../assets/images/guanggao.png'
     }],
     mealAnimation: {
       mealAnimationX: {
         show: 0,
-        hidden: '300rpx'
+        hidden: 424
       },
       mealAnimationY: {
         show: 0,
-        hidden: -620
+        hidden: -420
       },
     },
     setMeal: false,
+    primaryRadio:'',
+    secondaryResult: [],
     mockPet: [
       // {
       //   name: '洗护套餐A',
@@ -127,7 +98,7 @@ Page({
     animation: '',
     showTime: '',
     activeMeal: '',
-    initial: true,
+    initial: false,
     suggestAdd: [],
     addPetShow: false,
     mainActiveIndex: 0,
@@ -140,7 +111,12 @@ Page({
     petName:'',
     totalPrice:'0.00',
     zPrice:'',
-    fPricr:[]
+    fPricr:[],
+    // 主套餐，上一次点击的套餐id
+    prevRadio: '',
+    // 已选中主次套餐信息
+    primaryMealMsg:{},
+    secondaryMealMsg:[]
   },
   goMap: function () {
       wx.navigateTo({
@@ -152,7 +128,88 @@ Page({
       url: '../add-pet/add-pet'
     })
   },
+  onChangeCheck(event) {
+    this.setData({
+      primaryRadio: event.detail,
+      prevRadio: this.data.primaryRadio
+    });
+  },
+  onChangeCheckBox(event){
+    console.log(event);
+    this.setData({
+      secondaryResult: event.detail,
+    });
+  },
+  onClickPrimary(event) {
+    const { id } = event.currentTarget.dataset.text;
+    if (this.data.primaryRadio === this.data.prevRadio) {
+      console.log('取消')
+      this.setData({
+        primaryRadio: '',
+        primaryMealMsg: {}
+      });
+    } else {
+      console.log('单选')
+      this.setData({
+        primaryRadio: id,
+        primaryMealMsg:event.currentTarget.dataset.text
+      });
+    }
 
+    console.log('已经选中的主套餐', this.data.primaryMealMsg)
+    this.animationTimeAndPerson();
+    this.sumPrice(this.data.primaryMealMsg, this.data.secondaryMealMsg)
+  },
+  onClickSecondary(event){
+    console.log(this.data.secondaryResult)
+    console.log('接口返回所有单项: ', this.data.addItem)
+    const secondaryArr = []
+    this.data.secondaryResult.forEach((item, index) => {
+      this.data.addItem.forEach((ele, num) => {
+        if(item === ele.id) {
+          secondaryArr.push(ele)
+        }
+      });
+    })
+    this.setData({
+      secondaryMealMsg: secondaryArr
+    })
+    console.log('已选中的单项: ', this.data.secondaryMealMsg)
+    this.animationTimeAndPerson();
+    this.sumPrice(this.data.primaryMealMsg, this.data.secondaryMealMsg)
+  },
+  animationTimeAndPerson(){
+    this.setData({
+      setMeal: !this.data.setMeal,
+      initial: false
+    })
+    let option, optionY;
+    option = this.b()
+    optionY = this.c()
+    console.log(optionY,option);
+    let animation = wx.createAnimation({
+      transformOrigin: "50% 50%",
+      duration: 1000,
+      timingFunction: "ease",
+      delay: 0
+    })
+    this.animation = animation
+    animation.translateX(`${option}rpx`).step()
+    this.setData({
+      animation: animation.export(),
+    })
+    let animationY = wx.createAnimation({
+      transformOrigin: "50% 50%",
+      duration: 1000,
+      timingFunction: "ease",
+      delay: 0
+    });
+    this.animationY = animationY
+    animationY.translateY(`${optionY}rpx`).step()
+    this.setData({
+      animationY: animationY.export(),
+    })
+  },
   initPet: function (e) {
     if (e) {
       this.data.items.forEach(item => {
@@ -214,40 +271,26 @@ Page({
     })
     this.getComboList()
   },
-  a: function (e) {
-    if (e.currentTarget.dataset.item.id === this.data.activeMeal) {
-      this.setData({
-        activeMeal: ''
-      })
-    } else {
-      this.setData({
-        activeMeal: e.currentTarget.dataset.item.id
-      })
-    }
-  },
-  b: function (e) {
-    if (e.currentTarget.dataset.item.id === this.data.activeMeal) {
+  b: function () {
+    if (this.data.primaryMealMsg.price||this.data.secondaryMealMsg.length > 0) {
       return this.data.mealAnimation.mealAnimationX.show
     } else {
       return this.data.mealAnimation.mealAnimationX.hidden
     }
   },
-  c: function (e) {
-    if (e.currentTarget.dataset.item.id === this.data.activeMeal) {
+  c: function () {
+    if (this.data.primaryMealMsg.price||this.data.secondaryMealMsg.length > 0) {
       return this.data.mealAnimation.mealAnimationY.show
     } else {
       return this.data.mealAnimation.mealAnimationY.hidden
     }
   },
   selectMeal: function (e) {
-    
-    console.log(this.data.activeMeal!==e.currentTarget.dataset.item.id);
     // 主套餐价格
     if(e.currentTarget.dataset.item.id!==this.data.activeMeal){
       this.setData({
         zPrice:e.currentTarget.dataset.item.price
       })
-      
     this.sub(e.currentTarget.dataset.item.price,this.data.fPrice)
     }else{
       this.setData({
@@ -255,6 +298,7 @@ Page({
       })
     }
     this.a(e)
+
     this.setData({
       setMeal: !this.data.setMeal,
       initial: false
@@ -285,6 +329,30 @@ Page({
       animationY: animationY.export(),
     })
   },
+  
+  /**
+   * sumPrice 预约总价
+   * @param primaryMealMsg 主套餐信息
+   * @param secondaryMealMsg 辅套餐信息
+   */
+  sumPrice: function(primaryMealMsg, secondaryMealMsg) {
+    console.log('预约总价计算-主', primaryMealMsg)
+    console.log('预约总价计算-单项', secondaryMealMsg)
+    let sumValueZ = 0, sumValueF = 0
+    if (primaryMealMsg.price) {
+      sumValueZ = Number(primaryMealMsg.price)
+    }
+    if (secondaryMealMsg.length > 0) {
+      for (var i=secondaryMealMsg.length-1; i>=0; i--) {
+        sumValueF += Number(secondaryMealMsg[i].price);
+      }
+    }
+    const sumValue=sumValueF + sumValueZ
+    console.log(sumValue);
+    this.setData({
+      totalPrice:sumValue
+    })
+  },
   sub:function(priceZ,pirceF){
     let sumValueF = 0
     if(pirceF){
@@ -301,8 +369,37 @@ Page({
     })
   },
   suggestItem: function (e) {
-    console.log(e.currentTarget.dataset.item)
-    console.log(this.data.addItem);
+    console.log(e);
+    this.a(e)
+    this.setData({
+      setMeal: !this.data.setMeal,
+      initial: false
+    })
+    let option, optionY;
+    option = this.b(e)
+    optionY = this.c(e)
+    let animation = wx.createAnimation({
+      transformOrigin: "50% 50%",
+      duration: 1000,
+      timingFunction: "ease",
+      delay: 0
+    })
+    this.animation = animation
+    animation.translateX(`${option}rpx`).step()
+    this.setData({
+      animation: animation.export(),
+    })
+    let animationY = wx.createAnimation({
+      transformOrigin: "50% 50%",
+      duration: 1000,
+      timingFunction: "ease",
+      delay: 0
+    });
+    this.animationY = animationY
+    animationY.translateY(`${optionY}rpx`).step()
+    this.setData({
+      animationY: animationY.export(),
+    })
     wx.nextTick(()=>{
       let priceArr=[];
       this.data.addItem.forEach((item, index)=>{
@@ -310,14 +407,11 @@ Page({
           priceArr.push(item.price)
         }
       })
-    console.log(priceArr);
     this.setData({
       fPrice:priceArr
     })
-
     this.sub(this.data.zPrice,priceArr)
     });
-
     let that = this,
       index = e.currentTarget.dataset.index,
       id = e.currentTarget.dataset.id,
@@ -335,12 +429,10 @@ Page({
       }
     }
     items[index].checked = !val;
-    
     that.setData({
       addItem: items,
       suggestAdd: suggestAdd,
     })
-    
   },
   goMoreTime(){
     wx.navigateTo({
@@ -442,16 +534,16 @@ Page({
   onShow: function () {
     let that = this;
     this.getComboList()
-    // if(!that.data.shopName){return}
-    // console.log(that.data.shopName.id);
-    // const storeId  = that.data.shopName.id;
-    // getWorktime(storeId ).then(res=>{
-    //   if(res&&res.status === 200){
-    //     console.log(res);
-    //   }
-    // }).catch(err=>{
-    //   console.log(err);
-    // })
+    if(!that.data.shopName){return}
+    console.log(that.data.shopName.id);
+    const storeId  = that.data.shopName.id;
+    getWorktime( storeId ).then(res=>{
+      if(res.status === 200){
+        console.log(res);
+      }
+    }).catch(err=>{
+      console.log(err);
+    })
   },
 
   /**

@@ -15,7 +15,7 @@ import {
   DeleteOutlined,
 } from '@ant-design/icons';
 import Api from '@/Api';
-import HT from '@/constants/interface';
+
 interface IProps {
   visible: boolean;
   type: string;

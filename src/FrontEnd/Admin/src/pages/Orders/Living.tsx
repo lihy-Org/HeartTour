@@ -53,7 +53,7 @@ const Living: FC = () => {
   const [form] = Form.useForm();
   const [dataSource, setDataSource] = useState<ColumnsType[]>([]);
   const [total, setTotal] = useState(0);
-  const [page, setPage] = useState<HT.TablePageDataType<FilterParamsType>>(
+  const [page, setPage] = useState<HT.TablePageData<FilterParamsType>>(
     () => ({
       pageSize: 20,
       page: 1,

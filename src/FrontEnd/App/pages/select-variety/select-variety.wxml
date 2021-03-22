@@ -6,7 +6,7 @@
             <block wx:for="{{item.datas}}" wx:for-item="itemName" wx:key="index">
                 <view slot="title" class="">                  
                     <van-cell is-link border="{{ true }}" data-text="{{itemName}}" catchtap="petName">
-                        <image class="mr-20" src="{{itemName.src}}" style="width:56rpx;height:56rpx;object-fit: cover;"></image>
+                        <image class="mr-20" src="{{itemName.avatar}}" style="width:56rpx;height:56rpx;object-fit: cover;"></image>
                         <span>{{itemName.name}}</span>
                     </van-cell>         
                 </view>

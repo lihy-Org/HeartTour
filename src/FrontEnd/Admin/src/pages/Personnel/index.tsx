@@ -36,7 +36,7 @@ import Validator from 'lg-validator';
 import { RuleObject } from 'antd/lib/form';
 import UploadFile from '@/components/UploadFile';
 import Api from '@/Api';
-import HT from '@/constants/interface';
+
 import { kPOST, kTITLE } from '@/constants';
 
 // 筛选条件
@@ -108,7 +108,7 @@ const Personnel: FC = () => {
   const [personnelForm] = Form.useForm();
   const [dataSource, setDataSource] = useState<ColumnsType[]>([]);
   const [total, setTotal] = useState(0);
-  const [page, setPage] = useState<HT.TablePageDataType<FilterParamsType>>(
+  const [page, setPage] = useState<HT.TablePageData<FilterParamsType>>(
     () => ({
       pageSize: 20,
       page: 1,

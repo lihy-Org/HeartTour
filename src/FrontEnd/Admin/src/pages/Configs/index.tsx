@@ -1,7 +1,7 @@
 /*
  * @Author: Li-HONGYAO
  * @Date: 2021-01-22 12:36:49
- * @LastEditTime: 2021-03-16 15:45:13
+ * @LastEditTime: 2021-03-22 12:21:35
  * @LastEditors: Li-HONGYAO
  * @Description:
  * @FilePath: \Admin\src\pages\Configs\index.tsx
@@ -13,6 +13,7 @@ import TagModal from '@/components/TagModal';
 import { kGOODS_CLASSIFY, kPOST, kTITLE, kVARIETIES } from '@/constants';
 import ConfigTree from '../../components/ConfigTree';
 import ReturnReason from './ReturnReason';
+import Rate from './Rate';
 
 const { Meta } = Card;
 
@@ -23,6 +24,7 @@ const Banner: FC = () => {
   const [varietiesVisible, setVarietiesVisible] = useState(false);
   const [goodsClassifyVisible, setGoodsClassifyVisible] = useState(false);
   const [returnReasonVisible, setReturnReasonVisible] = useState(false);
+  const [rateVisible, setRateVisible] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
 
   // list datas
@@ -31,7 +33,6 @@ const Banner: FC = () => {
       cover:
         'https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=3062556219,1093566700&fm=26&gp=0.jpg',
       title: '职位管理',
-      description: '职位相关管理',
       actions: [
         <Button
           type="primary"
@@ -47,7 +48,6 @@ const Banner: FC = () => {
       cover:
         'https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=3062556219,1093566700&fm=26&gp=0.jpg',
       title: '头衔管理',
-      description: '头衔相关管理',
       actions: [
         <Button
           type="primary"
@@ -63,7 +63,6 @@ const Banner: FC = () => {
       cover:
         'https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=3062556219,1093566700&fm=26&gp=0.jpg',
       title: '宠物品种',
-      description: '宠物种类相关分类管理',
       actions: [
         <Button
           type="primary"
@@ -79,13 +78,27 @@ const Banner: FC = () => {
       cover:
         'https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=3062556219,1093566700&fm=26&gp=0.jpg',
       title: '退单理由管理',
-      description: '退单默认理由管理',
       actions: [
         <Button
           type="primary"
           size="small"
           icon={<EditOutlined key="edit" />}
           onClick={() => setReturnReasonVisible(true)}
+        >
+          查看编辑
+        </Button>,
+      ],
+    },
+    {
+      cover:
+        'https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=3062556219,1093566700&fm=26&gp=0.jpg',
+      title: '退单费率配置',
+      actions: [
+        <Button
+          type="primary"
+          size="small"
+          icon={<EditOutlined key="edit" />}
+          onClick={() => setRateVisible(true)}
         >
           查看编辑
         </Button>,
@@ -130,7 +143,7 @@ const Banner: FC = () => {
                 cover={<img alt="example" src={item.cover} />}
                 actions={item.actions}
               >
-                <Meta title={item.title} description={item.description} />
+                <Meta title={item.title} />
               </Card>
             </Col>
           ))}
@@ -174,6 +187,8 @@ const Banner: FC = () => {
         visible={returnReasonVisible}
         onCancel={() => setReturnReasonVisible(false)}
       />
+      {/* 退单费率配置 */}
+      <Rate visible={rateVisible} onCancel={() => setRateVisible(false)} />
     </div>
   );
 };
