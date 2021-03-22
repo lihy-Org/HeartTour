@@ -111,7 +111,7 @@
             </view>
         </scroll-view>
         <view class="px-24 f32 f-bold mt-32">
-            <p class="color-384359">单项服务</p>
+            <p class="color-384359">单项服务1</p>
         </view>
         <scroll-view scroll-x>
             <view style="width: 100%;white-space:nowrap;" class="py-20 px-24">
