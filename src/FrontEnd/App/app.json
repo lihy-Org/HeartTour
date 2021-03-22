@@ -1,16 +1,18 @@
 {
   "pages": [
-    "pages/login/login",
     "pages/index/index",
+    "pages/login/login",
+    
+    "pages/pet/pet",
+    "pages/my-pet/my-pet",
+    "pages/add-pet/add-pet",
     
     "pages/more-time/more-time",
-    "pages/add-pet/add-pet",
     "pages/select-variety/select-variety",
-    "pages/pet/pet",
+    
     "pages/confirm-order/confirm-order",
     "pages/map/map",
     "pages/address-management/address-management",
-    "pages/my-pet/my-pet",
     "pages/my-order/my-order",
     "pages/mine/mine",
     "pages/goods/goods",

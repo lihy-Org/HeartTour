@@ -2,3 +2,12 @@
 .van-cell__value{
     text-align: left !important;
 }
+.van-radio{
+    display: inline-block !important;
+    position: relative;
+}
+.van-radio__icon-wrap{
+    position: absolute;
+    right: 0;
+    bottom: 0;
+}

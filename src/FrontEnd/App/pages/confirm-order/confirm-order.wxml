@@ -50,18 +50,18 @@
             </p>
         </view>
     </view>
-    <view class="px-12 py-24 bg-FFFFFF rounded-16 flex-between-top">
+    <!-- <view class="px-12 py-24 bg-FFFFFF rounded-16 flex-between-top">
         <image class="" src="../../assets/images/dengpao.png" style="width:34rpx;height:44rpx;"></image>
         <span class="color-F63D24 f24 d-line-block" style="width:620rpx">
             取消订单需要提前24小时，24小时内需要扣除10%的手续
 费请您确认爱宠是否有怀孕、发情、受伤、咬人等不适合服
 务的情况，下单前先与店内沟通哦~
         </span>
-    </view>
+    </view> -->
 </view>
 <view class="position-fixed bg-FFFFFF w-100 flex-center" style="bottom:0; height:166rpx; left:0;">
     <van-button type="primary" bind:tap='goOrderList' custom-style="width:700rpx; background:#4BC065;height:100rpx;border-radius:27rpx;" block>
         <span class="f32 mx-10">支付</span>
-        <span class="f24">限时送粮饷540</span>
+        <!-- <span class="f24">限时送粮饷540</span> -->
     </van-button>
 </view>

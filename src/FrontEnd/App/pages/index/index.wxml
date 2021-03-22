@@ -1,17 +1,32 @@
 <view class="container" hover-class="none" hover-stop-propagation="false">
     <view class="bg-FFFFFF" hover-class="none" style="position:relative;z-index:99;" hover-stop-propagation="false">
-        <!-- logo -->
-        <view class="logo text-center mt-72 mb-32">
-            <image src="../../assets/images/bLogo.png"></image>
-        </view>
-        <!-- 积攒 -->
-        <view class="praiseList flex-wrap flex-center">
-            <block wx:for="{{praiseList}}" wx:key="index">
-                <image class="mr-4" src="{{item.url}}"></image>
-            </block>
+        <view class="top-bar position-relative">
+            <image class="top-bg" src="../../assets/images/bgt.jpg" />
+            <view class="infos absolute-top flex-v-center">
+                <image class="logo" src="../../assets/images/logo.png" />
+            </view>
+            <view class="position-relative shop-pet flex-between">
+                <view class="mr-10 flex-center" bind:tap='goMap'>
+                    <text class="f-bold f36 mr-4 color-FFFFFF" wx:if="{{!shopName.name}}">定位</text>
+                    <text class="f-bold f36 mr-4 color-FFFFFF line-clamp-1">{{shopName.name}}</text>
+                    <van-icon name="arrow-down" color="#fff" />
+                </view>
+                <view class="add-pet" bind:tap="addPet">
+                    <image style="width:70rpx;height:70rpx;" wx:if="{{!petName}}" src="../../assets/images/addpets.png" lazy-load="false" binderror="" bindload=""></image>
+                    <text class="f-bold f36 color-FFFFFF line-clamp-1">{{petName}}</text>
+                </view>
+            </view>
+            <view class="flex-wrap flex-center mb-24 bb-top" style="z-index:100000">
+                <image class="line" src="../../assets/images/heng.png"></image>
+                <view class="flex-v-center mx-22">
+                    <h6 class="f32 f-bold color-384359">超值套餐</h6>
+                    <image class="" style="width:145rpx;height:40rpx" src="../../assets/images/valuemeals.png"></image>
+                </view>
+                <image class="line" src="../../assets/images/heng.png"></image>
+            </view>
         </view>
         <!-- 定位和添加宠物 -->
-        <view class="flex-wrap flex-center add-pet-wrap my-32">
+        <!-- <view class="flex-wrap flex-center add-pet-wrap my-32">
             <view class="location flex-wrap flex-center" bind:tap='goMap'>
                 <image class="" src="../../assets/images/location.png"></image>
                 <view class="add-pet ml-10">
@@ -29,20 +44,44 @@
                     <image style="width:108rpx;" src="../../assets/images/ADDTO.png" lazy-load="false" binderror="" bindload=""></image>
                 </view>
             </view>
-        </view>
+        </view> -->
         <!-- 超值套餐 -->
-        <view class="flex-wrap flex-center mb-24">
-            <image class="line" src="../../assets/images/heng.png"></image>
-            <view class="flex-v-center mx-22">
-                <h6 class="f32 f-bold color-384359">超值套餐</h6>
-                <image class="" style="width:145rpx;height:40rpx" src="../../assets/images/valuemeals.png"></image>
-            </view>
-            <image class="line" src="../../assets/images/heng.png"></image>
-        </view>
         <scroll-view scroll-x>
             <view style="width: 100%;white-space:nowrap;" class="py-20 px-24">
-                <block wx:for="{{mockPet}}" wx:key='index'>
-                    <view class="setMeal mr-8 py-12 px-12 position-relative">
+                <van-radio-group value="{{ primaryRadio }}" bind:change="onChangeCheck">
+                    <block wx:for="{{mockPet}}" wx:key='index'>
+                        <van-radio name="{{item.id}}" label-disabled data-text="{{item}}" bind:tap="onClickPrimary">
+                            <view class="setMeal mr-8 py-12 px-12 position-relative">
+                                <view class="d-flex" hover-class="none" hover-stop-propagation="false">
+                                    <view class="mr-20" hover-class="none" hover-stop-propagation="false">
+                                        <image class="" style="width:150rpx;height:220rpx;object-fit: cover;" src="{{item.bgImg}}" lazy-load="false" binderror="" bindload=""></image>
+                                    </view>
+                                    <view class="" style="display: flex;flex-wrap: wrap;align-content: space-between;">
+                                        <view class="" hover-class="none" hover-stop-propagation="false">
+                                            <h4 class="d-block f32 f-bold color-384359 mb-10 line-clamp-1">
+                                                {{item.name}}
+                                            </h4>
+                                            <p class="d-block f24 color-999999 mb-4 line-clamp-1" selectable="false" space="false" decode="false">
+                                                {{item.details}}
+                                            </p>
+                                            <p class="d-block f24 line-clamp-2 color-999999" style="width:260rpx;white-space:normal;" selectable="false" space="false" decode="false">
+                                                {{item.details1}}
+                                            </p>
+                                        </view>
+                                        <view class="d-flex justify-content-between " style="width:200rpx;align-items: center;" hover-class="none" hover-stop-propagation="false">
+                                            <p class="f28 f-bold color-384359">{{item.price}}</p>
+                                        </view>
+                                        <!-- <view class="position-absolute addSelet bg-E2F6FF " bind:tap='selectMeal' data-item="{{item}}">
+                                            <image class="position-absolute" src="{{activeMeal===item.id?'../../assets/images/yes.png':'../../assets/images/jia.png'}}"></image>
+                                        </view> -->
+                                    </view>
+                                </view>
+                            </view>
+                        </van-radio>
+                    </block>
+                </van-radio-group>
+                <!-- <block wx:for="{{mockPet}}" wx:key='index'> -->
+                <!-- <view class="setMeal mr-8 py-12 px-12 position-relative">
                         <view class="d-flex" hover-class="none" hover-stop-propagation="false">
                             <view class="mr-20" hover-class="none" hover-stop-propagation="false">
                                 <image class="" style="width:150rpx;height:220rpx;object-fit: cover;" src="{{item.bgImg}}" lazy-load="false" binderror="" bindload=""></image>
@@ -62,24 +101,35 @@
                                 <view class="d-flex justify-content-between " style="width:200rpx;align-items: center;" hover-class="none" hover-stop-propagation="false">
                                     <p class="f28 f-bold color-384359">{{item.price}}</p>
                                 </view>
-                                <view class="position-absolute addSelet bg-E2F6FF " bind:tap='selectMeal'  data-item="{{item}}">
+                                <view class="position-absolute addSelet bg-E2F6FF " bind:tap='selectMeal' data-item="{{item}}">
                                     <image class="position-absolute" src="{{activeMeal===item.id?'../../assets/images/yes.png':'../../assets/images/jia.png'}}"></image>
                                 </view>
                             </view>
                         </view>
-                    </view>
-                </block>
+                    </view> -->
+                <!-- </block> -->
             </view>
         </scroll-view>
-    </view>
-    <!-- 建议增项 -->
-    <!-- <view class="" style="overflow:hidden;" hover-class="none" hover-stop-propagation="false"> -->
-    <view class="position-relative" animation="{{animationY}}" style="transform:translateY(-620rpx);z-index:20;padding-bottom:60rpx" hover-class="none" hover-stop-propagation="false">
         <view class="px-24 f32 f-bold mt-32">
-            <p class="color-384359">建议增项</p>
+            <p class="color-384359">单项服务</p>
         </view>
         <scroll-view scroll-x>
             <view style="width: 100%;white-space:nowrap;" class="py-20 px-24">
+                <van-checkbox-group value="{{ secondaryResult }}" bind:change="onChangeCheckBox">
+                    <block wx:for="{{addItem}}" wx:key="index">
+                        <van-checkbox name="{{item.id}}" label-disabled data-text="{{item}}" bind:tap="onClickSecondary">
+                            <view class="addItem mr-20 d-inline-block line-clamp-1">
+                                <p class="color-384359 f-bold f32 mt-16 ml-16 ">{{item.name}}</p>
+                                <view class="flex-center">
+                                    <p class="color-384359 f-bold f28 mr-8">{{item.price}}</p>
+                                    <image class="" style="width:20rpx;height:20rpx;" src="{{item.checked?'../../assets/images/yes.png':'../../assets/images/jia.png'}}"></image>
+                                </view>
+                            </view>
+                        </van-checkbox>
+                    </block>
+                </van-checkbox-group>
+            </view>
+            <!-- <view style="width: 100%;white-space:nowrap;" class="py-20 px-24">
                 <block wx:for="{{addItem}}" wx:key="index">
                     <view class="addItem mr-20 d-inline-block line-clamp-1">
                         <p class="color-384359 f-bold f32 mt-16 ml-16 ">{{item.name}}</p>
@@ -89,8 +139,11 @@
                         </view>
                     </view>
                 </block>
-            </view>
+            </view> -->
         </scroll-view>
+    </view>
+    <!-- 建议增项 -->
+    <view class="position-relative" animation="{{animationY}}" style="transform:translateY(-420rpx);z-index:20;padding-bottom:60rpx" hover-class="none" hover-stop-propagation="false">
         <!-- 预约时间 -->
         <view class="px-24 flex-center my-20 flex-wrap ">
             <block wx:for="{{timers}}" wx:key="index">
@@ -103,7 +156,9 @@
                 </view>
             </block>
             <view class="reservationTime  mr-20 mb-10 text-center">
-                <span class="f34 color-384359 mr-10" bind:tap='goMoreTime' style="line-height:80rpx">更多时间</span>
+                <span class="f34 color-384359 mr-10" bind:tap='goMoreTime' style="line-height:80rpx">
+                    更多时间
+                </span>
                 <image class="" style="width:10rpx;height:20rpx;" src="../../assets/images/you.png"></image>
             </view>
         </view>
@@ -120,14 +175,24 @@
     </view>
     <!-- </view> -->
     <!-- 结算按钮 -->
-    <view hidden="{{initial}}" animation="{{animation}}" bind:tap="goPay" class="setTlement position-fixed" style="transform:translateX(300px);z-index:999">
+    <!-- <view hidden="{{initial}}" animation="{{animation}}" bind:tap="goPay" class="setTlement position-fixed" style="transform:translateX(300px);z-index:999">
         <view class="ml-24 lh-94 va-middle">
             <p class="d-inline-block va-middle mr-12 f36 f-bold color-333333">¥{{totalPrice}}</p>
             <image class="d-inline-block" style="width:18rpx;height:10rpx;" src="../../assets/images/shang.png"></image>
         </view>
         <view class="bg-F63D24 setTlement-F63D24 flex-v-center">
             <p class="f28 f-bold color-FFFFFF">预约</p>
-            <p class="color-FFFFFF f24">限时送粮0.00</p>
+        </view>
+    </view> -->
+
+    <view bind:tap="goPay" hidden="{{initial}}" animation="{{animation}}" class="setTlement position-fixed" style="transform:translateX(424rpx);z-index:999">
+        <view class="ml-24 lh-94 va-middle">
+            <p class="d-inline-block va-middle mr-12 f36 f-bold color-333333">¥{{totalPrice}}</p>
+            <image class="d-inline-block" style="width:18rpx;height:10rpx;" src="../../assets/images/shang.png"></image>
+        </view>
+        <view class="bg-F63D24 setTlement-F63D24 flex-v-center">
+            <p class="f28 f-bold color-FFFFFF">预约</p>
+            <!-- <p class="color-FFFFFF f24">限时送粮0.00</p> -->
         </view>
     </view>
     <!-- 选择宠物 -->

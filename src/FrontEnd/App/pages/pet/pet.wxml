@@ -1,3 +1,15 @@
 <view>
-pet
+    <van-radio-group value="{{ radio }}" bind:change="onChange">
+        <van-radio name="1" label-disabled>
+        <view class="" hover-class="none" hover-stop-propagation="false" bind:tap='ccc' data-text=''>
+            <image class="" src="../../assets/images/shan.png" style="width:100rpx;height:100rpx" lazy-load="false" binderror="" bindload="">
+                
+            </image>
+            <text class="" >
+                sdsad
+            </text>
+        </view>
+        </van-radio>
+        <van-radio name="2" label-disabled>单选框 2</van-radio>
+    </van-radio-group>
 </view>

@@ -2,6 +2,10 @@
   "navigationBarTitleText": "我的宠物",
   "usingComponents": {
     "business-card": "../../components/business-card/business-card",
-    "van-button": "../../miniprogram_npm/@vant/weapp/button/"
+    "van-button": "../../miniprogram_npm/@vant/weapp/button/",
+    "van-swipe-cell": "@vant/weapp/swipe-cell/index",
+    "van-dialog": "../../miniprogram_npm/@vant/weapp/dialog/",
+    "lg-loading": "../../components/@lgs/loading/index",
+    "van-loading": "@vant/weapp/loading/index"
   }
 }

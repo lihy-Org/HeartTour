@@ -1,15 +1,32 @@
 /* pages/index/index.wxss */
-
 .logo image {
-    width: 280rpx;
-    height: 260rpx;
+    width: 176rpx;
+    height: 162rpx;
 }
-
-.praiseList image {
-    width: 58rpx;
-    height: 52rpx;
+.top-bg {
+    width: 100%;
+    height: 580rpx;
+  }
+  
+  .logo {
+    width: 128rpx;
+    height: 128rpx;
+  }
+.bb-top{
+    width: 100%;
+    height: 120rpx;
+    position: absolute;
+    background: #fff;
+    border-radius: 50rpx;
+    bottom: 0;
 }
-
+.infos {
+    top: 200rpx;
+  }
+  .shop-pet{
+      bottom: 140rpx;
+      padding: 0 50rpx 0 50rpx;
+  }
 .location image {
     width: 48rpx;
     height: 60rpx;
@@ -177,4 +194,14 @@
     border-radius: 15rpx;
     position: relative;
     margin-left: 24rpx;
+}
+.van-radio{
+    display: inline-block !important;
+    position: relative;
+}
+.van-radio__icon-wrap{
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    z-index: 1000000;
 }

@@ -66,6 +66,7 @@ export function checkAuth() {
  * 轻提示
  * @param {*} options 
  */
+
 export function toast(options) {
   options.icon = options.icon || 'none';
   options.duration = options.duration || 2000;

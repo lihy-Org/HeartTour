@@ -5,10 +5,19 @@ Page({
    * 页面的初始数据
    */
   data: {
+    radio: '1',
     
   },
  
-  
+  onChange(event) {
+    console.log(event);
+    this.setData({
+      radio: event.detail,
+    });
+  },
+  ccc(e){
+    console.log(e);
+  },
 
 
   /**

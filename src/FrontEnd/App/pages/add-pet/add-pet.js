@@ -1,25 +1,24 @@
 // pages/add-pet/add-pet.js
-
+import {addOrUpdate,getPet} from '../../api/pet'
 Page({
-
   /**
    * 页面的初始数据
    */
   data: {
     radio: {
       gender: [// 性别
-        { label: '妹妹' },
-        { label: '弟弟' },
+        { label: '妹妹',value:2 },
+        { label: '弟弟', value:1},
       ],
       sterilization: [// 是否绝育
         { label: '已绝育', value: 1 },
         { label: '未绝育', value: 0 },
       ],
-      vaccine: [// 是否绝育
-        { label: '已打疫苗', value: 1 },
-        { label: '未打疫苗', value: 0 },
-      ],
-      grade: [// 品级
+      // vaccine: [// 是否绝育
+      //   { label: '已打疫苗', value: 1 },
+      //   { label: '未打疫苗', value: 0 },
+      // ],
+      shoulderHeight: [// 品级
         { label: '<35cm' },
         { label: '>35cm' },
       ]
@@ -30,31 +29,45 @@ Page({
     isEditAvatar: false,
     isAdd: 1,
     values: {
+      avatar:'',
       petId: '',
-      nickname: '',
-      breed: '',
+      nickname: '',    
       gender: '',
       color:'',
       birthday: '',
-      grade: '',
+      shoulderHeight: '',
       is_sterilization: '',
-      is_vaccine:''
+      varietyId:'',
+      remark:'',
+      variety:''
     },
-    petId:''
+    breed: '',
+    desId:''
   },
-
+  //获取宠物详情
+  getDes(){
+    let id = this.data.desId;
+    getPet(id).then(res=>{
+      if(res&&res.status === 200){
+        console.log(res.data);
+        this.setData({
+           values:res.data,
+           [`values.birthday`]:res.data.birthday.slice(0,10),
+           [`values.petId`]:res.data.id
+         })
+      }   
+    })
+  },
   _checkForm() {
     return new Promise(resolve => {
-      const { files, values: { nickname, breed, gender } } = this.data;
+      const { values: { nickname, gender,variety } } = this.data;
       let errMsg = '';
       switch (true) {
-        case files.length < 1:
-          errMsg = '请上传宠物头像';
-          break;
+        // case files.length < 1:
         case !nickname:
           errMsg = '请填写宠物昵称';
           break;
-        case !breed:
+        case !this.data.breed&&!variety:
           errMsg = '请填写宠物品种';
           break;
         case !gender:
@@ -115,14 +128,21 @@ Page({
     })
   },
   onAddPets() {
+    let data = this.data.values;
+    console.log(data);
     this._checkForm().then(() => {
-        wx.showToast({
-          title:'添加成功',
-          icon:'none'
-        }),
-        wx.navigateTo({
-          url:'../my-pet/my-pet'
-        })
+      addOrUpdate(data).then(res=>{
+        if(res&&res.status === 200){
+          wx.showToast({
+            title:'添加成功',
+            icon:'none'
+          }),
+          wx.navigateTo({
+            url:'../my-pet/my-pet'
+          })
+        }
+      })
+
     });
   },
 
@@ -130,7 +150,10 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-    
+    this.setData({
+      desId:options.id
+    })
+    this.getDes();
   },
 
   /**
@@ -144,7 +167,7 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow: function () {
-    console.log(this.data.petId);
+    console.log(this.data.values.petId);
   },
 
   /**

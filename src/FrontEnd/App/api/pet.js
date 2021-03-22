@@ -7,10 +7,16 @@ export function addOrUpdate(data){
         data
     })
 }
-
+// 详情
+export function getPet(id){
+    return request({
+        url:`/pet/${id}`
+    })
+}
 export function myPetsList (){
     return request({
-        url:"/pet/list", 
+        url:"/pet/list",
+        method:'POST'
     }) 
 }
 
