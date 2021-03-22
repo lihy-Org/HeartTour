@@ -143,8 +143,7 @@ class UserController extends Controller
      *         @OA\Schema(
      *           @OA\Property(description="用户ID", property="userId", type="string", default="10"),
      *           @OA\Property(description="排期日期", property="days", type="string", default="10"),
-     *           @OA\Property(description="排期当天开始时间 09:00", property="startTime", type="string", default="10"),
-     *           @OA\Property(description="排期当天结束时间 21:00", property="endTime", type="string", default="10"),
+     *           @OA\Property(description="班次配置id", property="freqId", type="string", default="10"),
      *           required={"userId"}
      *           )
      *       )
@@ -189,11 +188,12 @@ class UserController extends Controller
      */
     public function SetWorktime(Request $request)
     {
+      
         $rules = [
             'days' => ['required', 'array'],
-            'days.*.day' => ['date_format:"Y-m-d"', 'after_or_equal:today'],
-            'days.*.startTime' => ['nullable', 'date_format:"H:i"'],
-            'days.*.endTime' => ['nullable', 'date_format:"H:i"'],
+            'days.*.day' => ['required','date_format:"Y-m-d"', 'after_or_equal:today'],
+            'days.*.freqId' => ['required', Rule::exists('configs', 'id')],
+           
             'userId' => ['required', Rule::exists('users', 'id')->where(function ($query) use ($request) {
                 $query->where('state', 0)->whereNotIn('type', [0, 1])->where('isBeautician', 1)->where('storeId', $request->user->storeId);
             })],
@@ -293,12 +293,11 @@ class UserController extends Controller
         return json_encode($this->userRepository->SetStore((object) $request->all()));
     }
 
-
-     /**
+    /**
      * @OA\Post(
      *     path="/api/storesys/user/SetKpi",
      *     tags={"门店管理系统-人员管理"},
-     *     summary="设置月度目标",       
+     *     summary="设置月度目标",
      *     @OA\Parameter(name="token", in="header", @OA\Schema(type="string"), required=true, description="token"),
      *     @OA\RequestBody(
      *     @OA\MediaType(
@@ -370,7 +369,7 @@ class UserController extends Controller
                 'data' => $validator->errors(),
             ));
         }
-        $data=(object) $request->all();
+        $data = (object) $request->all();
         $data->storeId = $request->user->storeId;
         $data->setId = $request->user->id;
         $data->setName = $request->user->name;
@@ -386,7 +385,7 @@ class UserController extends Controller
      *     @OA\RequestBody(
      *     @OA\MediaType(
      *       mediaType="multipart/form-data",
-     *         @OA\Schema(     
+     *         @OA\Schema(
      *           @OA\Property(description="月份", property="month", type="number", default="10"),
      *           @OA\Property(description="条数", property="pageSize", type="number", default="10"),
      *           @OA\Property(description="页数", property="page", type="number", default="1"),

@@ -6,12 +6,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class UserWorktime extends Model
+class RefundRule extends Model
 {
     use HasFactory;
     use SoftDeletes;
     use \App\Http\Traits\UseUuid;
-    protected $table = 'userWorktimes';
+    protected $table = 'refundRules';
     protected $primaryKey = 'id';
-    protected $fillable = ['workDay', 'workTime', 'uid','storeId', 'uname', 'orderId', 'orderPrice','freqId','freqName'];
+    protected $fillable = ['minMin', 'maxMin', 'rate'];
 }

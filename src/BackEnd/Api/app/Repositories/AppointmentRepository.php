@@ -264,9 +264,8 @@ class AppointmentRepository
             $user = User::find($data->userId);
             $store = Store::find($user->storeId);
             $slaveUser;
-            if(isset($data->slaveUserId))
-            {
-                 $slaveUser = User::find($data->slaveUserId);
+            if (isset($data->slaveUserId)) {
+                $slaveUser = User::find($data->slaveUserId);
             }
             //保存主订单
             $order = Order::create([
@@ -279,8 +278,8 @@ class AppointmentRepository
                 'petType' => $pet->type,
                 'userId' => $data->userId,
                 'userName' => $user->name,
-                'slaveUserId' => isset($data->slaveUserId)?$data->slaveUserId:'',
-                'slaveUserName'=> isset($data->slaveUserId)?$slaveUser->name:'',
+                'slaveUserId' => isset($data->slaveUserId) ? $data->slaveUserId : '',
+                'slaveUserName' => isset($data->slaveUserId) ? $slaveUser->name : '',
                 'storeId' => $user->storeId,
                 'storeName' => $store->name,
                 'phone' => $wc->phone,
@@ -377,7 +376,7 @@ class AppointmentRepository
             $worktimes = $worktimes->where('uid', $data->userId);
         }
 
-        return $worktimes->orderBy('workTime')->select('storeId', 'uid', 'uname', 'workDay', 'workTime', 'orderId');
+        return $worktimes->orderBy('workTime');
     }
 
     public function SetWorktime($data)
@@ -389,8 +388,17 @@ class AppointmentRepository
             $config = $ConfigRepository->GetOne('TimeSlot', 'TimeSlot')->first();
             foreach ($data->days as $v) {
                 $day = $v['day'];
-                $startTime = $v['startTime'];
-                $endTime = $v['endTime'];
+                $freq = $ConfigRepository->GetOneById($v['freqId']);
+                if (!preg_match('/^[0-1][0-9]:[0-6][0-9]-[0-1][0-9]:[0-6][0-9]$/', $freq->value)) {
+                    Db::rollback(); // 回滚事务
+                    return array(
+                        'status' => 500,
+                        'msg' => $day . '日，班次有误' . $freq->value . '的格式不正确!',
+                        'data' => '');
+                }
+                $times = explode('-', $freq->value);
+                $startTime = $times[0];
+                $endTime = $times[1];
                 if (UserWorktime::where('workDay', $day)->where('uid', $user->id)->whereNotNull('orderId')->count() > 0) {
                     Db::rollback(); // 回滚事务
                     return array(
@@ -402,7 +410,8 @@ class AppointmentRepository
                 $st = Carbon::parse($day . ' ' . $startTime . ':00');
                 $et = Carbon::parse($day . ' ' . $endTime . ':00');
                 while ($et->gte($st)) {
-                    UserWorktime::create(['workDay' => $st->format('Y-m-d'), 'workTime' => $st->format('H:i'), 'storeId' => $user->storeId, 'uid' => $user->id, 'uname' => $user->name]);
+                    UserWorktime::create(['workDay' => $st->format('Y-m-d'), 'workTime' => $st->format('H:i'),
+                        'storeId' => $user->storeId, 'uid' => $user->id, 'uname' => $user->name, 'freqId' => $freq->id, 'freqName' => $freq->key]);
                     $st = $st->addMinutes($config->value);
                 }
             }
@@ -465,17 +474,16 @@ class AppointmentRepository
 
             $user = User::find($data->userId);
             $slaveUser;
-            if(isset($data->slaveUserId))
-            {
-                 $slaveUser = User::find($data->slaveUserId);
+            if (isset($data->slaveUserId)) {
+                $slaveUser = User::find($data->slaveUserId);
             }
             // $store = Store::find($data->storeId);
             //修改主订单
             $order = Order::find($data->orderId);
             $order->userId = $data->userId;
             $order->userName = $user->name;
-            $order->slaveUserId = isset($data->slaveUserId)?$data->slaveUserId:'';
-            $order->slaveUserName = isset($data->slaveUserId)?$slaveUser->name:'';
+            $order->slaveUserId = isset($data->slaveUserId) ? $data->slaveUserId : '';
+            $order->slaveUserName = isset($data->slaveUserId) ? $slaveUser->name : '';
             $order->apptTime = $data->workDay . $apptUserWorktimes[0]->workTime;
 
             //保存用户预约信息
@@ -502,6 +510,35 @@ class AppointmentRepository
                 'data' => '');
         }
 
+    }
+
+    //查询技师总排版情况
+    public function GetStatsWorktime($data)
+    {
+        $user = DB::table('users')->where('users.storeId', $data->storeId)->where('isBeautician', 1);
+        $worktimes = $user->leftJoin('userworktimes', function ($join) use ($data) {
+            $join->on('users.id', '=', 'userworktimes.uid')
+                ->where('userworktimes.storeId', '=', $data->storeId)
+                ->whereNull('userworktimes.deleted_at');
+
+            if (isset($data->startDate) && isset($data->endDate)) {
+                $join = $join->where(function ($query) use ($data) {
+                    $query->where('workDay', '>=', $data->startDate)->where('workDay', '<=', $data->endDate);
+                });
+            }
+            if (isset($data->workDay)) {
+                $join = $join->where('workDay', $data->workDay);
+            } else {
+                $join = $join->where('workDay', '>', Carbon::now()->format('Y-m-d'));
+            }
+        });
+        if (isset($data->userId)) {
+            $worktimes = $worktimes->where('users.id', $data->userId);
+        }
+        $worktimes = $worktimes->groupBy('users.id', 'users.name', 'post', 'workDay', 'freqId', 'freqName')
+            ->select(DB::raw('users.id as uid'), DB::raw('users.name as uname'), 'post', 'workDay', 'freqId', 'freqName', DB::raw('CONCAT(min(workTime),\'-\',max(workTime)) as times'));
+
+        return $worktimes;
     }
 
     //修改状态
@@ -651,34 +688,5 @@ class AppointmentRepository
         } else {
             return $result;
         }
-    }
-
-    //查询技师总排版情况
-    public function GetStatsWorktime($data)
-    {
-        $user = DB::table('users')->where('users.storeId', $data->storeId)->where('isBeautician', 1);
-        $worktimes = $user->leftJoin('userworktimes', function ($join) use ($data) {
-            $join->on('users.id', '=', 'userworktimes.uid')
-                ->where('userworktimes.storeId', '=', $data->storeId)
-                ->whereNull('userworktimes.deleted_at');
-           
-            if (isset($data->startDate) && isset($data->endDate)) {
-                $join = $join->where(function ($query) use ($data) {
-                    $query->where('workDay', '>=', $data->startDate)->where('workDay', '<=', $data->endDate);
-                });
-            }
-            if (isset($data->workDay)) {
-                $join = $join->where('workDay', $data->workDay);
-            } else {
-                $join = $join->where('workDay', '>', Carbon::now()->format('Y-m-d'));
-            }
-        });
-        if (isset($data->userId)) {
-            $worktimes = $worktimes->where('users.id', $data->userId);
-        }
-        $worktimes = $worktimes->groupBy('users.id', 'users.name', 'post', 'workDay')
-            ->select(DB::raw('users.id as uid'), DB::raw('users.name as uname'), 'post', 'workDay', DB::raw('CONCAT(min(workTime),\'-\',max(workTime)) as times'));
-
-        return $worktimes;
     }
 }

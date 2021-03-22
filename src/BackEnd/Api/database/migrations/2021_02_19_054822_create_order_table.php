@@ -45,7 +45,7 @@ class CreateOrderTable extends Migration
             $table->unsignedDecimal('totalMoney', 11, 2)->comment('订单总价');
             $table->unsignedDecimal('freight', 11, 2)->default(0)->comment('运费');
             $table->unsignedDecimal('payMoney', 11, 2)->comment('最终支付总价');
-            $table->unsignedInteger('payType')->default(1)->comment('支付方式，1微信支付');
+            $table->unsignedInteger('payType')->default(1)->comment('支付方式，1微信支付，2支付宝支付，3现金支付');
             $table->unsignedInteger('type')->default(1)->comment('订单类型，1套餐预约，20商城,30活体');
             $table->timestamp('payTime')->nullable()->comment('付款时间');
             $table->timestamp('beginTime')->nullable()->comment('服务开始时间');

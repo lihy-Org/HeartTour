@@ -132,6 +132,7 @@ class AppointmentController extends Controller
 
         }
     }
+    
     /**
      * @OA\Post(
      *     path="/api/storesys/appt/getWorktime",
@@ -207,7 +208,7 @@ class AppointmentController extends Controller
             'workDay' => ['nullable', 'date_format:"Y-m-d"', 'after_or_equal:today'],
             'workTime' => ['nullable', 'date_format:"H:i"'],
             'userId' => ['nullable', Rule::exists('users', 'id')->where(function ($query) use ($request) {
-                $query->where('state', 0)->whereNotIn('type', [0, 1])->where('isBeautician', 1)->where('storeId', $request->storeId);
+                $query->where('state', 0)->whereNotIn('type', [0, 1])->where('isBeautician', 1)->where('storeId', $request->user->storeId);
             })],
         ];
         $messages = [];
@@ -303,7 +304,7 @@ class AppointmentController extends Controller
             'endDate' => ['nullable', 'date_format:"Y-m-d"'],
             'workDay' => ['nullable', 'date_format:"Y-m-d"', 'after_or_equal:today'],
             'userId' => ['nullable', Rule::exists('users', 'id')->where(function ($query) use ($request) {
-                $query->where('state', 0)->whereNotIn('type', [0, 1])->where('isBeautician', 1)->where('storeId', $request->storeId);
+                $query->where('state', 0)->whereNotIn('type', [0, 1])->where('isBeautician', 1)->where('storeId', $request->user->storeId);
             })],
         ];
         $messages = [];
@@ -325,6 +326,7 @@ class AppointmentController extends Controller
             )
         );
     }
+
     /**
      * @OA\Post(
      *     path="/api/storesys/appt/trans",
