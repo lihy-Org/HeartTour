@@ -1,6 +1,6 @@
 // @ts-nocheck
 import React from 'react';
-import { ApplyPluginsType, dynamic } from 'E:/心之旅/HeartTour/src/FrontEnd/Admin/node_modules/umi/node_modules/@umijs/runtime';
+import { ApplyPluginsType, dynamic } from '/Users/lihongyao/Desktop/外包项目/心之旅/HeartTour/src/FrontEnd/Admin/node_modules/umi/node_modules/@umijs/runtime';
 import * as umiExports from './umiExports';
 import { plugin } from './plugin';
 import LoadingComponent from '@/Loading';

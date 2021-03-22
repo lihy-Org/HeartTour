@@ -6,7 +6,7 @@ import { EffectsCommandMap, SubscriptionAPI } from 'dva';
 import { match } from 'react-router-dom';
 import { Location, LocationState, History } from 'history';
 
-export * from 'E:/心之旅/HeartTour/src/FrontEnd/Admin/src/models/user';
+export * from '/Users/lihongyao/Desktop/外包项目/心之旅/HeartTour/src/FrontEnd/Admin/src/models/user';
 
 export interface Action<T = any> {
   type: T
