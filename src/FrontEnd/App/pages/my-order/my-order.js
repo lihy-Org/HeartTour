@@ -19,10 +19,6 @@ Page({
         type:1,
       },
       {
-        title:'服务中',
-        type:2,
-      },
-      {
         title:'待领取',
         type:3,
       },
@@ -67,7 +63,6 @@ Page({
 
   },
   onChange(e){
-
     wx.showToast({
       title: `点击标签 ${e.detail.name}`,
       icon: 'none',

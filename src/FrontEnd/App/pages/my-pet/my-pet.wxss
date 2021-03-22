@@ -36,3 +36,14 @@ page{
     background-color: #F7F8FA;
     padding-bottom:200rpx
 }
+.van-swipe-cell__left,
+.van-swipe-cell__right {
+  display: inline-block;
+  width: 65px;
+  height: 206rpx;
+  font-size: 15px;
+  line-height: 206rpx;
+  color: #fff;
+  text-align: center;
+  background-color: #f44;
+}

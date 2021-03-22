@@ -51,7 +51,7 @@ button::after {
 .bg-EFEFEF { background-color: #EFEFEF; }
 .bg-D85410 { background-color: #D85410; }
 .bg-FF9972 { background-color: #FF9972; }
-.bg-F63D24 { background-color: #F63D24; }
+.bg-F63D24 { background-color: #00499e; }
 .bg-FFD5D5 {background-color: #FFD5D5;}
 .bg-F7F8FA {background-color: #F7F8FA;}
 .bg-00499e { background-color: #00499e;}
@@ -94,7 +94,7 @@ button::after {
 .color-FF4141 { color: #FF4141; }
 .color-384359 { color: #384359;}
 .color-333333 { color: #333333;}
-.color-F63D24 { color: #F63D24; }
+.color-F63D24 { color: #00499e; }
 .color-999999 { color: #999999; }
 
 
