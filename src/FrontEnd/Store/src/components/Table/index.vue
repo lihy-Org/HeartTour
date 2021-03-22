@@ -21,7 +21,20 @@
         <template v-for="(item, key) in columns">
           <template v-if="item.type !='tag'">
             <el-table-column
-              v-if="!item.contentType"
+              v-if="!item.contentType || item.contentType === 'normal'"
+              :key="key"
+              :prop="item.prop"
+              :label="item.label"
+              :type="item.type"
+              :width="item.width"
+              :min-width="item.minWidth"
+              :formatter="item.formatter"
+              show-overflow-tooltip
+              :fixed="item.fixed"
+              :align="item.align"
+            />
+            <el-table-column
+              v-else-if="item.contentType==='select'"
               :key="key"
               :prop="item.prop"
               :label="item.label"
@@ -34,7 +47,7 @@
               :align="item.align"
             >
               <!-- 是否有可选择的下拉框 -->
-              <template v-if="isSelect && item.canEdit" v-slot="{row}">
+              <template v-slot="{row}">
                 <el-select
                   v-model="row[item.value]"
                   popper-class="role-option"

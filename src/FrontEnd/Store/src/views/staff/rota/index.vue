@@ -9,6 +9,7 @@
 
     <!-- 表格区域 -->
     <Table
+      :key="isSelect"
       :loading="tableLoading"
       :table-data="tableData"
       :table-height="tableHeight"
@@ -108,6 +109,8 @@ export default {
           endPlaceholder: '结束时间',
           value: 'workDay',
           pickerOptions: pickerOptions,
+          clearable: false,
+          disabled: () => this.isSelect,
           change: val => this.changeDate(val)
         },
         {
@@ -117,6 +120,7 @@ export default {
           label: '人员 :',
           value: 'userId',
           clearable: true,
+          disabled: () => this.isSelect,
           list: () => this.usersList,
           change: () => this.currentChange(1),
           style: 'width: 120px'
@@ -163,7 +167,7 @@ export default {
         {
           type: () => this.isSelect ? 'danger' : 'success',
           size: 'small',
-          value: '编辑人员班表',
+          value: '编辑排班',
           click: () => this.setRota(),
           icon: 'el-icon-setting'
         },
@@ -361,6 +365,7 @@ export default {
                 rotaName: '请选择班次',
                 optionData: () => this.rotaList,
                 clearable: true,
+                contentType: 'normal',
                 isDisabled: moment().startOf('day') > moment(dateStamp).startOf('day'),
                 minWidth: '160px',
                 change: val => this.changeDateTable(val)
@@ -396,8 +401,19 @@ export default {
       }
     },
 
-    // 编辑人员班表
+    // 编辑排班
     setRota() {
+      // this.isSelect = !this.isSelect
+      // this.$set(this, 'isSelect', !this.isSelect)
+      console.log(this.isSelect)
+      this.columns.forEach(item => {
+        if (!this.isSelect && item.contentType === 'normal') {
+          item.contentType = 'select'
+        }
+        if (this.isSelect && item.contentType === 'select') {
+          item.contentType = 'normal'
+        }
+      })
       if (this.isSelect) {
         this.$confirm('班表尚未提交, 此操作将退出编辑, 是否继续?', '提示', {
           confirmButtonText: '确定',
@@ -405,9 +421,8 @@ export default {
           type: 'warning'
         }).then(() => {
           this.isSelect = !this.isSelect
-          this.operationBtns[1].value = this.isSelect ? '取消编辑' : '编辑人员班表'
+          this.operationBtns[1].value = this.isSelect ? '取消排班' : '编辑排班'
           this.isFirstIn = true
-          this.getRota(this.searchForm.workDay)
           this.$message({
             type: 'info',
             message: '退出编辑'
@@ -421,19 +436,17 @@ export default {
       } else {
         this.setTableData = []
         this.isSelect = !this.isSelect
-        this.operationBtns[1].value = this.isSelect ? '取消编辑' : '编辑人员班表'
+        this.operationBtns[1].value = this.isSelect ? '取消排班' : '编辑排班'
         // setTableData 只保留tableData中的非班次的数据
         this.tableData.forEach((item) => {
           this.setTableData.push({
             post: item.post,
             uid: item.uid,
             uname: item.uname
-          }
-          )
+          })
         })
         console.log(this.setTableData)
         this.isFirstIn = true
-        this.getRota(this.searchForm.workDay)
       }
     },
 
