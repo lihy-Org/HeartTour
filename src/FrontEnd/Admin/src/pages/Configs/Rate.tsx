@@ -1,7 +1,7 @@
 /*
  * @Author: Li-HONGYAO
  * @Date: 2021-03-22 10:18:46
- * @LastEditTime: 2021-03-22 18:16:47
+ * @LastEditTime: 2021-03-23 12:10:42
  * @LastEditors: Li-HONGYAO
  * @Description:
  * @FilePath: \Admin\src\pages\Configs\Rate.tsx
@@ -26,154 +26,215 @@ import {
   InputNumber,
   message,
   Space,
+  Table,
 } from 'antd';
 import Api from '@/Api';
 import { kRETURN_REASON } from '@/constants';
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
+import { ColumnProps } from 'antd/es/table';
 interface IProps {
   visible: boolean;
   onCancel: () => void;
 }
+type ColumnsType = {
+  id: string /** id */;
+  start: number;
+  end: number;
+  rate: number;
+};
 
 const Rate: FC<IProps> = (props) => {
   // state
-
   const [form] = Form.useForm();
-  const [disabled, setDisabled] = useState(true);
+  const [dataSource, setDataSource] = useState<ColumnsType[]>([]);
+  const [addRateVisible, setAddRateVisible] = useState(false);
+  const [limitVisible, setLimitVisible] = useState(false);
 
   // methods
-  const getConfigs = () => {
-    Api.config.get<HT.BaseResponse<any>>(kRETURN_REASON).then((res) => {
-      if (res && res.status === 200) {
-      }
-    });
+  const getConfigs = (loading: boolean, dialog?: string) => {
+    loading && message.loading('数据记载中...', 20);
+    setDataSource([
+      { id: '1', start: 10, end: 20, rate: 30 },
+      { id: '2', start: 10, end: 20, rate: 30 },
+      { id: '3', start: 10, end: 20, rate: 30 },
+      { id: '4', start: 10, end: 20, rate: 30 },
+      { id: '5', start: 10, end: 20, rate: 30 },
+    ]);
   };
 
   // events
-  const onFinish = (values: any) => {
-    // 判断
-    const rates = values.rates;
-    const keys = Object.keys(rates);
-    let flag = false;
-    for (let i = 1; i < keys.length; i++) {
-      if (rates[keys[i]].start < rates[keys[i - 1]].end) {
-        flag = true;
-        break;
+  const onAddRate = async () => {
+    try {
+      const values = await form.validateFields();
+      if (values) {
+        console.log(values);
       }
-    }
-    if (flag) {
-      message.error('费率配置出问题');
-      return;
-    }
-    console.log('Received values of form:', values);
+    } catch (err) {}
   };
+  const onDeleteRate = () => {
+    Modal.confirm({
+      content: '您确定要删除该项配置么？',
+      cancelText: '点错了',
+      onOk: () => {
+        message.success('删除成功')
+      }
+    })
+  }
   // effects
-  useEffect(() => {}, []);
+  useEffect(() => {
+    if (props.visible) {
+      getConfigs(true);
+    }
+  }, [props.visible]);
+
   // render
+  const columns: ColumnProps<ColumnsType>[] = [
+    { title: '序号', key: 'No.', render: (row, record, index) => index + 1 },
+    {
+      title: '范围',
+      key: 'scope',
+      render: (record: ColumnsType) => `${record.start} ~ ${record.end}`,
+    },
+    { title: '费率', dataIndex: 'rate', render: (rate: number) => `${rate}%` },
+    {
+      width: 100,
+      title: '操作',
+      key: 'action',
+      render: (record: ColumnsType) => (
+        <Space>
+          <Button
+            type="primary"
+            size="small"
+            onClick={() => {
+              form.setFieldsValue({ ...record });
+              setAddRateVisible(true);
+            }}
+          >
+            编辑
+          </Button>
+          <Button type="primary" size="small" danger onClick={onDeleteRate}>
+            删除
+          </Button>
+        </Space>
+      ),
+    },
+  ];
   return (
     <>
       <Modal
         title="退单费率配置"
-        width={700}
+        width={650}
         visible={props.visible}
         onCancel={props.onCancel}
         footer={null}
       >
-        <Form form={form} autoComplete="off" onFinish={onFinish}>
-          <div className="group-title">不可退时间:</div>
-          <Space style={{ display: 'flex', marginBottom: 8 }} align="baseline">
-            <Form.Item
-              label="订单开始前"
-              name="limit"
-              rules={[{ required: true, message: '' }]}
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: 16,
+          }}
+        >
+          <div>订单开始前 30分钟 不可退</div>
+          <Space>
+            <Button
+              type="primary"
+              size="small"
+              shape="round"
+              onClick={() => setLimitVisible(true)}
             >
-              <InputNumber placeholder="0" disabled={disabled} />
+              设置不可退限制
+            </Button>
+            <Button
+              type="primary"
+              size="small"
+              shape="round"
+              onClick={() => setAddRateVisible(true)}
+            >
+              添加费率挡位
+            </Button>
+          </Space>
+        </div>
+        <Table
+          dataSource={dataSource}
+          columns={columns}
+          size="small"
+          pagination={false}
+          rowKey="id"
+        />
+      </Modal>
+      {/* 添加费率 */}
+      <Modal
+        width={650}
+        title="费率挡位信息"
+        visible={addRateVisible}
+        onCancel={() => {
+          setAddRateVisible(false);
+          form.resetFields();
+        }}
+        closable={false}
+        onOk={onAddRate}
+        destroyOnClose={true}
+        okButtonProps={{
+          htmlType: 'submit',
+        }}
+      >
+        <Form
+          form={form}
+          autoComplete="off"
+          layout="inline"
+          onFinish={onAddRate}
+        >
+          <Space align="baseline" size="small">
+            <Form.Item
+              label="范围"
+              name="start"
+              rules={[{ required: true, message: '请填写开始时间' }]}
+              style={{ marginRight: 0 }}
+            >
+              <InputNumber placeholder="开始" min={0} style={{ width: 120 }} />
+            </Form.Item>
+            <span style={{ margin: '0 8px' }}>~</span>
+            <Form.Item
+              name="end"
+              rules={[{ required: true, message: '请填写结束时间' }]}
+            >
+              <InputNumber placeholder="结束" min={0} style={{ width: 120 }} />
             </Form.Item>
             <span>分钟</span>
+            <Form.Item
+              label="费率"
+              name="rate"
+              rules={[{ required: true, message: '请填写费率' }]}
+              style={{ marginLeft: 16 }}
+            >
+              <InputNumber
+                placeholder="百分比"
+                min={0}
+                max={100}
+                style={{ width: 120 }}
+              />
+            </Form.Item>
+            <span>%</span>
           </Space>
-          <div className="group-title">退款费率档位：</div>
-          <p style={{ fontSize: 12, color: '#ff4d4f' }}>
-            注意：时间范围选择不能出现交叉情况，请谨慎填写。
-          </p>
-          <Form.List name="rates">
-            {(fields, { add, remove }) => (
-              <>
-                {fields.map((field) => (
-                  <Space
-                    key={field.key}
-                    style={{ display: 'flex', marginBottom: 8 }}
-                    align="baseline"
-                  >
-                    <Form.Item
-                      {...field}
-                      label="范围"
-                      name={[field.name, 'start']}
-                      fieldKey={[field.fieldKey, 'start']}
-                      rules={[{ required: true, message: '' }]}
-                    >
-                      <InputNumber
-                        placeholder="0"
-                        disabled={disabled}
-                        parser={(value) => (value ? Math.floor(+value) : '')}
-                      />
-                    </Form.Item>
-                    -
-                    <Form.Item
-                      {...field}
-                      name={[field.name, 'end']}
-                      fieldKey={[field.fieldKey, 'end']}
-                      rules={[{ required: true, message: '' }]}
-                    >
-                      <InputNumber
-                        placeholder="0"
-                        disabled={disabled}
-                        parser={(value) => (value ? Math.floor(+value) : '')}
-                      />
-                    </Form.Item>
-                    <span style={{ marginRight: 20 }}>分钟</span>
-                    <Form.Item
-                      {...field}
-                      label="费率"
-                      name={[field.name, 'rate']}
-                      fieldKey={[field.fieldKey, 'rate']}
-                      rules={[{ required: true, message: '' }]}
-                    >
-                      <InputNumber placeholder="0" disabled={disabled} />
-                    </Form.Item>
-                    <span style={{ marginRight: 20 }}>%</span>
-                    <MinusCircleOutlined
-                      onClick={() => {
-                        remove(field.name);
-                      }}
-                    />
-                  </Space>
-                ))}
-                <Form.Item hidden={disabled} style={{ textAlign: 'center' }}>
-                  <Button
-                    type="link"
-                    onClick={() => add()}
-                    icon={<PlusOutlined />}
-                  >
-                    添加费率档位
-                  </Button>
-                </Form.Item>
-                <Form.Item>
-                  <Space>
-                    <Button type="primary" htmlType="submit">
-                      保存修改
-                    </Button>
-                    <Button type="primary" onClick={() => setDisabled(false)}>
-                      编辑
-                    </Button>
-                    <Button type="primary" onClick={() => setDisabled(true)}>
-                      取消
-                    </Button>
-                  </Space>
-                </Form.Item>
-              </>
-            )}
-          </Form.List>
         </Form>
+        <p style={{ fontSize: 12, color: '#ff4d4f', marginTop: 16 }}>
+          注意：时间范围选择不能出现交叉情况，并且结束时间不能小于开始时间设置，请谨慎填写。
+        </p>
+      </Modal>
+      {/* 不可退限制 */}
+      <Modal
+        title="退单限制"
+        visible={limitVisible}
+        onCancel={() => setLimitVisible(false)}
+        closable={false}
+      >
+        <Space>
+          <span>订单开始前</span>
+          <InputNumber placeholder="请输入限制" style={{ width: 100 }} />
+          <span>分钟不可退单</span>
+        </Space>
       </Modal>
     </>
   );

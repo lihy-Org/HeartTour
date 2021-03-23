@@ -1,7 +1,7 @@
 /*
  * @Author: Li-HONGYAO
  * @Date: 2021-01-22 12:36:49
- * @LastEditTime: 2021-03-22 12:21:35
+ * @LastEditTime: 2021-03-23 12:26:50
  * @LastEditors: Li-HONGYAO
  * @Description:
  * @FilePath: \Admin\src\pages\Configs\index.tsx
@@ -14,6 +14,7 @@ import { kGOODS_CLASSIFY, kPOST, kTITLE, kVARIETIES } from '@/constants';
 import ConfigTree from '../../components/ConfigTree';
 import ReturnReason from './ReturnReason';
 import Rate from './Rate';
+import Schedule from './Schedule';
 
 const { Meta } = Card;
 
@@ -25,7 +26,7 @@ const Banner: FC = () => {
   const [goodsClassifyVisible, setGoodsClassifyVisible] = useState(false);
   const [returnReasonVisible, setReturnReasonVisible] = useState(false);
   const [rateVisible, setRateVisible] = useState(false);
-  const [modalVisible, setModalVisible] = useState(false);
+  const [scheduleVisible, setScheduleVisible] = useState(false);
 
   // list datas
   const datas = [
@@ -104,6 +105,21 @@ const Banner: FC = () => {
         </Button>,
       ],
     },
+    {
+      cover:
+        'https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=3062556219,1093566700&fm=26&gp=0.jpg',
+      title: '班次配置',
+      actions: [
+        <Button
+          type="primary"
+          size="small"
+          icon={<EditOutlined key="edit" />}
+          onClick={() => setScheduleVisible(true)}
+        >
+          查看编辑
+        </Button>,
+      ],
+    },
     // {
     //   cover:
     //     'https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=3062556219,1093566700&fm=26&gp=0.jpg',
@@ -137,11 +153,12 @@ const Banner: FC = () => {
       <div className="contents">
         <Row gutter={16}>
           {datas.map((item, i) => (
-            <Col span={6} key={item.title}>
+            <Col span={4} key={item.title}>
               <Card
                 key={`card__${i}`}
                 cover={<img alt="example" src={item.cover} />}
                 actions={item.actions}
+                style={{ marginBottom: 8 }}
               >
                 <Meta title={item.title} />
               </Card>
@@ -189,6 +206,11 @@ const Banner: FC = () => {
       />
       {/* 退单费率配置 */}
       <Rate visible={rateVisible} onCancel={() => setRateVisible(false)} />
+      {/* 班次配置 */}
+      <Schedule
+        visible={scheduleVisible}
+        onCancel={() => setScheduleVisible(false)}
+      />
     </div>
   );
 };
