@@ -493,8 +493,9 @@ class AppointmentController extends Controller
      *           @OA\Property(description="技师ID", property="userId", type="string", default="dd"),
      *           @OA\Property(description="套餐总额", property="totalMoney", type="number", default="dd"),
      *           @OA\Property(description="门店ID", property="storeId", type="string", default="dd"),
+     *           @OA\Property(description="支付方式，1微信2支付宝3现金", property="payType", type="string", default="dd"),
      *           @OA\Property(description="备注", property="remark", type="string", default="dd"),
-     *           required={"comboIds","userId","storeId"})
+     *           required={"comboIds","userId","storeId","payType"})
      *       )
      *     ),
      *     @OA\Response(
@@ -562,7 +563,7 @@ class AppointmentController extends Controller
             'color' => ['string'],
             'shoulderHeight' => ['string', 'integer', 'gt:0'],
             'petRemark' => ['string'],
-
+            'payType' => ['required', Rule::in(1, 2, 3)],
             'userId' => ['required', Rule::exists('users', 'id')->where(function ($query) use ($request) {
                 $query->where('state', 0)->whereNotIn('type', [0, 1])->where('isBeautician', 1);
             })],

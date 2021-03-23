@@ -133,7 +133,7 @@ class UserController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/api/storesys/user/SetWorktime",
+     *     path="/api/storesys/user/setWorktime",
      *     tags={"门店管理系统-人员管理"},
      *     summary="人员排期",       *
      *     @OA\Parameter(name="token", in="header", @OA\Schema(type="string"), required=true, description="token"),
@@ -187,8 +187,7 @@ class UserController extends Controller
      * )
      */
     public function SetWorktime(Request $request)
-    {
-      
+    {        
         $rules = [
             'days' => ['required', 'array'],
             'days.*.day' => ['required','date_format:"Y-m-d"', 'after_or_equal:today'],
@@ -295,7 +294,7 @@ class UserController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/api/storesys/user/SetKpi",
+     *     path="/api/storesys/user/setKpi",
      *     tags={"门店管理系统-人员管理"},
      *     summary="设置月度目标",
      *     @OA\Parameter(name="token", in="header", @OA\Schema(type="string"), required=true, description="token"),

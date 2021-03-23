@@ -24,6 +24,6 @@ class CreateAdminSeeder extends Seeder
          'avatar' => 'https://thirdwx.qlogo.cn/mmopen/vi_32/DYAIOgq83eqYLIk6CAiaQQAmywjREtoMXEMcCIbB4k188DKcc2AibPcsgURwCoSmjDgnGrLyXSsOs4ZWI7eh2rlQ/0', 
          'phone' => '15828242712']);
 
-         DB::table('configs')->insert(['id'=>Uuid::generate(),'type' => 'TimeSlot', 'key' => 'TimeSlot', 'value'=>'30']);
+         DB::table('configs')->insert(['id'=>Uuid::generate(),'type' => 'TimeSlot', 'key' => 'TimeSlot', 'value'=>'10']);
     }
 }

@@ -1,10 +1,10 @@
 <?php
-
 use App\Http\Controllers\Admin\AccountController as AdminAccountController;
 use App\Http\Controllers\Admin\AppointmentController as AdminAppointmentController;
 use App\Http\Controllers\Admin\ComboController as AdminComboController;
 use App\Http\Controllers\Admin\ConfigController as AdminConfigController;
 use App\Http\Controllers\Admin\OSSController as AdminOSSController;
+use App\Http\Controllers\Admin\RefundRuleController as AdminRefundRuleController;
 use App\Http\Controllers\Admin\StoreController as AdminStoreController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Admin\WechatUserController as AdminWechatUserController;
@@ -18,7 +18,9 @@ use App\Http\Controllers\StoreSystem\UserController as StoreSysUserController;
 use App\Http\Controllers\TestController;
 use App\Http\Controllers\WechatUser\AddressController;
 use App\Http\Controllers\WechatUser\AppointmentController;
+use App\Http\Controllers\WechatUser\ComboController;
 use App\Http\Controllers\WechatUser\PetController;
+use App\Http\Controllers\WechatUser\UserController;
 use App\Http\Controllers\WechatUser\WechatUserController;
 use Illuminate\Support\Facades\Route;
 
@@ -46,7 +48,11 @@ Route::prefix('api/admin')->middleware(['auth:sanctum', 'adminapi'])->group(func
     Route::get('/config/{type}/{key?}', [AdminConfigController::class, 'GetConfig']);
     Route::post('/config/addOrUpdate', [AdminConfigController::class, 'AddOrUpdate']);
     Route::post('/config/remove', [AdminConfigController::class, 'Remove']);
-
+    //退款费率配置
+    Route::post('/rfrule/addOrUpdate', [AdminRefundRuleController::class, 'AddOrUpdate']);    
+    Route::post('/rfrule/list', [AdminRefundRuleController::class, 'GetList']);
+    Route::post('/rfrule/setLimit', [AdminRefundRuleController::class, 'SetLimit']);
+    Route::post('/rfrule/getLimit', [AdminRefundRuleController::class, 'GetLimit']);
     //人员管理
     Route::post('/user/addOrUpdate', [AdminUserController::class, 'AddOrUpdate']);
     Route::post('/user/list', [AdminUserController::class, 'GetList']);
@@ -138,9 +144,10 @@ Route::prefix('api')->middleware(['web', 'wechatapi'])->group(function () {
 
     //获取门店信息
     Route::post('/store/list', [AdminStoreController::class, 'GetList']);
-
+    //人员
+    Route::post('/user/list', [UserController::class, 'GetList']);
     //套餐管理
-    Route::post('/combo/list', [AdminComboController::class, 'GetList']);
+    Route::post('/combo/list', [ComboController::class, 'GetList']);
 
     //收货地址
     Route::post('/address/addOrUpdate', [AddressController::class, 'AddOrUpdate']);

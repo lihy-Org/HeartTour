@@ -28,17 +28,18 @@ class AppointmentRepository
             $mainCombo = null;
             foreach ($data->comboIds as $v) {
                 $combo = Combo::find($v);
-                //有且只能有一个主套餐
-                if ($combo->comboType == 0) {
-                    if ($mainCombo != null) {
-                        return array(
-                            'status' => 500,
-                            'msg' => '预约失败，主套餐数据必须为1!',
-                            'data' => '');
-                    } else {
-                        $mainCombo = $combo;
-                    }
-                }
+                // //有且只能有一个主套餐
+                // if ($combo->comboType == 0) {
+                //     if ($mainCombo != null) {
+                //         return array(
+                //             'status' => 500,
+                //             'msg' => '预约失败，主套餐数据必须为1!',
+                //             'data' => '');
+                //     } else {
+                //         $mainCombo = $combo;
+                //     }
+                // }
+                $mainCombo = $combo; //最后一个套餐
                 array_push($combos, $combo);
                 $allTime = bcadd($allTime, $combo->nursingTime);
                 $totalMoney = bcadd($totalMoney, $combo->salePrice, 2);
@@ -52,7 +53,7 @@ class AppointmentRepository
             if ($mainCombo == null) {
                 return array(
                     'status' => 500,
-                    'msg' => '预约失败，主套餐数据必须为1!',
+                    'msg' => '预约失败，无套餐!',
                     'data' => '');
             }
             if ($allTime == 0) {
@@ -168,17 +169,18 @@ class AppointmentRepository
             $mainCombo = null;
             foreach ($data->comboIds as $v) {
                 $combo = Combo::find($v);
-                //有且只能有一个主套餐
-                if ($combo->comboType == 0) {
-                    if ($mainCombo != null) {
-                        return array(
-                            'status' => 500,
-                            'msg' => '预约失败，主套餐数据必须为1!',
-                            'data' => '');
-                    } else {
-                        $mainCombo = $combo;
-                    }
-                }
+                // //有且只能有一个主套餐
+                // if ($combo->comboType == 0) {
+                //     if ($mainCombo != null) {
+                //         return array(
+                //             'status' => 500,
+                //             'msg' => '预约失败，主套餐数据必须为1!',
+                //             'data' => '');
+                //     } else {
+                //         $mainCombo = $combo;
+                //     }
+                // }
+                $mainCombo = $combo; //最后一个套餐
                 array_push($combos, $combo);
                 $allTime = bcadd($allTime, $combo->nursingTime);
                 $totalMoney = bcadd($totalMoney, $combo->salePrice, 2);
@@ -189,12 +191,12 @@ class AppointmentRepository
                     'msg' => '预约失败，订单金额有误!',
                     'data' => '');
             }
-            if ($mainCombo == null) {
-                return array(
-                    'status' => 500,
-                    'msg' => '预约失败，主套餐数据必须为1!',
-                    'data' => '');
-            }
+            // if ($mainCombo == null) {
+            //     return array(
+            //         'status' => 500,
+            //         'msg' => '预约失败，主套餐数据必须为1!',
+            //         'data' => '');
+            // }
             if ($allTime == 0) {
                 return array(
                     'status' => 500,
@@ -289,7 +291,7 @@ class AppointmentRepository
                 'totalMoney' => $totalMoney,
                 'freight' => 0,
                 'payMoney' => $totalMoney,
-                'payType' => 1,
+                'payType' => $data->payType,
                 'type' => 1,
                 'isOffline' => 1,
                 'state' => 500,
@@ -388,17 +390,6 @@ class AppointmentRepository
             $config = $ConfigRepository->GetOne('TimeSlot', 'TimeSlot')->first();
             foreach ($data->days as $v) {
                 $day = $v['day'];
-                $freq = $ConfigRepository->GetOneById($v['freqId']);
-                if (!preg_match('/^[0-1][0-9]:[0-6][0-9]-[0-1][0-9]:[0-6][0-9]$/', $freq->value)) {
-                    Db::rollback(); // 回滚事务
-                    return array(
-                        'status' => 500,
-                        'msg' => $day . '日，班次有误' . $freq->value . '的格式不正确!',
-                        'data' => '');
-                }
-                $times = explode('-', $freq->value);
-                $startTime = $times[0];
-                $endTime = $times[1];
                 if (UserWorktime::where('workDay', $day)->where('uid', $user->id)->whereNotNull('orderId')->count() > 0) {
                     Db::rollback(); // 回滚事务
                     return array(
@@ -407,11 +398,26 @@ class AppointmentRepository
                         'data' => '');
                 }
                 UserWorktime::where('workDay', $day)->where('uid', $user->id)->forceDelete();
-                $st = Carbon::parse($day . ' ' . $startTime . ':00');
-                $et = Carbon::parse($day . ' ' . $endTime . ':00');
-                while ($et->gte($st)) {
-                    UserWorktime::create(['workDay' => $st->format('Y-m-d'), 'workTime' => $st->format('H:i'),
-                        'storeId' => $user->storeId, 'uid' => $user->id, 'uname' => $user->name, 'freqId' => $freq->id, 'freqName' => $freq->key]);
+                $freq = $ConfigRepository->GetOneById($v['freqId']);
+                if (!preg_match('/^[0-1][0-9]:[0-6][0-9]-[0-1][0-9]:[0-6][0-9],[0-1][0-9]:[0-6][0-9]-[0-1][0-9]:[0-6][0-9]$/', $freq->value)) {
+                    Db::rollback(); // 回滚事务
+                    return array(
+                        'status' => 500,
+                        'msg' => $day . '日，班次有误' . $freq->value . '的格式不正确!',
+                        'data' => '');
+                }
+                $times = explode(',', $freq->value);
+                $workTime = explode('-', $times[0]);
+                $restTime = explode('-', $times[1]);
+                $st = Carbon::parse($day . ' ' . $workTime[0] . ':00');
+                $et = Carbon::parse($day . ' ' . $workTime[1] . ':00');
+                $startRest = Carbon::parse($day . ' ' . $restTime[0] . ':00');
+                $endRest = Carbon::parse($day . ' ' . $restTime[1] . ':00');
+                while ($et->gt($st)) {
+                    if (!$st->between($startRest, $endRest) || $st->eq($endRest)) {
+                        UserWorktime::create(['workDay' => $st->format('Y-m-d'), 'workTime' => $st->format('H:i'),
+                            'storeId' => $user->storeId, 'uid' => $user->id, 'uname' => $user->name, 'freqId' => $freq->id, 'freqName' => $freq->key]);
+                    }
                     $st = $st->addMinutes($config->value);
                 }
             }
@@ -421,7 +427,7 @@ class AppointmentRepository
                 'msg' => '设置成功!',
                 'data' => '');
         } catch (\Exception $ex) {
-            //dd($ex);
+            // dd($ex);
             Db::rollback(); // 回滚事务
             return array(
                 'status' => 500,
