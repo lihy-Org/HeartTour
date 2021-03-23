@@ -46,3 +46,14 @@ export function editPhone(data) {
     data
   })
 }
+/**
+ * 获取门店人员列表
+ * @param {*} data 
+ */
+ export function userList(data) {
+  return request({
+    url: '/user/list',
+    method: 'POST',
+    data
+  })
+}

@@ -115,8 +115,8 @@
 }
 
 .addSelet {
-    width: 65rpx;
-    height: 65rpx;
+    width: 80rpx;
+    height: 80rpx;
     /* background-color: #ccc; */
     bottom: 0;
     right: 0;
@@ -195,13 +195,28 @@
     position: relative;
     margin-left: 24rpx;
 }
-.van-radio{
+.scroll-wrap .van-radio{
     display: inline-block !important;
     position: relative;
+    overflow: visible;
 }
-.van-radio__icon-wrap{
+.scroll-wrap .van-radio__icon-wrap{
     position: absolute;
     right: 0;
-    bottom: 0;
+    bottom: 0rpx;
     z-index: 1000000;
+}
+.dx-wrap {
+  position: relative;
+  display: inline-block;
+}
+.dx-wrap-img{
+  position: absolute;
+  right: 70rpx;
+  bottom: 8rpx;
+  z-index: 1000;
+  padding:16rpx 10rpx 10rpx 120rpx;
+}
+.dx-wrap .van-checkbox__label{
+    margin: 0 ;
 }
