@@ -1,7 +1,7 @@
 /*
  * @Author: Li-HONGYAO
  * @Date: 2021-03-22 10:18:46
- * @LastEditTime: 2021-03-23 12:10:42
+ * @LastEditTime: 2021-03-23 17:58:19
  * @LastEditors: Li-HONGYAO
  * @Description:
  * @FilePath: \Admin\src\pages\Configs\Rate.tsx
@@ -123,10 +123,11 @@ const Rate: FC<IProps> = (props) => {
     <>
       <Modal
         title="退单费率配置"
-        width={650}
+        width={680}
         visible={props.visible}
         onCancel={props.onCancel}
         footer={null}
+        maskClosable={false}
       >
         <div
           style={{
@@ -166,13 +167,14 @@ const Rate: FC<IProps> = (props) => {
       </Modal>
       {/* 添加费率 */}
       <Modal
-        width={650}
+        width={680}
         title="费率挡位信息"
         visible={addRateVisible}
         onCancel={() => {
           setAddRateVisible(false);
           form.resetFields();
         }}
+        maskClosable={false}
         closable={false}
         onOk={onAddRate}
         destroyOnClose={true}

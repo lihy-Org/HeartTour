@@ -1,7 +1,7 @@
 /*
  * @Author: Li-HONGYAO
  * @Date: 2021-03-22 10:18:46
- * @LastEditTime: 2021-03-23 15:38:47
+ * @LastEditTime: 2021-03-23 17:52:57
  * @LastEditors: Li-HONGYAO
  * @Description:
  * @FilePath: \Admin\src\pages\Configs\Schedule.tsx
@@ -32,6 +32,7 @@ const Schedule: FC<IProps> = (props) => {
   const [form] = Form.useForm();
   const [dataSource, setDataSource] = useState<HT.ConfigType[]>([]);
   const [addVisible, setAddVisible] = useState(false);
+  const [isAdd, setIsAdd] = useState(false);
 
   // methods
   const getConfigs = (loading: boolean, dialog?: string) => {
@@ -51,10 +52,10 @@ const Schedule: FC<IProps> = (props) => {
       if (values) {
         const breakTime = values.breakTime
           .map((obj: any) => obj.format('HH:mm'))
-          .join(' - ');
+          .join('-');
         const workTime = values.workTime
           .map((obj: any) => obj.format('HH:mm'))
-          .join(' - ');
+          .join('-');
         Api.config
           .addOrUpdate<HT.BaseResponse<any>>({
             configId: values.configId,
@@ -73,12 +74,16 @@ const Schedule: FC<IProps> = (props) => {
     } catch (err) {}
   };
 
-  const onDeleteRate = () => {
+  const onDeleteConfig = (configId: string) => {
     Modal.confirm({
       content: '您确定要删除该项配置么？',
       cancelText: '点错了',
       onOk: () => {
-        message.success('删除成功');
+        Api.config.remove<HT.BaseResponse<any>>(configId).then((res) => {
+          if (res && res.status === 200) {
+            getConfigs(false, '删除成功');
+          }
+        });
       },
     });
   };
@@ -121,11 +126,11 @@ const Schedule: FC<IProps> = (props) => {
                 name: record.key,
                 workTime: record.value
                   .split(',')[0]
-                  .split(' - ')
+                  .split('-')
                   .map((item) => moment(item, 'HH:mm')),
                 breakTime: record.value
                   .split(',')[1]
-                  .split(' - ')
+                  .split('-')
                   .map((item) => moment(item, 'HH:mm')),
               });
               setAddVisible(true);
@@ -133,7 +138,12 @@ const Schedule: FC<IProps> = (props) => {
           >
             编辑
           </Button>
-          <Button type="primary" size="small" danger onClick={onDeleteRate}>
+          <Button
+            type="primary"
+            size="small"
+            danger
+            onClick={() => onDeleteConfig(record.id)}
+          >
             删除
           </Button>
         </Space>
@@ -162,7 +172,10 @@ const Schedule: FC<IProps> = (props) => {
             type="primary"
             size="small"
             shape="round"
-            onClick={() => setAddVisible(true)}
+            onClick={() => {
+              setAddVisible(true);
+              setIsAdd(true);
+            }}
           >
             添加班次
           </Button>
@@ -174,16 +187,18 @@ const Schedule: FC<IProps> = (props) => {
           pagination={false}
           rowKey="id"
           childrenColumnName="-"
+          style={{ marginBottom: 50 }}
         />
       </Modal>
       {/* 添加排班 */}
       <Modal
         width={650}
-        title="添加排班"
+        title={isAdd ? '添加排班' : '编辑排班'}
         visible={addVisible}
         maskClosable={false}
         onCancel={() => {
           setAddVisible(false);
+          setIsAdd(false);
           form.resetFields();
         }}
         closable={false}
@@ -203,8 +218,13 @@ const Schedule: FC<IProps> = (props) => {
           <Form.Item hidden={true} noStyle name="configId">
             <Input />
           </Form.Item>
-          <Form.Item label="班次名" name="name" rules={[{ required: true }]}>
-            <Input placeholder="请输入班次名" />
+          <Form.Item
+            label="班次名"
+            name="name"
+            rules={[{ required: true }]}
+            extra={isAdd ? '注意：班次名添加之后将不可修改，请谨慎填写。' : ''}
+          >
+            <Input placeholder="请输入班次名" disabled={!isAdd} />
           </Form.Item>
           <Form.Item
             label="工作时间"

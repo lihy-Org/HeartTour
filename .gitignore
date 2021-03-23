@@ -8,17 +8,16 @@
 /src/FrontEnd/Admin/package-lock.json
 
 # production
-src/FrontEnd/Admin/dist
+/src/FrontEnd/Admin/dist
 
 # misc
 .DS_Store
 
 # umi
-/src/FrontEnd/Admin/src/*
-/src/FrontEnd/Admin/src/.umi/.cache/*
-src/FrontEnd/Admin/src/.umi-production
-src/FrontEnd/Admin/src/.umi-test
-src/FrontEnd/Admin/.env.local
+/src/FrontEnd/Admin/src/.umi
+/src/FrontEnd/Admin/src/.umi-production
+/src/FrontEnd/Admin/src/.umi-test
+/src/FrontEnd/Admin/.env.local
 
 /vendor/
 node_modules/
