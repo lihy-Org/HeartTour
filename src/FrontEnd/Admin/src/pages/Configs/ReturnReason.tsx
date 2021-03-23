@@ -1,14 +1,13 @@
 /*
  * @Author: Li-HONGYAO
  * @Date: 2021-03-15 15:35:48
- * @LastEditTime: 2021-03-22 10:26:03
+ * @LastEditTime: 2021-03-23 09:34:21
  * @LastEditors: Li-HONGYAO
  * @Description:
  * @FilePath: \Admin\src\pages\Configs\ReturnReason.tsx
  */
 
 import React, {
-  ChangeEventHandler,
   FC,
   memo,
   useEffect,
@@ -31,6 +30,7 @@ type SelectedObjType = {
 const TextArea = Input.TextArea;
 const ReturnReason: FC<IProps> = (props) => {
   // state
+
   const [reasons, setReasons] = useState<HT.ConfigType[]>([]);
   const [visible, setVisible] = useState(false);
   const [value, setValue] = useState<SelectedObjType>({

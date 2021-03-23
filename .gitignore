@@ -1,23 +1,23 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
-/FrontEnd/Admin/node_modules
-/FrontEnd/Admin/npm-debug.log*
-/FrontEnd/Admin/yarn-error.log
-/FrontEnd/Admin/yarn.lock
-/FrontEnd/Admin/package-lock.json
+/src/FrontEnd/Admin/node_modules
+/src/FrontEnd/Admin/npm-debug.log*
+/src/FrontEnd/Admin/yarn-error.log
+/src/FrontEnd/Admin/yarn.lock
+/src/FrontEnd/Admin/package-lock.json
 
 # production
-/FrontEnd/Admin/dist
+/src/FrontEnd/Admin/dist
 
 # misc
 .DS_Store
 
 # umi
-/FrontEnd/Admin/src/.umi
-/FrontEnd/Admin/src/.umi-production
-/FrontEnd/Admin/src/.umi-test
-/FrontEnd/Admin/.env.local
+/src/FrontEnd/Admin/src/.umi
+/src/FrontEnd/Admin/src/.umi-production
+/src/FrontEnd/Admin/src/.umi-test
+/src/FrontEnd/Admin/.env.local
 
 /vendor/
 node_modules/

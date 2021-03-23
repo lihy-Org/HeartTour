@@ -55,8 +55,11 @@
                   size="small"
                   :disabled="item.isDisabled"
                   :clearable="item.clearable"
+                  @clear="
+                    typeof item.clear === 'function' ? item.clear($event, row) : () => {}
+                  "
                   @change="
-                    typeof item.change === 'function' ? item.change($event) : () => {}
+                    typeof item.change === 'function' ? item.change($event, row) : () => {}
                   "
                 >
                   <el-option

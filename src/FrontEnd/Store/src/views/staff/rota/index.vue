@@ -51,8 +51,7 @@
 import Form from '@/components/Form/index'
 import Btns from '@/components/Btns/index'
 import Table from '@/components/Table/index'
-import { getStatsWorktime, getUsersList } from '@/api/personManage'
-// import { getStatsWorktime, getUsersList, setStaffShiftList } from '@/api/personManage'
+import { getStatsWorktime, getUsersList, setStaffShiftList } from '@/api/personManage'
 import moment from 'moment'
 import 'moment/locale/zh-cn'
 
@@ -185,6 +184,7 @@ export default {
        * table属性
        * @param tableLoading 动画
        * @param tableData 列表数据
+       * @param saveData 进入编辑保存当前tableData，若取消，使用该保存data赋值给tableData
        * @param setTableData 编辑班表时，拷贝的table，清空数据时会用（只为了传递给后端的数据是修改的、并非所有的）
        * @param columns 列表展示项
        * @param pagination 分页
@@ -194,6 +194,7 @@ export default {
       tableHeight: 'height: calc(100vh - 184px)',
       tableLoading: false,
       tableData: [],
+      saveData: [],
       setTableData: [],
       columns: [
         {
@@ -353,7 +354,7 @@ export default {
 
             this.tableLoading = false
             this.tableData = newData
-
+            this.saveData = this.$_.cloneDeep(newData)
             const dateArr = []
             for (let i = 0; i < timeDifference; i++) {
               const dateStamp = moment(val[0] + i * 1000 * 60 * 60 * 24)
@@ -365,10 +366,11 @@ export default {
                 rotaName: '请选择班次',
                 optionData: () => this.rotaList,
                 clearable: true,
+                clear: (val, row) => this.clearSelectRota(val, row, dateStamp.format('YYYY-MM-DD')),
                 contentType: 'normal',
                 isDisabled: moment().startOf('day') > moment(dateStamp).startOf('day'),
                 minWidth: '160px',
-                change: val => this.changeDateTable(val)
+                change: (val, row) => this.changeDateTable(val, row)
               }
               dateArr.push(obj)
             }
@@ -403,9 +405,8 @@ export default {
 
     // 编辑排班
     setRota() {
-      // this.isSelect = !this.isSelect
-      // this.$set(this, 'isSelect', !this.isSelect)
       console.log(this.isSelect)
+      console.log(this.saveData)
       this.columns.forEach(item => {
         if (!this.isSelect && item.contentType === 'normal') {
           item.contentType = 'select'
@@ -423,11 +424,19 @@ export default {
           this.isSelect = !this.isSelect
           this.operationBtns[1].value = this.isSelect ? '取消排班' : '编辑排班'
           this.isFirstIn = true
+          this.tableData = this.$_.cloneDeep(this.saveData)
           this.$message({
             type: 'info',
             message: '退出编辑'
           })
         }).catch(() => {
+          console.log(this.isSelect)
+          // 取消后，仍然是select下拉框
+          this.columns.forEach(item => {
+            if (this.isSelect && item.contentType === 'normal') {
+              item.contentType = 'select'
+            }
+          })
           this.$message({
             type: 'info',
             message: '已取消退出'
@@ -435,7 +444,7 @@ export default {
         })
       } else {
         this.setTableData = []
-        this.isSelect = !this.isSelect
+        this.isSelect = true
         this.operationBtns[1].value = this.isSelect ? '取消排班' : '编辑排班'
         // setTableData 只保留tableData中的非班次的数据
         this.tableData.forEach((item) => {
@@ -451,10 +460,16 @@ export default {
     },
 
     // 编辑班表-下拉框选择班次
-    changeDateTable(val) {
+    changeDateTable(val, row) {
       console.log(val)
-      console.log(this.setTableData)
-      console.log(this.tableData)
+      console.log(row)
+    },
+    // 编辑班表，清空时，删除班表的key-value
+    clearSelectRota(val, row, key) {
+      console.log(row)
+      console.log(key)
+      delete row[key]
+      console.log(row)
     },
 
     // 提交班表
@@ -468,6 +483,43 @@ export default {
       // }).catch(err => {
       //   console.log(err)
       // })
+
+      // 目前暂时一个一个人传，因此按人，将数据处理，多次请求接口，select清空时，已delete，可以直接判断Object.keys的lenth
+      this.tableData.forEach(item => {
+        console.log(item)
+        const keysArr = Object.keys(item)
+        console.log(keysArr)
+        // 没有修改排班，所存在的key为["post", "uid", "uname"]，剩下的key["post", "uid", "uname", "2021-03-23", "2021-03-24"]，是day
+        let daysKeyArr = []
+        const originalArr = ['post', 'uid', 'uname']
+        daysKeyArr = keysArr.filter(ele => {
+          return originalArr.indexOf(ele) === -1
+        })
+        console.log(daysKeyArr)
+        const daysArr = []
+        daysKeyArr.forEach((ele, index) => {
+          const dayObj = {
+            day: ele,
+            startTime: item[ele].split('-')[0],
+            endTime: item[ele].split('-')[1]
+          }
+          daysArr.push(dayObj)
+        })
+        const obj = {
+          userId: item.uid,
+          days: daysArr
+        }
+        // 只请求修改了班表的人
+        if (obj.days.length > 0) {
+          console.log(obj, '------------------------------------')
+          setStaffShiftList(obj).then(res => {
+            console.log(res.data)
+          }).catch(err => {
+            console.log(err)
+          })
+        }
+        console.log('+++++++++++++++++++++++++++++++++++')
+      })
     },
 
     // 调店

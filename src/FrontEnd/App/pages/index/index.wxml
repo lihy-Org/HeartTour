@@ -46,12 +46,13 @@
             </view>
         </view> -->
         <!-- 超值套餐 -->
-        <scroll-view scroll-x>
-            <view style="width: 100%;white-space:nowrap;" class="py-20 px-24">
+        <scroll-view scroll-x class="scroll-wrap">
+            <view style="width: 100%;white-space:nowrap;" class="py-20 px-24 ">
                 <van-radio-group value="{{ primaryRadio }}" bind:change="onChangeCheck">
                     <block wx:for="{{mockPet}}" wx:key='index'>
-                        <van-radio name="{{item.id}}" label-disabled data-text="{{item}}" bind:tap="onClickPrimary">
-                            <view class="setMeal mr-8 py-12 px-12 position-relative">
+                        <van-radio name="{{item.id}}" use-icon-slot label-disabled data-text="{{item}}" catch:tap="onClickPrimary">
+                            <image slot="icon" style="width:40rpx;height:40rpx;padding:38rpx 20rpx 12rpx 36rpx;"  src="{{ primaryRadio == item.id ? icon.active : icon.normal }}" />
+                            <view class="setMeal mr-8 py-12 px-12 position-relative" catch:tap="goDetails">
                                 <view class="d-flex" hover-class="none" hover-stop-propagation="false">
                                     <view class="mr-20" hover-class="none" hover-stop-propagation="false">
                                         <image class="" style="width:150rpx;height:220rpx;object-fit: cover;" src="{{item.bgImg}}" lazy-load="false" binderror="" bindload=""></image>
@@ -71,9 +72,9 @@
                                         <view class="d-flex justify-content-between " style="width:200rpx;align-items: center;" hover-class="none" hover-stop-propagation="false">
                                             <p class="f28 f-bold color-384359">{{item.price}}</p>
                                         </view>
-                                        <!-- <view class="position-absolute addSelet bg-E2F6FF " bind:tap='selectMeal' data-item="{{item}}">
-                                            <image class="position-absolute" src="{{activeMeal===item.id?'../../assets/images/yes.png':'../../assets/images/jia.png'}}"></image>
-                                        </view> -->
+                                        <view class="position-absolute addSelet bg-E2F6FF" hover-class="none" hover-stop-propagation="false">
+                                            <!-- <image class="position-absolute" src="{{activeMeal===item.id?'../../assets/images/yes.png':'../../assets/images/jia.png'}}"></image> -->
+                                        </view>
                                     </view>
                                 </view>
                             </view>
@@ -111,35 +112,24 @@
             </view>
         </scroll-view>
         <view class="px-24 f32 f-bold mt-32">
-            <p class="color-384359">单项服务1</p>
+            <p class="color-384359">单项服务</p>
         </view>
         <scroll-view scroll-x>
             <view style="width: 100%;white-space:nowrap;" class="py-20 px-24">
                 <van-checkbox-group value="{{ secondaryResult }}" bind:change="onChangeCheckBox">
                     <block wx:for="{{addItem}}" wx:key="index">
-                        <van-checkbox name="{{item.id}}" label-disabled data-text="{{item}}" bind:tap="onClickSecondary">
-                            <view class="addItem mr-20 d-inline-block line-clamp-1">
+                        <van-checkbox name="{{item.id}}" use-icon-slot label-disabled class="dx-wrap" data-text="{{item}}" bind:tap="onClickSecondary">
+                           <image slot="icon" style="width:20rpx;height:20rpx;" class="dx-wrap-img"  src="{{item.checked ? icon.active : icon.normal }}" />
+                           <view class="addItem mr-20 d-inline-block line-clamp-1">
                                 <p class="color-384359 f-bold f32 mt-16 ml-16 ">{{item.name}}</p>
-                                <view class="flex-center">
-                                    <p class="color-384359 f-bold f28 mr-8">{{item.price}}</p>
-                                    <image class="" style="width:20rpx;height:20rpx;" src="{{item.checked?'../../assets/images/yes.png':'../../assets/images/jia.png'}}"></image>
+                                <view class="" style="display:flex;align-items: center;">
+                                    <p class="color-384359 f-bold f28 mr-8" style="margin-left:8rpx;">{{item.price}}</p>
                                 </view>
                             </view>
                         </van-checkbox>
                     </block>
                 </van-checkbox-group>
             </view>
-            <!-- <view style="width: 100%;white-space:nowrap;" class="py-20 px-24">
-                <block wx:for="{{addItem}}" wx:key="index">
-                    <view class="addItem mr-20 d-inline-block line-clamp-1">
-                        <p class="color-384359 f-bold f32 mt-16 ml-16 ">{{item.name}}</p>
-                        <view class="flex-center" bind:tap="suggestItem" data-index="{{index}}" data-item="{{item}}">
-                            <p class="color-384359 f-bold f28 mr-8">{{item.price}}</p>
-                            <image class="" style="width:20rpx;height:20rpx;" src="{{item.checked?'../../assets/images/yes.png':'../../assets/images/jia.png'}}"></image>
-                        </view>
-                    </view>
-                </block>
-            </view> -->
         </scroll-view>
     </view>
     <!-- 建议增项 -->
