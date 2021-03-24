@@ -1,10 +1,10 @@
 /*
  * @Author: Li-HONGYAO
  * @Date: 2021-01-04 15:41:47
- * @LastEditTime: 2021-03-15 21:40:42
+ * @LastEditTime: 2021-03-24 11:21:30
  * @LastEditors: Li-HONGYAO
  * @Description:
- * @FilePath: /Admin/src/layouts/Menus/index.tsx
+ * @FilePath: \Admin\src\layouts\Menus\index.tsx
  */
 import React, { FC } from 'react';
 import { Menu, Layout } from 'antd';
@@ -67,26 +67,26 @@ const menus: MenuItemType[] = [
     path: '/combo',
     title: '套餐管理',
     icon: <AppstoreOutlined />,
-  },
-  {
-    path: '/shop',
-    title: '商城管理',
-    icon: <ShoppingOutlined />,
-    children: [
-      {
-        path: '/shop/living',
-        title: '活体',
-      },
-      {
-        path: '/shop/product',
-        title: '产品',
-      },
-      {
-        path: '/shop/ambitus',
-        title: '周边',
-      },
-    ],
-  },
+  }, 
+  // {
+  //   path: '/shop',
+  //   title: '商城管理',
+  //   icon: <ShoppingOutlined />,
+  //   children: [
+  //     {
+  //       path: '/shop/living',
+  //       title: '活体',
+  //     },
+  //     {
+  //       path: '/shop/product',
+  //       title: '产品',
+  //     },
+  //     {
+  //       path: '/shop/ambitus',
+  //       title: '周边',
+  //     },
+  //   ],
+  // },
   {
     path: '/store',
     title: '门店管理',

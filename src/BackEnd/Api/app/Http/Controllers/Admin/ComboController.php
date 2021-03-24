@@ -225,9 +225,7 @@ class ComboController extends Controller
             'userIds' => ['required', 'array', Rule::exists('users', 'id')->where(function ($query) {
                 $query->where('state', 0)->whereNotIn('type', [0, 1])->where('isBeautician', 1);
             })],
-            'comboId' => ['required', Rule::exists('combos', 'id')->where(function ($query) {
-                $query->where('comboType', 0);
-            })],
+            'comboId' => ['required', Rule::exists('combos', 'id')],
         ];
         $messages = [];
         $validator = Validator::make($request->all(), $rules, $messages);

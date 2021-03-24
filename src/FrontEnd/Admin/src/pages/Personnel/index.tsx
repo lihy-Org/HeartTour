@@ -1,10 +1,10 @@
 /*
  * @Author: Li-HONGYAO
  * @Date: 2021-01-18 11:15:25
- * @LastEditTime: 2021-03-15 23:19:31
+ * @LastEditTime: 2021-03-24 11:11:29
  * @LastEditors: Li-HONGYAO
  * @Description:
- * @FilePath: /Admin/src/pages/Personnel/index.tsx
+ * @FilePath: \Admin\src\pages\Personnel\index.tsx
  */
 import React, { FC, useState, useEffect } from 'react';
 import {
@@ -108,15 +108,13 @@ const Personnel: FC = () => {
   const [personnelForm] = Form.useForm();
   const [dataSource, setDataSource] = useState<ColumnsType[]>([]);
   const [total, setTotal] = useState(0);
-  const [page, setPage] = useState<HT.TablePageData<FilterParamsType>>(
-    () => ({
-      pageSize: 20,
-      page: 1,
-      filters: {},
-    }),
-  );
+  const [page, setPage] = useState<HT.TablePageData<FilterParamsType>>(() => ({
+    pageSize: 20,
+    page: 1,
+    filters: {},
+  }));
   // methods
-  const getDataSource = (loading: boolean) => {
+  const getDataSource = (loading: boolean, dialog?: string) => {
     loading && message.loading('数据加载中...');
     Api.personnel
       .list<HT.BaseResponse<ColumnsType[]>>({
@@ -128,6 +126,7 @@ const Personnel: FC = () => {
         if (res && res.status === 200) {
           setDataSource(res.data);
           setTotal(res.page.total);
+          dialog && message.success(dialog);
         }
       });
   };
@@ -144,8 +143,7 @@ const Personnel: FC = () => {
         })
         .then((res) => {
           if (res && res.status === 200) {
-            getDataSource(false);
-            message.success(userId ? '编辑成功' : '添加成功');
+            getDataSource(false, userId ? '编辑成功' : '添加成功');
             setAddModalVisible(false);
           }
         });
@@ -161,8 +159,7 @@ const Personnel: FC = () => {
       onOk: () => {
         Api.personnel.remove<HT.BaseResponse<any>>(id).then((res) => {
           if (res && res.status === 200) {
-            message.success('禁用成功');
-            getDataSource(false);
+            getDataSource(false, '禁用成功');
           }
         });
       },
@@ -182,8 +179,7 @@ const Personnel: FC = () => {
       })
       .then((res) => {
         if (res && res.status === 200) {
-          message.success('已分配');
-          getDataSource(false);
+          getDataSource(false, '已分配');
           setSelectedStore('');
           setStoreModalVisible(false);
         }
@@ -359,7 +355,7 @@ const Personnel: FC = () => {
           </Form.Item>
           {/* 性别 */}
           <Form.Item label="性别：" name="gender">
-            <Select placeholder="全部" allowClear>
+            <Select placeholder="全部" allowClear style={{ width: 80 }}>
               <Option value={1}>男</Option>
               <Option value={2}>女</Option>
             </Select>
@@ -380,7 +376,7 @@ const Personnel: FC = () => {
             </Button>
           </Form.Item>
           <Form.Item>
-            <Button type="primary" icon={<DownloadOutlined />}>
+            <Button type="primary" icon={<DownloadOutlined />} disabled>
               导出
             </Button>
           </Form.Item>
