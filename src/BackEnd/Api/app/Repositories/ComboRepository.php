@@ -145,9 +145,11 @@ class ComboRepository
             $combo = $combo->whereIn('id', function ($query) use ($data) {
                 $query->select('cid')
                     ->from('comboBeauticians')
+                    ->whereNull('deleted_at')
                     ->whereIn('userId', function ($query) use ($data) {
                         $query->select('id')
                             ->from('users')
+                            ->whereNull('deleted_at')
                             ->where('storeId', $data->storeId);
                     });
             });
@@ -156,6 +158,7 @@ class ComboRepository
             $combo = $combo->whereIn('id', function ($query) use ($data) {
                 $query->select('cid')
                     ->from('comboVarieties')
+                    ->whereNull('deleted_at')
                     ->where('varietyId', $data->varietyId);
             });
         }

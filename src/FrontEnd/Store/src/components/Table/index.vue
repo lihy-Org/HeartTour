@@ -55,8 +55,11 @@
                   size="small"
                   :disabled="item.isDisabled"
                   :clearable="item.clearable"
+                  @clear="
+                    typeof item.clear === 'function' ? item.clear($event, row) : () => {}
+                  "
                   @change="
-                    typeof item.change === 'function' ? item.change($event) : () => {}
+                    typeof item.change === 'function' ? item.change($event, row) : () => {}
                   "
                 >
                   <el-option
@@ -66,7 +69,10 @@
                     :key="index"
                     :label="ele.label"
                     :value="ele.value"
-                  />
+                  >
+                    <span style="float: left">{{ ele.label }}</span>
+                    <span style="float: right; color: #8492a6; font-size: 13px; margin-left: 20px">上班时间{{ ele.workTime }} / 休息时间{{ ele.restTime }}</span>
+                  </el-option>
                 </el-select>
               </template>
             </el-table-column>
