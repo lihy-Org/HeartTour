@@ -1,7 +1,7 @@
 /*
  * @Author: Li-HONGYAO
  * @Date: 2021-03-22 10:18:46
- * @LastEditTime: 2021-03-23 17:58:19
+ * @LastEditTime: 2021-03-24 11:07:20
  * @LastEditors: Li-HONGYAO
  * @Description:
  * @FilePath: \Admin\src\pages\Configs\Rate.tsx
@@ -37,9 +37,9 @@ interface IProps {
   onCancel: () => void;
 }
 type ColumnsType = {
-  id: string /** id */;
-  start: number;
-  end: number;
+  id: string;
+  minMin: number;
+  maxMin: number;
   rate: number;
 };
 
@@ -48,42 +48,62 @@ const Rate: FC<IProps> = (props) => {
   const [form] = Form.useForm();
   const [dataSource, setDataSource] = useState<ColumnsType[]>([]);
   const [addRateVisible, setAddRateVisible] = useState(false);
+  const [isAdd, setIsAdd] = useState(false);
+  const [limit, setLimit] = useState(0);
+  const [limitInputValue, setLimitInputValue] = useState(0);
   const [limitVisible, setLimitVisible] = useState(false);
 
   // methods
-  const getConfigs = (loading: boolean, dialog?: string) => {
+  const getRates = (loading: boolean, dialog?: string) => {
     loading && message.loading('数据记载中...', 20);
-    setDataSource([
-      { id: '1', start: 10, end: 20, rate: 30 },
-      { id: '2', start: 10, end: 20, rate: 30 },
-      { id: '3', start: 10, end: 20, rate: 30 },
-      { id: '4', start: 10, end: 20, rate: 30 },
-      { id: '5', start: 10, end: 20, rate: 30 },
-    ]);
+    Api.rfrule.list<HT.BaseResponse<ColumnsType[]>>().then((res) => {
+      if (res && res.status === 200) {
+        setDataSource(res.data);
+        dialog && message.success(dialog);
+      }
+    });
+  };
+  const getLimit = () => {
+    Api.rfrule.getLimit<HT.BaseResponse<{ maxMin: number }>>().then((res) => {
+      if (res && res.status === 200 && res.data) {
+        setLimit(res.data.maxMin);
+      }
+    });
   };
 
   // events
-  const onAddRate = async () => {
+  const onAddOrEditRate = async () => {
     try {
       const values = await form.validateFields();
       if (values) {
-        console.log(values);
+        Api.rfrule.addOrUpdate<HT.BaseResponse<any>>(values).then((res) => {
+          if (res && res.status === 200) {
+            setAddRateVisible(false);
+            form.resetFields();
+            getRates(false, isAdd ? '添加成功' : '编辑成功');
+          }
+        });
       }
     } catch (err) {}
   };
-  const onDeleteRate = () => {
+  const onDeleteRate = (id: string) => {
     Modal.confirm({
       content: '您确定要删除该项配置么？',
       cancelText: '点错了',
       onOk: () => {
-        message.success('删除成功')
-      }
-    })
-  }
+        Api.rfrule.remove<HT.BaseResponse<any>>(id).then((res) => {
+          if (res && res.status === 200) {
+            getRates(false, '删除成功');
+          }
+        });
+      },
+    });
+  };
   // effects
   useEffect(() => {
     if (props.visible) {
-      getConfigs(true);
+      getRates(true);
+      getLimit();
     }
   }, [props.visible]);
 
@@ -93,7 +113,8 @@ const Rate: FC<IProps> = (props) => {
     {
       title: '范围',
       key: 'scope',
-      render: (record: ColumnsType) => `${record.start} ~ ${record.end}`,
+      render: (record: ColumnsType) =>
+        `${record.minMin} ~ ${record.maxMin}分钟`,
     },
     { title: '费率', dataIndex: 'rate', render: (rate: number) => `${rate}%` },
     {
@@ -106,13 +127,19 @@ const Rate: FC<IProps> = (props) => {
             type="primary"
             size="small"
             onClick={() => {
-              form.setFieldsValue({ ...record });
+              form.setFieldsValue({ ...record, rId: record.id });
               setAddRateVisible(true);
+              setIsAdd(false);
             }}
           >
             编辑
           </Button>
-          <Button type="primary" size="small" danger onClick={onDeleteRate}>
+          <Button
+            type="primary"
+            size="small"
+            danger
+            onClick={() => onDeleteRate(record.id)}
+          >
             删除
           </Button>
         </Space>
@@ -137,7 +164,7 @@ const Rate: FC<IProps> = (props) => {
             marginBottom: 16,
           }}
         >
-          <div>订单开始前 30分钟 不可退</div>
+          <div>订单开始前{limit}分钟不可退</div>
           <Space>
             <Button
               type="primary"
@@ -151,7 +178,10 @@ const Rate: FC<IProps> = (props) => {
               type="primary"
               size="small"
               shape="round"
-              onClick={() => setAddRateVisible(true)}
+              onClick={() => {
+                setAddRateVisible(true);
+                setIsAdd(true);
+              }}
             >
               添加费率挡位
             </Button>
@@ -168,7 +198,7 @@ const Rate: FC<IProps> = (props) => {
       {/* 添加费率 */}
       <Modal
         width={680}
-        title="费率挡位信息"
+        title={isAdd ? '添加费率挡位' : '编辑费率挡位'}
         visible={addRateVisible}
         onCancel={() => {
           setAddRateVisible(false);
@@ -176,7 +206,7 @@ const Rate: FC<IProps> = (props) => {
         }}
         maskClosable={false}
         closable={false}
-        onOk={onAddRate}
+        onOk={onAddOrEditRate}
         destroyOnClose={true}
         okButtonProps={{
           htmlType: 'submit',
@@ -186,12 +216,15 @@ const Rate: FC<IProps> = (props) => {
           form={form}
           autoComplete="off"
           layout="inline"
-          onFinish={onAddRate}
+          onFinish={onAddOrEditRate}
         >
           <Space align="baseline" size="small">
+            <Form.Item noStyle hidden name="rId">
+              <Input />
+            </Form.Item>
             <Form.Item
               label="范围"
-              name="start"
+              name="minMin"
               rules={[{ required: true, message: '请填写开始时间' }]}
               style={{ marginRight: 0 }}
             >
@@ -199,7 +232,7 @@ const Rate: FC<IProps> = (props) => {
             </Form.Item>
             <span style={{ margin: '0 8px' }}>~</span>
             <Form.Item
-              name="end"
+              name="maxMin"
               rules={[{ required: true, message: '请填写结束时间' }]}
             >
               <InputNumber placeholder="结束" min={0} style={{ width: 120 }} />
@@ -227,16 +260,39 @@ const Rate: FC<IProps> = (props) => {
       </Modal>
       {/* 不可退限制 */}
       <Modal
+        width={500}
         title="退单限制"
         visible={limitVisible}
         onCancel={() => setLimitVisible(false)}
         closable={false}
+        onOk={() => {
+          if (!limitInputValue) {
+            message.info('请填写限制数据!');
+          } else {
+            Api.rfrule
+              .setLimit<HT.BaseResponse<any>>(limitInputValue)
+              .then((res) => {
+                if (res && res.status === 200) {
+                  message.success('设置成功');
+                  setLimitVisible(false);
+                  getLimit();
+                }
+              });
+          }
+        }}
       >
         <Space>
           <span>订单开始前</span>
-          <InputNumber placeholder="请输入限制" style={{ width: 100 }} />
+          <InputNumber
+            placeholder="请输入限制"
+            style={{ width: 100 }}
+            onChange={(value: any) => setLimitInputValue(value)}
+          />
           <span>分钟不可退单</span>
         </Space>
+        <p style={{ fontSize: 12, color: '#ff4d4f', marginTop: 16 }}>
+          注意：输入是的时间限制需小于等于费率挡位设置的最小分钟数+1。
+        </p>
       </Modal>
     </>
   );

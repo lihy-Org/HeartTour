@@ -1,7 +1,7 @@
 /*
  * @Author: Li-HONGYAO
  * @Date: 2021-01-18 11:15:25
- * @LastEditTime: 2021-03-16 15:58:16
+ * @LastEditTime: 2021-03-24 11:17:10
  * @LastEditors: Li-HONGYAO
  * @Description:
  * @FilePath: \Admin\src\pages\Store\index.tsx
@@ -43,7 +43,7 @@ type ShopAssistantType = {
   phone: string /** 电话 */;
   titles: {
     id: string;
-    title: string
+    title: string;
   }[] /** 头衔 */;
   post: string /** 职位 */;
   type: number /** 2:门店系统管理员（店长） 3:普通人员 */;
@@ -88,15 +88,13 @@ const Store: FC = () => {
   const [saModalVisible, setSAModalVisible] = useState(false);
   const [dataSource, setDataSource] = useState<ColumnsType[]>([]);
   const [total, setTotal] = useState(0);
-  const [page, setPage] = useState<HT.TablePageData<FilterParamsType>>(
-    () => ({
-      pageSize: 20,
-      page: 1,
-      filters: {},
-    }),
-  );
+  const [page, setPage] = useState<HT.TablePageData<FilterParamsType>>(() => ({
+    pageSize: 20,
+    page: 1,
+    filters: {},
+  }));
   // methods
-  const getDataSource = (loading: boolean) => {
+  const getDataSource = (loading: boolean, dialog?: string) => {
     loading && message.loading('数据加载中...');
     Api.store
       .list<HT.BaseResponse<ColumnsType[]>>({
@@ -108,6 +106,7 @@ const Store: FC = () => {
         if (res && res.status === 200) {
           setDataSource(res.data);
           setTotal(res.page.total);
+          dialog && message.success(dialog);
         }
       });
   };
@@ -155,8 +154,7 @@ const Store: FC = () => {
           })
           .then((res) => {
             if (res && res.status === 200) {
-              message.success(storeId ? '编辑成功' : '添加成功');
-              getDataSource(false);
+              getDataSource(false, storeId ? '编辑成功' : '添加成功');
               setAddModalVisible(false);
             }
           });
@@ -172,9 +170,7 @@ const Store: FC = () => {
       onOk: () => {
         Api.store.remove<HT.BaseResponse<any>>(id).then((res) => {
           if (res && res.status === 200) {
-            console.log(res);
-            message.success('禁用成功');
-            getDataSource(false);
+            getDataSource(false, '禁用成功');
           }
         });
       },
@@ -184,9 +180,8 @@ const Store: FC = () => {
   const onSetShopManager = (userId: string, storeId: string) => {
     Api.personnel.setManage<HT.BaseResponse<any>>(userId).then((res) => {
       if (res && res.status === 200) {
-        message.success('设置成功');
         getShopAssistant(false, storeId);
-        getDataSource(false);
+        getDataSource(false, '设置成功');
       }
     });
   };
@@ -290,14 +285,17 @@ const Store: FC = () => {
     {
       title: '头衔',
       dataIndex: 'titles',
-      render: (record: {title: string; id: string}[]) => (
+      render: (record: { title: string; id: string }[]) => (
         <Space size="small">
-          {record &&
+          {record.length > 0 ? (
             record.map((title, i) => (
               <Tag style={{ fontSize: 10 }} color="#87d068" key={title.id}>
                 {title.title}
               </Tag>
-            ))}
+            ))
+          ) : (
+            <span className="color-C5C5C5">暂无头衔</span>
+          )}
         </Space>
       ),
     },
