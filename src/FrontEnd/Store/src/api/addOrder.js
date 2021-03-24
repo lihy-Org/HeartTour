@@ -4,7 +4,6 @@
  */
 import request from '@/utils/request'
 
-// /api/storesys/config/{type}/{key?}
 export function getPetsList() {
   return request({
     url: '/api/storesys/config/kVARIETIES',
