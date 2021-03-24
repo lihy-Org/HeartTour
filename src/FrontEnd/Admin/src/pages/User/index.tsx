@@ -1,7 +1,7 @@
 /*
  * @Author: Li-HONGYAO
  * @Date: 2021-01-18 11:35:12
- * @LastEditTime: 2021-03-16 15:54:32
+ * @LastEditTime: 2021-03-24 10:53:12
  * @LastEditors: Li-HONGYAO
  * @Description:
  * @FilePath: \Admin\src\pages\User\index.tsx
@@ -25,7 +25,7 @@ import {
   SearchOutlined,
   StopOutlined,
   ReloadOutlined,
-  DownloadOutlined
+  DownloadOutlined,
 } from '@ant-design/icons';
 import { ColumnProps } from 'antd/es/table';
 import Api from '@/Api';
@@ -110,13 +110,11 @@ const User: FC = () => {
   // 列表数据
   const [dataSource, setDataSource] = useState<ColumnsType[]>([]);
   const [total, setTotal] = useState(0);
-  const [page, setPage] = useState<HT.TablePageData<FilterParamsType>>(
-    () => ({
-      pageSize: 20,
-      page: 1,
-      filters: {},
-    }),
-  );
+  const [page, setPage] = useState<HT.TablePageData<FilterParamsType>>(() => ({
+    pageSize: 20,
+    page: 1,
+    filters: {},
+  }));
 
   const [consumesSort, setConsumesSort] = useState<string | undefined>();
   const [aptTimesSort, setAptTimesSort] = useState<string | undefined>();
@@ -441,7 +439,11 @@ const User: FC = () => {
             </Button>
           </Form.Item>
           <Form.Item>
-            <Button type="primary" icon={<DownloadOutlined />}>
+            <Button
+              type="primary"
+              icon={<DownloadOutlined />}
+              disabled
+            >
               导出
             </Button>
           </Form.Item>

@@ -24,8 +24,10 @@ Component({
    * 组件的方法列表
    */
   methods: {
-    newClick(e) {
-      console.log(e);
+    newClick() {
+      wx.navigateTo({
+        url: '../../pages/my-order/my-order',
+      });
     },
 
   }

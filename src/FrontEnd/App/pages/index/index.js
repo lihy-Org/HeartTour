@@ -24,18 +24,15 @@ Page({
         name: '',
         style: 'vertical-align:middle;margin-right:10rpx;'
       },
-      sex:1,
+      sex: 1,
       technicianTitle2: {
         title2: "终极美容师",
       },
       show: true,
       businessCard: 'businessCard',
       technicianHead: 'technicianHead',
-      abcdef:() => {
-        console.log(123123)
-      }
     },
-    icon:{
+    icon: {
       normal: '../../assets/images/dog.png',
       active: '../../assets/images/dengpao.png',
     },
@@ -53,7 +50,7 @@ Page({
       },
     },
     setMeal: false,
-    primaryRadio:'',
+    primaryRadio: '',
     secondaryResult: [],
     mockPet: [
       // {
@@ -110,33 +107,34 @@ Page({
     radio: 0,
     whichPet: [],
     shopName: null,
-    petId:'',
-    petName:'',
-    totalPrice:'0.00',
-    zPrice:'',
-    fPricr:[],
+    petId: '',
+    petName: '',
+    totalPrice: '0.00',
+    zPrice: '',
+    fPricr: [],
     // 主套餐，上一次点击的套餐id
     prevRadio: '',
     // 已选中主次套餐信息
-    primaryMealMsg:{},
-    secondaryMealMsg:[],
+    primaryMealMsg: {},
+    secondaryMealMsg: [],
     // 门店ID
-    storeId:''
+    storeId: '',
+
   },
-  goToDes(){
+  goToDes() {
     console.log(this.goMap());
   },
   goMap: function () {
-      wx.navigateTo({
-        url: '../map/map',
-      });
+    wx.navigateTo({
+      url: '../map/map',
+    });
   },
   goAddPet() {
     wx.navigateTo({
       url: '../add-pet/add-pet'
     })
   },
-  goDetails(){
+  goDetails() {
     wx.navigateTo({
       url: '../add-pet/add-pet'
     })
@@ -147,14 +145,17 @@ Page({
       prevRadio: this.data.primaryRadio
     });
   },
-  onChangeCheckBox(event){
+  onChangeCheckBox(event) {
     this.setData({
       secondaryResult: event.detail,
     });
     console.log(this.data.secondaryResult);
   },
   onClickPrimary(event) {
-    const { id } = event.currentTarget.dataset.text;
+    const {
+      id
+    } = event.currentTarget.dataset.text;
+    console.log(id);
     if (this.data.primaryRadio === this.data.prevRadio) {
       this.setData({
         primaryRadio: '',
@@ -163,13 +164,14 @@ Page({
     } else {
       this.setData({
         primaryRadio: id,
-        primaryMealMsg:event.currentTarget.dataset.text
+        primaryMealMsg: event.currentTarget.dataset.text
       });
     }
+    this.getUserList();
     this.animationTimeAndPerson();
     this.sumPrice(this.data.primaryMealMsg, this.data.secondaryMealMsg)
   },
-  onClickSecondary(event){
+  onClickSecondary(event) {
     const secondaryArr = []
     const newAddItem = []
     this.data.addItem.forEach(item => {
@@ -186,18 +188,18 @@ Page({
     console.log(newAddItem)
     this.data.secondaryResult.forEach((item, index) => {
       this.data.addItem.forEach((ele, num) => {
-        if(item === ele.id) {
+        if (item === ele.id) {
           secondaryArr.push(ele)
         }
       });
     })
     this.setData({
       secondaryMealMsg: secondaryArr,
-    })   
+    })
     this.animationTimeAndPerson();
     this.sumPrice(this.data.primaryMealMsg, this.data.secondaryMealMsg)
   },
-  animationTimeAndPerson(){
+  animationTimeAndPerson() {
     this.setData({
       setMeal: !this.data.setMeal,
       initial: false
@@ -205,7 +207,7 @@ Page({
     let option, optionY;
     option = this.b()
     optionY = this.c()
-    console.log(optionY,option);
+    console.log(optionY, option);
     let animation = wx.createAnimation({
       transformOrigin: "50% 50%",
       duration: 1000,
@@ -234,13 +236,13 @@ Page({
       this.data.items.forEach(item => {
         if (item.text === e.currentTarget.dataset.text) {
           console.log(item.children[0]);
-          if(item.children[0].children[0]){
+          if (item.children[0].children[0]) {
             console.log(item);
-          this.setData({
-            whichPet: item.children,
-            activeId: item.children[0].children[0].id,
-            mainActiveIndex: 0
-          })
+            this.setData({
+              whichPet: item.children,
+              activeId: item.children[0].children[0].id,
+              mainActiveIndex: 0
+            })
           }
         }
       });
@@ -283,21 +285,21 @@ Page({
   },
   onClickItem(e) {
     this.setData({
-      petId:e.detail.id,
-      petName:e.detail.text,
+      petId: e.detail.id,
+      petName: e.detail.text,
       addPetShow: false
     })
     this.getComboList()
   },
   b: function () {
-    if (this.data.primaryMealMsg.price||this.data.secondaryMealMsg.length > 0) {
+    if (this.data.primaryMealMsg.price || this.data.secondaryMealMsg.length > 0) {
       return this.data.mealAnimation.mealAnimationX.show
     } else {
       return this.data.mealAnimation.mealAnimationX.hidden
     }
   },
   c: function () {
-    if (this.data.primaryMealMsg.price||this.data.secondaryMealMsg.length > 0) {
+    if (this.data.primaryMealMsg.price || this.data.secondaryMealMsg.length > 0) {
       return this.data.mealAnimation.mealAnimationY.show
     } else {
       return this.data.mealAnimation.mealAnimationY.hidden
@@ -308,25 +310,26 @@ Page({
    * @param primaryMealMsg 主套餐信息
    * @param secondaryMealMsg 辅套餐信息
    */
-  sumPrice: function(primaryMealMsg, secondaryMealMsg) {
-    let sumValueZ = 0, sumValueF = 0
+  sumPrice: function (primaryMealMsg, secondaryMealMsg) {
+    let sumValueZ = 0,
+      sumValueF = 0
     if (primaryMealMsg.price) {
       sumValueZ = Number(primaryMealMsg.price)
     }
     if (secondaryMealMsg.length > 0) {
-      for (var i=secondaryMealMsg.length-1; i>=0; i--) {
+      for (var i = secondaryMealMsg.length - 1; i >= 0; i--) {
         sumValueF += Number(secondaryMealMsg[i].price);
       }
     }
-    const sumValue=sumValueF + sumValueZ
+    const sumValue = sumValueF + sumValueZ
     console.log(sumValue);
     this.setData({
-      totalPrice:sumValue
+      totalPrice: sumValue
     })
   },
-  goMoreTime(){
+  goMoreTime() {
     wx.navigateTo({
-      url:'../more-time/more-time'
+      url: '../more-time/more-time'
     })
   },
   seletTime(e) {
@@ -340,72 +343,108 @@ Page({
       })
     }
   },
-  getConfig(){
+  getConfig() {
     let that = this;
     config().then(res => {
       if (res.status === 200) {
         let str = JSON.stringify(res.data)
-        let result = str.replace(/value/g,'text');
+        let result = str.replace(/value/g, 'text');
         let newData = JSON.parse(result)
         that.setData({
-          items:newData
-        } )
+          items: newData
+        })
         that.initPet();
       }
     })
   },
-  getComboList(){
-     let that = this;
-     console.log(that.data.petId,that.data.storeId);
-     comboList({storeId:that.data.storeId,varietyId:that.data.petId}).then(res => {
-      let comboZ = [],comboC=[];
-      if(res&&res.status===200){
-        res.data.forEach(item =>{
-          if(item.comboType === 0){
+  getComboList() {
+    let that = this;
+    console.log(that.data.petId, that.data.storeId);
+    comboList({
+      storeId: that.data.storeId,
+      varietyId: that.data.petId
+    }).then(res => {
+      let comboZ = [],
+        comboC = [];
+      if (res && res.status === 200) {
+        res.data.forEach(item => {
+          if (item.comboType === 0) {
             comboZ.push(item)
-          }else if(item.comboType === 1){
+          } else if (item.comboType === 1) {
             comboC.push(item)
           }
         })
       }
-      console.log(comboC,comboZ);
-      let arr = [], arrZ =[];
-      comboZ.forEach(item=>{
+      console.log(comboC, comboZ);
+      let arr = [],
+        arrZ = [];
+      comboZ.forEach(item => {
         let obj = {
-          bgImg:item.bgImg,
-          id:item.id,
-          originPrice:item.originPrice,
-          price:item.salePrice,
-          nursingTime:item.nursingTime,
-          details1:item.desc,
-          name:item.name
+          bgImg: item.bgImg,
+          id: item.id,
+          originPrice: item.originPrice,
+          price: item.salePrice,
+          nursingTime: item.nursingTime,
+          details1: item.desc,
+          name: item.name
         }
         arr.push(obj)
       })
       that.setData({
-        mockPet:arr
+        mockPet: arr
       })
-      comboC.forEach(item=>{
+      comboC.forEach(item => {
         let obj = {
-          name:item.name,
-          price:item.salePrice,
-          originPrice:item.originPrice,
+          name: item.name,
+          price: item.salePrice,
+          originPrice: item.originPrice,
           checked: false,
-          id:item.id
+          id: item.id
         }
         arrZ.push(obj)
       })
       that.setData({
-        addItem:arrZ
+        addItem: arrZ
       })
-      console.log(arrZ);
-      console.log(this.data.addItem)
-      console.log(comboC,comboZ);
     })
   },
-  goPay(){
+  goPay() {
     wx.navigateTo({
-      url:'../confirm-order/confirm-order'
+      url: '../confirm-order/confirm-order'
+    })
+  },
+  getUserList() {
+    userList({
+      storeId: this.data.storeId,
+      comboId: this.data.primaryRadio
+    }).then(res => {
+      if (res && res.status === 200) {
+        let item = res.data[0];
+        console.log(item);
+        let options = {
+          pic: {
+            src: item.avatar
+          },
+          technicianName: {
+            name: item.name,
+            style: 'vertical-align:middle;margin-right:10rpx;'
+          },
+          sex: item.gender,
+          technicianTitle2: {
+            // title2: item.titles[0].title
+            title2: ''
+          },
+          show: true,
+          businessCard: 'businessCard',
+          technicianHead: 'technicianHead',
+        }
+        if (item.titles.length > 0) {
+          options.technicianTitle2.title2 = item.titles[0].title
+        }
+        this.setData({
+          options: options
+        })
+      }
     })
   },
   /**
@@ -428,26 +467,24 @@ Page({
     let that = this;
     console.log(!!that.data.shopName);
     if (!that.data.shopName) return
-    const storeId  = that.data.shopName.id;
-    if(storeId){
+    const storeId = that.data.shopName.id;
+    if (storeId) {
       that.setData({
-        storeId:storeId
+        storeId: storeId
       })
-      this.getComboList()
+      this.getComboList();
     }
-    console.log(storeId);
-    userList({storeId:storeId,pageSize:1}).then(res=>{
-      if(res&&res.status===200){
-        console.log(res.data);
+    console.log(this.data.primaryRadio);
+
+    getWorktime({
+      storeId: storeId,
+      userId:'2fda1b1d-5533-43f5-8faa-44e9d9f87e3e',
+      workDay:'2021-03-26'
+    }).then(res => {
+      if (res.status === 200) {
+        console.log(res);
       }
     })
-    // getWorktime( {storeId:storeId} ).then(res=>{
-    //   if(res.status === 200){
-    //     console.log(res);
-    //   }
-    // }).catch(err=>{
-    //   console.log(err);
-    // })
   },
 
   /**

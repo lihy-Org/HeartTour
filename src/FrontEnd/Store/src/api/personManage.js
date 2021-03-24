@@ -6,6 +6,7 @@
  * @param setStaffShiftList 设置人员排班
  * @param getBookingManageList 预约
  * @param getPerformanceList 业绩
+ * @param getRotaList 获取排班配置
  */
 import request from '@/utils/request'
 
@@ -35,7 +36,7 @@ export function getStaffShiftList(data) {
 
 export function setStaffShiftList(data) {
   return request({
-    url: '/api/storesys/user/SetWorktime',
+    url: '/api/storesys/user/setWorktime',
     method: 'post',
     data
   })
@@ -54,6 +55,13 @@ export function getPerformanceList(data) {
     url: '/mock/06260b1fdf2704085031aac99da750a5/xinzhilv/xinzhilv/personManage/performance',
     method: 'post',
     data
+  })
+}
+
+export function getRotaList() {
+  return request({
+    url: '/api/storesys/config/kSCHEDULE',
+    method: 'get'
   })
 }
 

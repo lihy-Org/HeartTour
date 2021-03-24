@@ -2,14 +2,12 @@
   "pages": [
     "pages/index/index",
     "pages/login/login",
-    
+
     "pages/pet/pet",
     "pages/my-pet/my-pet",
     "pages/add-pet/add-pet",
-    
     "pages/more-time/more-time",
     "pages/select-variety/select-variety",
-    
     "pages/confirm-order/confirm-order",
     "pages/map/map",
     "pages/address-management/address-management",
