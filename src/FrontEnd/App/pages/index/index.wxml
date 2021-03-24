@@ -25,26 +25,6 @@
                 <image class="line" src="../../assets/images/heng.png"></image>
             </view>
         </view>
-        <!-- 定位和添加宠物 -->
-        <!-- <view class="flex-wrap flex-center add-pet-wrap my-32">
-            <view class="location flex-wrap flex-center" bind:tap='goMap'>
-                <image class="" src="../../assets/images/location.png"></image>
-                <view class="add-pet ml-10">
-                    <text class="f-bold f36 color-384359"  wx:if="{{!shopName.name}}">定位</text>
-                    <text class="f-bold f36 color-384359 line-clamp-1">{{shopName.name}}</text>
-                    <image class="" src="../../assets/images/loca.png" lazy-load="false" binderror="" bindload=""></image>
-                </view>
-            </view>
-            <image class="" style="width:4rpx;height:60rpx" src="../../assets/images/zhi.png"></image>
-            <view class="location flex-wrap flex-center" bind:tap="addPet">
-                <image style="width:56rpx;height:56rpx;" src="../../assets/images/addasstes.png"></image>
-                <view class="add-pet ml-10">
-                    <text class="f-bold f36 color-384359" wx:if="{{!petName}}">添加</text>
-                    <text class="f-bold f36 color-384359 line-clamp-1">{{petName}}</text>
-                    <image style="width:108rpx;" src="../../assets/images/ADDTO.png" lazy-load="false" binderror="" bindload=""></image>
-                </view>
-            </view>
-        </view> -->
         <!-- 超值套餐 -->
         <scroll-view scroll-x class="scroll-wrap">
             <view style="width: 100%;white-space:nowrap;" class="py-20 px-24 ">
@@ -81,34 +61,6 @@
                         </van-radio>
                     </block>
                 </van-radio-group>
-                <!-- <block wx:for="{{mockPet}}" wx:key='index'> -->
-                <!-- <view class="setMeal mr-8 py-12 px-12 position-relative">
-                        <view class="d-flex" hover-class="none" hover-stop-propagation="false">
-                            <view class="mr-20" hover-class="none" hover-stop-propagation="false">
-                                <image class="" style="width:150rpx;height:220rpx;object-fit: cover;" src="{{item.bgImg}}" lazy-load="false" binderror="" bindload=""></image>
-                            </view>
-                            <view class="" style="display: flex;flex-wrap: wrap;align-content: space-between;">
-                                <view class="" hover-class="none" hover-stop-propagation="false">
-                                    <h4 class="d-block f32 f-bold color-384359 mb-10 line-clamp-1">
-                                        {{item.name}}
-                                    </h4>
-                                    <p class="d-block f24 color-999999 mb-4 line-clamp-1" selectable="false" space="false" decode="false">
-                                        {{item.details}}
-                                    </p>
-                                    <p class="d-block f24 line-clamp-2 color-999999" style="width:260rpx;white-space:normal;" selectable="false" space="false" decode="false">
-                                        {{item.details1}}
-                                    </p>
-                                </view>
-                                <view class="d-flex justify-content-between " style="width:200rpx;align-items: center;" hover-class="none" hover-stop-propagation="false">
-                                    <p class="f28 f-bold color-384359">{{item.price}}</p>
-                                </view>
-                                <view class="position-absolute addSelet bg-E2F6FF " bind:tap='selectMeal' data-item="{{item}}">
-                                    <image class="position-absolute" src="{{activeMeal===item.id?'../../assets/images/yes.png':'../../assets/images/jia.png'}}"></image>
-                                </view>
-                            </view>
-                        </view>
-                    </view> -->
-                <!-- </block> -->
             </view>
         </scroll-view>
         <view class="px-24 f32 f-bold mt-32">
@@ -163,18 +115,7 @@
             </swiper-item>
         </swiper>
     </view>
-    <!-- </view> -->
     <!-- 结算按钮 -->
-    <!-- <view hidden="{{initial}}" animation="{{animation}}" bind:tap="goPay" class="setTlement position-fixed" style="transform:translateX(300px);z-index:999">
-        <view class="ml-24 lh-94 va-middle">
-            <p class="d-inline-block va-middle mr-12 f36 f-bold color-333333">¥{{totalPrice}}</p>
-            <image class="d-inline-block" style="width:18rpx;height:10rpx;" src="../../assets/images/shang.png"></image>
-        </view>
-        <view class="bg-F63D24 setTlement-F63D24 flex-v-center">
-            <p class="f28 f-bold color-FFFFFF">预约</p>
-        </view>
-    </view> -->
-
     <view bind:tap="goPay" hidden="{{initial}}" animation="{{animation}}" class="setTlement position-fixed" style="transform:translateX(424rpx);z-index:999">
         <view class="ml-24 lh-94 va-middle">
             <p class="d-inline-block va-middle mr-12 f36 f-bold color-333333">¥{{totalPrice}}</p>

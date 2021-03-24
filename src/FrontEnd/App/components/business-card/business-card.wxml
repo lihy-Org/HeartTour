@@ -8,7 +8,7 @@
             <span class="f28 color-384359 " style="{{options.technicianName.style}}">
                 {{options.technicianName.name }}
             </span>
-            <image class=""wx:if="{{options.sex}}" style="width:40rpx;height:40rpx;display:inline-block;" src="{{options.sex===0?'../../assets/images/boy.png':'../../assets/images/girl.png'}}"> </image>
+            <image class=""wx:if="{{options.sex}}" style="width:40rpx;height:40rpx;display:inline-block;" src="{{options.sex===1?'../../assets/images/boy.png':'../../assets/images/girl.png'}}"> </image>
             <span wx:if="{{options.technicianTitle.showTitle}}" class="bg-FFD5D5 color-F63D24 rounded-50 f20 f-bold py-6 px-15">
                 {{options.technicianTitle.title}}
             </span>
