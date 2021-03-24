@@ -53,6 +53,7 @@ Route::prefix('api/admin')->middleware(['auth:sanctum', 'adminapi'])->group(func
     Route::post('/rfrule/list', [AdminRefundRuleController::class, 'GetList']);
     Route::post('/rfrule/setLimit', [AdminRefundRuleController::class, 'SetLimit']);
     Route::post('/rfrule/getLimit', [AdminRefundRuleController::class, 'GetLimit']);
+    Route::post('/rfrule/remove', [AdminRefundRuleController::class, 'Remove']);
     //人员管理
     Route::post('/user/addOrUpdate', [AdminUserController::class, 'AddOrUpdate']);
     Route::post('/user/list', [AdminUserController::class, 'GetList']);

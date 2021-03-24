@@ -96,7 +96,7 @@ class AppointmentController extends Controller
                 $query->where('state', 0)->whereNotIn('type', [0, 1])->where('isBeautician', 1)->where('storeId', $request->storeId);
             })],
             'comboIds' => ['required', 'array', Rule::exists('combos', 'id')->where(function ($query) {
-                $query->where('state', 0);
+                $query->where('state', 1);
             })],
             'comboIds.*' => ['distinct'],
         ];
@@ -124,7 +124,9 @@ class AppointmentController extends Controller
      *     @OA\MediaType(
      *       mediaType="multipart/form-data",
      *         @OA\Schema(
-     *           @OA\Property(description="门店编号", property="storeId", type="number", default="13888888888"),     *
+     *           @OA\Property(description="门店编号", property="storeId", type="number", default="13888888888"),
+     *           @OA\Property(description="日期", property="workDay", type="string", default=""),
+     *           @OA\Property(description="用户编号", property="userId", type="string", default=""),
      *           required={"storeId"})
      *       )
      *     ),
@@ -183,6 +185,10 @@ class AppointmentController extends Controller
             'storeId' => ['required', Rule::exists('stores', 'id')->where(function ($query) {
                 $query->where('state', 0);
             })],
+            'workDay' => ['nullable', 'date_format:"Y-m-d"', 'after_or_equal:today'],
+            'userId' => ['nullable', Rule::exists('users', 'id')->where(function ($query) use ($request) {
+                $query->where('state', 0)->whereNotIn('type', [0, 1])->where('isBeautician', 1)->where('storeId', $request->storeId);
+            })],
         ];
         $messages = [];
         $validator = Validator::make($request->all(), $rules, $messages);
@@ -194,7 +200,13 @@ class AppointmentController extends Controller
             ));
         }
         $data = (object) $request->all();
-        return json_encode($this->appointmentRepository->GetWorktime($data)->get());
+        return json_encode(
+            array(
+                'status' => 200,
+                'msg' => '获取列表成功!',
+                'data' => $this->appointmentRepository->GetWorktime($data)->get(),
+            )
+        );
     }
 
     /**
@@ -417,7 +429,7 @@ class AppointmentController extends Controller
         $rules = [
             'storeId' => [Rule::exists('stores', 'id')],
             'startDate' => ['date_format:"Y-m-d H:i:s"'],
-            'isOffline'=>['nullable',Rule::in([0,1])],
+            'isOffline' => ['nullable', Rule::in([0, 1])],
             'endDate' => ['date_format:"Y-m-d H:i:s"'],
             'state' => [Rule::in([100, 200, 300, 400, 500, 501, 502, 600, 601])],
             'searchKey' => ['nullable', 'string'],
@@ -456,5 +468,83 @@ class AppointmentController extends Controller
                 )
             );
         }
+    }
+
+    /**
+     * @OA\Post(
+     *     path="/api/appt/refund",
+     *     tags={"小程序-预约"},
+     *     summary="退款",
+     *     @OA\Parameter(name="token", in="header", @OA\Schema(type="string"), required=true, description="token"),
+     *     @OA\RequestBody(
+     *     @OA\MediaType(
+     *       mediaType="multipart/form-data",
+     *         @OA\Schema(
+     *           @OA\Property(description="订单编号", property="orderId", type="string", default="dd"),
+     *           @OA\Property(description="退款理由编号", property="reasonId", type="string", default="dd"),
+     *           @OA\Property(description="图片凭证", property="images", type="string", default="dd"),
+     *           required={"orderId","reasonId"})
+     *       )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="成功",
+     *         @OA\JsonContent(
+     *            type="object",
+     *            @OA\Property(
+     *                   example="200",
+     *                   property="status",
+     *                   description="状态码",
+     *                   type="number",
+     *               ),
+     *            @OA\Property(
+     *                  type="string",
+     *                  property="msg",
+     *                  example="成功!",
+     *              )
+     *         ),
+     *     ),
+     *      @OA\Response(
+     *         response=500,
+     *         description="失败",
+     *         @OA\JsonContent(
+     *            type="object",
+     *            @OA\Property(
+     *                   example="500",
+     *                   property="status",
+     *                   description="状态码",
+     *                   type="number",
+     *               ),
+     *           @OA\Property(
+     *                  type="string",
+     *                  property="msg",
+     *                  example="失败!",
+     *               )
+     *           )
+     *       ),
+     * )
+     */
+    public function Refund(Request $request)
+    {
+        $rules = [
+            'orderId' => ['required', Rule::exists('orders', 'id')->where(function ($query) use ($request) {
+                $query->where('storeId', $request->user->storeId)->where('type', 1)->where('state', 200);
+            })],
+            'reasonId' => ['required', Rule::exists('configs', 'id')],
+        ];
+        $messages = [];
+        $validator = Validator::make($request->all(), $rules, $messages);
+        if ($validator->fails()) {
+            return json_encode(array(
+                'status' => 500,
+                'msg' => '验证失败!',
+                'data' => $validator->errors(),
+            ));
+        }
+        $data = (object) $request->all();
+        $data->userId = $request->user->id;
+        $data->userName = $request->user->name;
+        unset($data->rateId);
+        return json_encode($this->appointmentRepository->Refund($data));
     }
 }

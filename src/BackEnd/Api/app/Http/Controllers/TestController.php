@@ -11,8 +11,9 @@ class TestController extends Controller
 
     public function Test(Request $request)
     {
-       
-        dd(Carbon::now()->format('Y-m-d'));
+        $date = '2021-03-25 20:59:00';
+        $carbon = carbon::parse ($date); 
+        dd(Carbon::now()->diffInMinutes($carbon, false));
 
         $data=$request->all();
         echo json_encode($data);

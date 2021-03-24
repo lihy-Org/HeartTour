@@ -70,11 +70,11 @@ class PayRepository
         }
     }
 
-    public function Refund($data)
+    public function Refund($orderId)
     {
-        $order = Order::find($data->orderId);
+        $order = Order::find($orderId);
         $payment = \EasyWeChat::payment(); // 微信支付实例
-        $refund = OrderRefund::where('orderId', $data->orderId)->first();
+        $refund = OrderRefund::where('orderId', $orderId)->first();
         if ($refund) {
             $result = $payment->refund->byOutTradeNumber($order->orderNo, $refund->refundNo, bcmul($order->payMoney, 100), bcmul($refund->money, 100), []);
             if ($result['return_code'] == "FAIL") {

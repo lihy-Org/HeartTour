@@ -28,6 +28,7 @@ class UserController extends Controller
      *       mediaType="multipart/form-data",
      *         @OA\Schema(
      *           @OA\Property(description="门店编号", property="storeId", type="number", default="13888888888"),
+     *           @OA\Property(description="套餐编号", property="comboId", type="string", default=""),
      *           @OA\Property(description="职位", property="postId", type="string", default=""),
      *           @OA\Property(description="性别", property="gender", type="string", default=""),
      *           @OA\Property(description="条数", property="pageSize", type="number", default="10"),
@@ -98,6 +99,9 @@ class UserController extends Controller
             'page' => ['integer', 'gt:0'],
             'isDist' => ['nullable', 'integer', Rule::in([0, 1])],
             'type' => ['nullable', 'integer', Rule::in([3, 4, 5])],
+            'comboId' => ['nullable', Rule::exists('combos', 'id')->where(function ($query) {
+                $query->where('state', 1);
+            })],
         ];
         $messages = [];
         $validator = Validator::make($request->all(), $rules, $messages);

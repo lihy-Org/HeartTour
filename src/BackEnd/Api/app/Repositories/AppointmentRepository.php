@@ -5,6 +5,7 @@ use App\Models\Combo;
 use App\Models\Order;
 use App\Models\OrderDetail;
 use App\Models\Pet;
+use App\Models\RefundRule;
 use App\Models\Store;
 use App\Models\User;
 use App\Models\UserWorktime;
@@ -653,6 +654,41 @@ class AppointmentRepository
         //预约无需审核，操作创建退款记录 直接退款
         $order = Order::find($data->orderId);
         $refund = OrderRefund::where('orderId', $data->orderId)->first();
+        $ConfigRepository = new ConfigRepository();
+        $reason = $ConfigRepository->GetOneById($data->reasonId)->first();
+        $refundRate = 100;
+        if (isset($data->rateId)) {
+            $refundRule = RefundRule::find($data->rateId);
+            $refundRate = $refundRule->rate;
+        } else {
+            $now = Carbon::now();
+            //计算预约时间和现在时间相差多少分钟
+            $differ = $now->diffInMinutes(Carbon::parse($order->apptTime), false);
+            if ($differ <= 0) {
+                return array(
+                    'status' => 500,
+                    'msg' => '超过预约时间不可退款!',
+                    'data' => '');
+            }
+
+            $refundRule = RefundRule::where('minMin', '<=', $differ)->where('maxMin', '>', $differ)->first();
+            if ($refundRule->rate == 101) {
+                return array(
+                    'status' => 500,
+                    'msg' => '超过预约时间不可退款!',
+                    'data' => '');
+            }
+            if ($refundRule) {
+                $refundRate = $refundRule->rate;
+            }
+        }
+        //检查退款金额
+        if ($order->payMoney != bcdiv(bcmul($order->payMoney, $refundRate), 100, 2)) {
+            return array(
+                'status' => 500,
+                'msg' => '退款时间，扣款费率有误!',
+                'data' => '');
+        }
         if (!$refund) {
             $refund = OrderRefund::create([
                 'orderId' => $order->id,
@@ -661,16 +697,17 @@ class AppointmentRepository
                 'wcName' => $order->wcName,
                 'type' => 1, //售后类型1仅退款2退货退款
                 'money' => $order->payMoney,
-                'reason' => $data->reason,
+                'rate' => $refundRate,
+                'reasonId' => $reason->id,
+                'reason' => $reason->value,
                 'images' => isset($data->images) ? $data->images : '',
                 'state' => 0,
                 'userId' => $data->userId,
                 'userName' => $data->userName,
-                'examineDate' => Carbon::now(),
+                'examineDate' => $now,
             ]);
         }
-
-        $result = $payRepository->Refund($data);
+        $result = $payRepository->Refund($data->orderId);
         if ($result->status == 200) {
             try {
                 $refund->state = 300;

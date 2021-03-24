@@ -394,9 +394,10 @@ class AppointmentController extends Controller
      *       mediaType="multipart/form-data",
      *         @OA\Schema(
      *           @OA\Property(description="订单编号", property="orderId", type="string", default="dd"),
-     *           @OA\Property(description="退款理由", property="reason", type="string", default="dd"),
+     *           @OA\Property(description="退款理由编号", property="reasonId", type="string", default="dd"),
+     *           @OA\Property(description="退款费率档次", property="rateId", type="string", default="dd"),
      *           @OA\Property(description="图片凭证", property="images", type="string", default="dd"),
-     *           required={"orderId","reason"})
+     *           required={"orderId","reasonId"})
      *       )
      *     ),
      *     @OA\Response(
@@ -443,7 +444,8 @@ class AppointmentController extends Controller
             'orderId' => ['required', Rule::exists('stores', 'id')->where(function ($query) use ($request) {
                 $query->where('type', 1)->where('state', 200);
             })],
-            'reason' => ['required', 'string'],
+            'reasonId' => ['required', Rule::exists('configs', 'id')],
+            'rateId' => ['nullable', Rule::exists('refundrules', 'id')],
         ];
         $messages = [];
         $validator = Validator::make($request->all(), $rules, $messages);
@@ -572,7 +574,7 @@ class AppointmentController extends Controller
                 $query->where('state', 0);
             })],
             'comboIds' => ['required', 'array', Rule::exists('combos', 'id')->where(function ($query) {
-                $query->where('state', 0);
+                $query->where('state', 1);
             })],
             'comboIds.*' => ['distinct'],
         ];

@@ -21,6 +21,8 @@ class CreateOrderRefundTable extends Migration
             $table->uuid('wcName')->comment('小程序名称');
             $table->unsignedTinyInteger('type')->default(1)->comment('售后类型1仅退款2退货退款');
             $table->unsignedDecimal('money', 11, 2)->comment('退款金额');
+            $table->string('rate')->comment('扣款费率');
+            $table->string('reasonId')->comment('退款原因编号');
             $table->string('reason')->comment('退款原因');
             $table->string('images')->comment('图片凭证');
             $table->string('refuseReason')->default('')->comment('拒绝退款原因');

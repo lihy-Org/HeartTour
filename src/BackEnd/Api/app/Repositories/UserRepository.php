@@ -151,6 +151,14 @@ class UserRepository
         if (isset($data->gender)) {
             $users = $users->where('gender', $data->gender);
         }
+        if (isset($data->comboId)) {
+            $users = $users->whereIn('id', function ($query) use ($data) {
+                $query->select('userId')
+                    ->from('comboBeauticians')
+                    ->whereNull('deleted_at')
+                    ->where('cid', $data->comboId);
+            });
+        }
         return $users;
     }
 

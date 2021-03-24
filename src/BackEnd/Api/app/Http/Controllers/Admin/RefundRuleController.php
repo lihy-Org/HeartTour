@@ -3,10 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Repositories\RefundRuleRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
-use App\Repositories\RefundRuleRepository;
 
 class RefundRuleController extends Controller
 {
@@ -105,8 +105,8 @@ class RefundRuleController extends Controller
      *     @OA\MediaType(
      *       mediaType="multipart/form-data",
      *         @OA\Schema(
-     *           @OA\Property(description="不可退款分钟数", property="min", type="number", default="dd"),
-     *           required={"min"})
+     *           @OA\Property(description="不可退款分钟数", property="maxMin", type="number", default="dd"),
+     *           required={"maxMin"})
      *       )
      *     ),
      *     @OA\Response(
@@ -171,7 +171,7 @@ class RefundRuleController extends Controller
         return json_encode($this->refundRuleRepository->AddOrUpdate($data));
     }
 
-     /**
+    /**
      * @OA\Post(
      *     path="/api/admin/rfrule/getLimit",
      *     tags={"总台管理系统-退单费率管理"},
@@ -294,12 +294,71 @@ class RefundRuleController extends Controller
      */
     public function GetList(Request $request)
     {
+        $data = $this->refundRuleRepository->GetList()->get();
         return json_encode(
             array(
                 'status' => 200,
                 'msg' => '获取列表成功!',
-                'data' => $this->refundRuleRepository->GetList()->get(),
-            )
+                'data' => $data == null ? [] : $data,
+            ),
         );
+    }
+
+    /**
+     * @OA\Post(
+     *     path="/api/admin/rfrule/remove",
+     *     tags={"总台管理系统-退单费率管理"},
+     *     summary="删除",
+     *     @OA\Parameter(name="token", in="header", @OA\Schema(type="string"), required=true, description="token"),
+     *     @OA\RequestBody(
+     *     @OA\MediaType(
+     *       mediaType="multipart/form-data",
+     *         @OA\Schema(
+     *           @OA\Property(description="配置Id", property="rId", type="number", default="10"),
+     *           required={"comboId"}
+     *           )
+     *       )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="成功",
+     *         @OA\JsonContent(
+     *            type="object",
+     *            @OA\Property(
+     *                   example="200",
+     *                   property="status",
+     *                   description="状态码",
+     *                   type="number",
+     *               ),
+     *            @OA\Property(
+     *                  type="string",
+     *                  property="msg",
+     *                  example="禁用/启用成功!",
+     *              )
+     *         ),
+     *     ),
+     *      @OA\Response(
+     *         response=500,
+     *         description="失败",
+     *         @OA\JsonContent(
+     *            type="object",
+     *            @OA\Property(
+     *                   example="500",
+     *                   property="status",
+     *                   description="状态码",
+     *                   type="number",
+     *               ),
+     *           @OA\Property(
+     *                  type="string",
+     *                  property="msg",
+     *                  example="禁用/启用失败!",
+     *               )
+     *           )
+     *       ),
+     * )
+     */
+    public function Remove(Request $request)
+    {
+        return json_encode($this->refundRuleRepository->Remove($request->rId));
     }
 }
