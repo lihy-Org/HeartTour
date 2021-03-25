@@ -179,7 +179,7 @@ class UserController extends Controller
      *     tags={"技师公众号系统-人员信息"},
      *     summary="个人某天预约信息",
      *     @OA\Parameter(name="token", in="header", @OA\Schema(type="string"), required=true, description="token"),
-     *     @OA\Parameter(name="month", in="query", @OA\Schema(type="string"), required=true, description="月份"),
+     *     @OA\Parameter(name="day", in="query", @OA\Schema(type="string"), required=true, description="日期"),
      *     @OA\Response(
      *         response=200,
      *         description="成功",
