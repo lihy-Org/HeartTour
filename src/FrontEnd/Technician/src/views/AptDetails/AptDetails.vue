@@ -1,7 +1,7 @@
 <!--
  * @Author: Li-HONGYAO
  * @Date: 2021-03-17 17:31:27
- * @LastEditTime: 2021-03-18 10:13:32
+ * @LastEditTime: 2021-03-25 13:56:02
  * @LastEditors: Li-HONGYAO
  * @Description: 
  * @FilePath: \Technician\src\views\AptDetails\AptDetails.vue
@@ -9,100 +9,76 @@
 
 <template>
   <div class="page">
-    <!-- 轮播图 -->
-    <van-swipe class="swipe" :autoplay="4000" indicator-color="white">
-      <van-swipe-item v-for="(imgUrl, index) in banners" :key="index">
-        <img :src="imgUrl" alt="" class="w-100" />
-      </van-swipe-item>
-    </van-swipe>
-    <!-- 套餐信息 -->
-    <div class="info-wrap combo">
-      <div class="title">套餐：西湖套餐A1</div>
-      <div class="item-row">
-        <section class="label">订单状态</section>
-        <section class="value">已完成</section>
+    <!-- 预约卡片 -->
+    <div class="apt-card">
+      <div class="avatar"></div>
+      <div class="infos">
+        <div class="i-name">钩玉梅</div>
+        <div class="i-title">中级美容师</div>
+        <div class="apt-time">预约时间 2021-01-23 15:50:00</div>
       </div>
-      <div class="item-row">
-        <section class="label">订单编号</section>
-        <section class="value">284738434374332</section>
-      </div>
-      <div class="item-row">
-        <section class="label">订单备注</section>
-        <section class="value">修毛、剪短、留1厘米</section>
-      </div>
-      <div class="item-row">
-        <section class="label">店长备注</section>
-        <section class="value">预检有皮肤病，需药浴</section>
-      </div>
-      <div class="item-row">
-        <section class="label">技师备注</section>
-        <section class="value">
-          已经药浴，可卖皮肤保健品；福莱希纤绳1根，冠能粮1袋；
-        </section>
+    </div>
+    <!-- 宠物信息 -->
+    <div class="pet-data">
+      <div class="avatar"></div>
+      <div class="pt-6">
+        <div class="varieties">雪纳瑞</div>
+        <div class="name">旺仔</div>
       </div>
     </div>
     <!-- 宠物信息 -->
     <div class="info-wrap">
-      <div class="title">宠物信息</div>
+      <div class="title">预约信息</div>
       <div class="item-row">
-        <div class="label">名称</div>
-        <div class="value">旺仔</div>
+        <div class="label">美容套餐</div>
+        <div class="value">￥232.00</div>
       </div>
       <div class="item-row">
-        <div class="label">品种</div>
-        <div class="value">雪拉瑞</div>
+        <div class="label">抗菌洗护</div>
+        <div class="value">￥232.00</div>
       </div>
       <div class="item-row">
-        <div class="label">年龄</div>
-        <div class="value">1岁半</div>
+        <div class="label">眼睛护理</div>
+        <div class="value">￥232.00</div>
       </div>
       <div class="item-row">
-        <div class="label">性别</div>
-        <div class="value">GG</div>
-      </div>
-      <div class="item-row">
-        <div class="label">生日</div>
-        <div class="value">2020.04.03</div>
-      </div>
-      <div class="item-row">
-        <div class="label">毛色</div>
-        <div class="value">黑色</div>
-      </div>
-      <div class="item-row">
-        <div class="label">疫苗</div>
-        <div class="value">已打疫苗</div>
-      </div>
-      <div class="item-row">
-        <div class="label">是否绝育</div>
-        <div class="value">已绝育</div>
-      </div>
-    </div>
-    <!-- 主人信息 -->
-    <div class="info-wrap">
-      <div class="title">主人信息</div>
-      <div class="item-row">
-        <div class="label">姓名</div>
-        <div class="value">李鸿耀</div>
-      </div>
-      <div class="item-row">
-        <div class="label">手机号</div>
-        <div class="value">1739****669</div>
+        <div class="label">订单总金额</div>
+        <div class="value">￥232.00</div>
       </div>
     </div>
     <!-- 其他 -->
-    <div class="info-wrap other">
-      <div class="title">其他</div>
+    <div class="info-wrap bt">
       <div class="item-row">
-        <div class="label">上次消费日期</div>
-        <div class="value">2020-01-29 12:23:23</div>
+        <div class="label">联系人</div>
+        <div class="value">李连杰 189****9566</div>
       </div>
       <div class="item-row">
-        <div class="label">上次消费内容</div>
-        <div class="value">洗护套餐A1</div>
+        <div class="label">备注信息</div>
+        <div class="value">未填写备注信息</div>
       </div>
       <div class="item-row">
-        <div class="label">上次消费金额</div>
-        <div class="value">￥247</div>
+        <div class="label">订单编号</div>
+        <div class="value">202103117893430</div>
+      </div>
+      <div class="item-row">
+        <div class="label">提交时间</div>
+        <div class="value">2021-03-11 12:30</div>
+      </div>
+      <div class="item-row">
+        <div class="label">到店时间</div>
+        <div class="value">2021-03-11 12:30</div>
+      </div>
+      <div class="item-row">
+        <div class="label">完成时间</div>
+        <div class="value">2021-03-11 12:30</div>
+      </div>
+      <div class="item-row">
+        <div class="label">原预约时间</div>
+        <div class="value">202103117893430</div>
+      </div>
+      <div class="item-row">
+        <div class="label">原预约美容师</div>
+        <div class="value">张靓颖</div>
       </div>
     </div>
     <!-- bar -->
@@ -126,39 +102,105 @@ export default defineComponent({
 </script>
 
 <style lang="less" scoped>
+// 预约卡片
+.apt-card {
+  width: ~"calc(100% - 8px)";
+  margin: 0 auto;
+  padding: 27px;
+  height: 141px;
+  background: url("https://img.meituan.net/csc/37dc3dc1b24895c339d1f780445d7f8622432.png");
+  background-size: 100% 100%;
+  color: #fff;
+  display: flex;
+  .avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background-color: #eee;
+    flex-shrink: 0;
+    margin-right: 10px;
+  }
+  .infos {
+    padding-top: 12px;
+  }
+  .i-name {
+    font-size: 16px;
+    font-weight: bold;
+    line-height: 23px;
+  }
+  .i-title {
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 20px;
+    margin-top: 4px;
+    margin-bottom: 3px;
+  }
+  .apt-time {
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 17px;
+  }
+}
+// 宠物信息
+.pet-data {
+  display: flex;
+  padding: 20px 30px;
+  border-top: 10px solid #f9f9f9;
+  border-bottom: 4px solid #f9f9f9;
+  color: #384359;
+  .avatar {
+    width: 57px;
+    height: 57px;
+    border-radius: 50%;
+    background-color: cornflowerblue;
+    background-size: cover !important;
+    margin-right: 7px;
+  }
+  .varieties {
+    font-size: 16px;
+    font-weight: bold;
+    line-height: 23px;
+    margin-bottom: 3px;
+  }
+  .name {
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 20px;
+  }
+}
+
+// 描述信息
+.info-wrap {
+  padding-bottom: 15px;
+  &.bt {
+    border-top: 10px solid #f9f9f9;
+  }
+}
 .title {
   font-size: 16px;
   font-weight: bold;
   line-height: 23px;
   color: #333333;
-  padding: 15px 10px;
+  padding: 15px 10px 0;
   &::before {
     content: "";
     display: inline-block;
     width: 7px;
     height: 24px;
-    background: #1946bb;
+    background: #ffbd5c;
     margin-right: 10px;
     position: relative;
     top: 7px;
   }
 }
-.combo .title {
-  border-bottom: 1px solid #e3e3e3;
-}
-.combo .title::before {
-  display: none;
-}
-.combo .item-row {
-  padding: 15px 10px 0;
-}
+
 .item-row {
   display: flex;
-  padding: 15px 26px 0;
+  padding: 15px 30px 0;
 }
 .label {
-  width: 66px;
-  margin-right: 21px;
+  width: 99px;
+  margin-right: 38px;
   flex-shrink: 0;
   font-size: 16px;
   font-weight: 500;
@@ -171,10 +213,6 @@ export default defineComponent({
   font-weight: 500;
   line-height: 23px;
   color: #333333;
-}
-.other .label {
-  width: 99px;
-  margin-right: 38px;
 }
 .bar {
   height: 100px;

@@ -1,7 +1,7 @@
 /*
  * @Author: Li-HONGYAO
  * @Date: 2021-03-08 20:46:29
- * @LastEditTime: 2021-03-17 17:03:46
+ * @LastEditTime: 2021-03-25 15:29:35
  * @LastEditors: Li-HONGYAO
  * @Description:
  * @FilePath: \Technician\src\api\request.ts
@@ -33,6 +33,7 @@ service.interceptors.request.use(
       "Content-Type": "application/json",
       Authorization: token ? `Bearer ${token}` : "",
     };
+    console.log(config)
     return config;
   },
   (error) => {

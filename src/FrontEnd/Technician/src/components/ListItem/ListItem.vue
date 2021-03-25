@@ -1,7 +1,7 @@
 <!--
  * @Author: Li-HONGYAO
  * @Date: 2021-03-17 10:33:45
- * @LastEditTime: 2021-03-18 09:41:34
+ * @LastEditTime: 2021-03-25 13:14:52
  * @LastEditors: Li-HONGYAO
  * @Description: 
  * @FilePath: \Technician\src\components\ListItem\ListItem.vue
@@ -23,19 +23,19 @@
             <img
               v-if="status === 1"
               class="status-img"
-              src="https://img.meituan.net/csc/290b705c71d83ff8c9e6bc3e30814f9f1065.png"
+              src="https://img.meituan.net/csc/646569d8e46b4fc3db02a99a8adbfe741175.png"
               alt="已到店"
             />
             <img
               v-if="status === 2"
               class="status-img"
-              src="https://img.meituan.net/csc/123f8a0f0c6922d65491c3958d149fcf1408.png"
+              src="https://img.meituan.net/csc/ac9db69ea866bee56411ccccbd3578d31350.png"
               alt="已完成"
             />
             <img
               v-if="status === 3"
               class="status-img"
-              src="https://img.meituan.net/csc/f26e4eca3572e8d30150cc48e941c0301256.png"
+              src="https://img.meituan.net/csc/8466d6e5e89a50b5d45cb75145a5d76f1222.png"
               alt="未到店"
             />
           </div>
