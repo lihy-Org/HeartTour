@@ -1,7 +1,7 @@
 /*
  * @Author: Li-HONGYAO
  * @Date: 2021-03-07 22:58:33
- * @LastEditTime: 2021-03-17 17:32:59
+ * @LastEditTime: 2021-03-25 14:18:41
  * @LastEditors: Li-HONGYAO
  * @Description: 
  * @FilePath: \Technician\src\router\index.ts
@@ -43,6 +43,14 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import(/* webpackChunkName: "aptDetails" */ '../views/AptDetails/AptDetails.vue'),
     meta: {
       title: '预约详情'
+    }
+  },
+  {
+    path: '/apt-list',
+    name: 'AptList',
+    component: () => import(/* webpackChunkName: "aptList" */ '../views/AptList/AptList.vue'),
+    meta: {
+      title: '预约信息'
     }
   },
 ]

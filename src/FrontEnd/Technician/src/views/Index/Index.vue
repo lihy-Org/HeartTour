@@ -1,7 +1,7 @@
 <!--
  * @Author: Li-HONGYAO
  * @Date: 2021-03-07 22:59:19
- * @LastEditTime: 2021-03-18 09:42:58
+ * @LastEditTime: 2021-03-25 15:28:05
  * @LastEditors: Li-HONGYAO
  * @Description: 
  * @FilePath: \Technician\src\views\Index\Index.vue
@@ -28,7 +28,16 @@
         </section>
         <!-- 右侧数据 -->
         <section class="text-right">
-          <div class="ranks">当月排名：1</div>
+          <div class="ranks">
+            <span>当月排名：</span>
+            <img
+              src="https://img.meituan.net/csc/cd93d16cc92a53d49900d7b7bd37a6717500.png"
+              alt="1"
+            />
+            <!-- <img src="https://img.meituan.net/csc/ec1492b293d8418bd4d2c1eadab831526787.png" alt="2"/> -->
+            <!-- <img src="https://img.meituan.net/csc/4ed67afcf2c50c1baeaf6d7bb4b4d0696871.png" alt="3"/> -->
+            <!-- <span>1</span> -->
+          </div>
           <img
             class="performan"
             src="https://img.meituan.net/csc/1c46c7f9b58d8388679429b2db1233222814.png"
@@ -53,19 +62,19 @@
         <div class="sta-list tar">
           <div class="item">
             <div class="label">当月目标</div>
-            <div class="value">13232</div>
+            <div class="value" style="color: #1946bb">100000</div>
           </div>
           <div class="item">
             <div class="label">已完成</div>
-            <div class="value">13232</div>
+            <div class="value" style="color: #6de242">54932</div>
           </div>
           <div class="item">
             <div class="label">差额</div>
-            <div class="value">32132</div>
+            <div class="value" style="color: #ff4d00">49232</div>
           </div>
           <div class="item">
             <div class="label">需每日完成</div>
-            <div class="value">321321</div>
+            <div class="value" style="color: #1946bb">12321</div>
           </div>
         </div>
       </div>
@@ -81,19 +90,19 @@
         </div>
         <!-- 模块 -->
         <div class="sta-list">
-          <div class="item">
+          <div class="item" @click="$router.push('/apt-list')">
             <div class="label">当日预约</div>
-            <div class="value">10</div>
+            <div class="value" style="color: #1946bb">10</div>
           </div>
-          <div class="item">
+          <div class="item" @click="$router.push('/apt-list')">
             <div class="label">已服务</div>
-            <div class="value">3</div>
+            <div class="value" style="color: #1946bb">3</div>
           </div>
-          <div class="item">
+          <div class="item" @click="$router.push('/apt-list')">
             <div class="label">待服务</div>
             <div class="value" style="color: #ffbd5c">8</div>
           </div>
-          <div class="item">
+          <div class="item" @click="$router.push('/apt-list')">
             <div class="label">已取消/改约</div>
             <div class="value" style="color: #ffbd5c">6</div>
           </div>
@@ -102,7 +111,12 @@
     </div>
     <!-- 列表数据 -->
     <view class="list">
-      <list-item :status="1" @tap="onAptItemTap" @startService="onStartService" @complete="onComplete" />
+      <list-item
+        :status="1"
+        @tap="onAptItemTap"
+        @startService="onStartService"
+        @complete="onComplete"
+      />
       <list-item :status="2" />
       <list-item :status="3" />
       <div class="no-more">没有更多啦~</div>
@@ -142,8 +156,11 @@
 
 <script lang="ts">
 import { useRouter } from "vue-router";
-import { computed, defineComponent, reactive, ref } from "vue";
+import { computed, defineComponent, onMounted, reactive, ref } from "vue";
+import Api from "@/api";
 import ListItem from "../../components/ListItem/ListItem.vue";
+
+interface IUser {}
 export default defineComponent({
   name: "index",
   setup() {
@@ -152,7 +169,7 @@ export default defineComponent({
     const curDateForApt = ref(new Date());
     const pickerForTarVisible = ref(false);
     const pickerForAptVisible = ref(false);
-
+    const user = reactive<IUser>({});
     // hooks
     const router = useRouter();
     // methods
@@ -169,6 +186,13 @@ export default defineComponent({
       return val;
     };
     const numformatter = (val: number) => (val < 10 ? `0${val}` : val);
+    const getUserInfo = () => {
+      Api.user.appt<LovePets.BaseResponse<any>>(encodeURIComponent('2020/03/10')).then(res => {
+        if(res && res.status === 200) {
+          console.log(res);
+        }
+      })
+    };
     // events
     const onPickerConfirm = ($event: Date, flag: string) => {
       if (flag === "tar") {
@@ -178,15 +202,15 @@ export default defineComponent({
       }
     };
     const onAptItemTap = () => {
-      console.log('onAptItemTap');
-      router.push('/apt-details')
-    }
+      console.log("onAptItemTap");
+      router.push("/apt-details");
+    };
     const onStartService = () => {
-      console.log('onStartService')
-    }
+      console.log("onStartService");
+    };
     const onComplete = () => {
-      console.log('onComplete')
-    }
+      console.log("onComplete");
+    };
     // computed
     const dateStrForTar = computed(() => {
       const year = curDateForTar.value.getFullYear();
@@ -198,6 +222,10 @@ export default defineComponent({
       const month = curDateForApt.value.getMonth() + 1;
       const day = curDateForApt.value.getDay();
       return `${year}/${numformatter(month)}/${numformatter(day)}`;
+    });
+    // life circles
+    onMounted(() => {
+      getUserInfo();
     });
     // data
     return {
@@ -268,6 +296,13 @@ export default defineComponent({
     font-size: 18px;
     font-weight: 500;
     line-height: 25px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    img {
+      width: 30px;
+      height: 19px;
+    }
   }
   .performan {
     width: 81px;
@@ -318,19 +353,6 @@ export default defineComponent({
     justify-content: space-around;
     align-items: center;
     text-align: center;
-    &.tar .value {
-      font-weight: normal;
-      font-size: 14px;
-    }
-    &.tar .value::before {
-      content: "";
-      display: inline-block;
-      width: 10px;
-      height: 11px;
-      background-image: url("https://img.meituan.net/csc/b36d024c3f198a0532d8c84300b923353219.png");
-      background-size: 100% 100%;
-      margin-right: 2px;
-    }
   }
   .title {
     font-size: 14px;
@@ -340,10 +362,12 @@ export default defineComponent({
     margin-bottom: 5px;
   }
   .value {
-    font-size: 18px;
+    font-size: 20px;
     font-weight: bold;
     line-height: 25px;
-    color: #1946bb;
+  }
+  .tar .value {
+    font-size: 18px;
   }
 }
 
