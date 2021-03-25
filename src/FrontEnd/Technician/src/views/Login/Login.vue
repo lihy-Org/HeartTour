@@ -1,10 +1,10 @@
 <!--
  * @Author: Li-HONGYAO
  * @Date: 2021-03-09 17:36:15
- * @LastEditTime: 2021-03-17 17:17:16
+ * @LastEditTime: 2021-03-25 23:04:28
  * @LastEditors: Li-HONGYAO
  * @Description: 
- * @FilePath: \Technician\src\views\Login\Login.vue
+ * @FilePath: /Technician/src/views/Login/Login.vue
 -->
 
 <template>
@@ -19,6 +19,7 @@
         />
         <h1 class="title">美容师管理平台</h1>
       </header>
+      <DatePicker />
       <!-- 表单 -->
       <div class="form mt-20">
         <section class="form-item">
@@ -48,8 +49,12 @@ import { useRouter } from "vue-router";
 import Tools from "lg-tools";
 import Cookie from "lg-cookie";
 import Api from "@/api";
+import DatePicker from "@/components/@lgs/DatePicker/DatePicker.vue";
 
 export default defineComponent({
+  components: {
+    DatePicker,
+  },
   setup(props: any, context: any) {
     // state
     const TIME_MAX = 10;
@@ -65,7 +70,7 @@ export default defineComponent({
         if (res && res.status === 200) {
           // 登录成功
           Cookie.set("LOVEPETS_TOKEN", res.data);
-          router.replace('/index');
+          router.replace("/index");
         }
       });
     };

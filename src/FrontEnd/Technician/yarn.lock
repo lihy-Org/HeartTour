@@ -5213,10 +5213,10 @@ lg-cookie@^1.0.1:
   resolved "https://registry.npm.taobao.org/lg-cookie/download/lg-cookie-1.0.1.tgz#b4e4e86f636e2467634d858580d32f94666a0890"
   integrity sha1-tOTob2NuJGdjTYWFgNMvlGZqCJA=
 
-lg-tools@^1.0.15:
-  version "1.0.15"
-  resolved "https://registry.npm.taobao.org/lg-tools/download/lg-tools-1.0.15.tgz#04f25639ca67fe249ffd82b57ec720e35f5ee42a"
-  integrity sha1-BPJWOcpn/iSf/YK1fscg419e5Co=
+lg-tools@^1.0.16:
+  version "1.0.16"
+  resolved "https://registry.npmjs.org/lg-tools/-/lg-tools-1.0.16.tgz#4f56ecfb2aeb2cdc15e15d265804c9365b190f1b"
+  integrity sha512-WZ0YgY8gysZwXgao2rx+kGDTns9AiwC6gC6RmqWUuSXeJAk7vvYq6s8vSJnd/szKnuVHBLeYP4SgDQAy4w0AVg==
 
 lg-validator@^1.0.2:
   version "1.0.2"
