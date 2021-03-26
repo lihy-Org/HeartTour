@@ -2,7 +2,7 @@
 // 生产环境：https://api.imichong.com/api
 // 开发环境：http://32d774f978.51vip.biz:30009/api
 import {checkAuth} from './common';
-const BASE_URI = 'http://api.xinzhilv.vip:32001/api';
+const BASE_URI = 'http://api.xinzhilv.vip/api';
 
 // request
 const request = (options, loadingTips) => {

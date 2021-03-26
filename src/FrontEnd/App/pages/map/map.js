@@ -3,7 +3,6 @@ import {
   storeList
 } from '../../api/map';
 Page({
-
   /**
    * 页面的初始数据
    */
@@ -11,10 +10,10 @@ Page({
     makers: [],
     myLatitude: null,
     myLongitude: null,
-    activeId: null,
     items: [{
       text: '成都',
     }, ],
+    shopId: '',
     shopName: ''
   },
   /**
@@ -40,12 +39,26 @@ Page({
   },
 
   tapPet(e) {
-    let name = e.currentTarget.dataset.text;
+    let shopMsg = e.currentTarget.dataset.text;
+    // console.log(e.currentTarget.dataset)
     let pages = getCurrentPages();
     let prevPages = pages[pages.length - 2];
     prevPages.setData({
-      shopName: name
+      shopName: shopMsg,
     });
+    const nowShopId = wx.getStorageSync("shopId");
+    console.log(nowShopId, shopMsg.id)
+    if (nowShopId === shopMsg.id) {
+      prevPages.setData({
+        isSameShop: false
+      })
+    } else {
+      prevPages.setData({
+        isSameShop: true
+      })
+    }
+    console.log(this.data.isSameShop)
+    wx.setStorageSync("shopId", shopMsg.id);
     wx.navigateBack({
       delta: 1
     });

@@ -220,3 +220,6 @@
 .dx-wrap .van-checkbox__label{
     margin: 0 ;
 }
+.Noborder:last-child{
+    border-bottom: 0;
+}

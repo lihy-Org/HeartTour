@@ -31,7 +31,7 @@
                 <van-radio-group value="{{ primaryRadio }}" bind:change="onChangeCheck">
                     <block wx:for="{{mockPet}}" wx:key='index'>
                         <van-radio name="{{item.id}}" use-icon-slot label-disabled data-text="{{item}}" catch:tap="onClickPrimary">
-                            <image slot="icon" style="width:40rpx;height:40rpx;padding:38rpx 20rpx 12rpx 36rpx;"  src="{{ primaryRadio == item.id ? icon.active : icon.normal }}" />
+                            <image slot="icon" style="width:40rpx;height:40rpx;padding:38rpx 20rpx 12rpx 36rpx;" src="{{ primaryRadio == item.id ? icon.active : icon.normal }}" />
                             <view class="setMeal mr-8 py-12 px-12 position-relative" catch:tap="goDetails">
                                 <view class="d-flex" hover-class="none" hover-stop-propagation="false">
                                     <view class="mr-20" hover-class="none" hover-stop-propagation="false">
@@ -71,11 +71,14 @@
                 <van-checkbox-group value="{{ secondaryResult }}" bind:change="onChangeCheckBox">
                     <block wx:for="{{addItem}}" wx:key="index">
                         <van-checkbox name="{{item.id}}" use-icon-slot label-disabled class="dx-wrap" data-text="{{item}}" bind:tap="onClickSecondary">
-                           <image slot="icon" style="width:20rpx;height:20rpx;" class="dx-wrap-img"  src="{{item.checked ? icon.active : icon.normal }}" />
-                           <view class="addItem mr-20 d-inline-block line-clamp-1">
-                                <p class="color-384359 f-bold f32 mt-16 ml-16 ">{{item.name}}</p>
+                            <image slot="icon" style="width:20rpx;height:20rpx;" class="dx-wrap-img" src="{{item.checked === true ? icon.active : icon.normal }}" />
+                            <view class="addItem mr-20 d-inline-block line-clamp-1" catch:tap="goDetails">
+                                <!-- <p class="color-384359 f-bold f32 mt-16 ml-16 ">{{item.name}}</p> -->
+                                <p class="color-384359 f-bold f32 mt-16 ml-16 ">{{item.checked}}</p>
                                 <view class="" style="display:flex;align-items: center;">
-                                    <p class="color-384359 f-bold f28 mr-8" style="margin-left:8rpx;">{{item.price}}</p>
+                                    <p class="color-384359 f-bold f28 mr-8" style="margin-left:8rpx;">
+                                        {{item.price}}
+                                    </p>
                                 </view>
                             </view>
                         </van-checkbox>
@@ -85,7 +88,7 @@
         </scroll-view>
     </view>
     <!-- 建议增项 -->
-    <view class="position-relative" animation="{{animationY}}" style="transform:translateY(-420rpx);z-index:20;padding-bottom:60rpx" hover-class="none" hover-stop-propagation="false">
+    <view class="position-relative" id='fkAnimate' animation="{{animationY}}" style="{{fkStyle}}" hover-class="none" hover-stop-propagation="false">
         <!-- 预约时间 -->
         <view class="px-24 flex-center my-20 flex-wrap ">
             <block wx:for="{{timers}}" wx:key="index">
@@ -116,14 +119,13 @@
         </swiper>
     </view>
     <!-- 结算按钮 -->
-    <view bind:tap="goPay" hidden="{{initial}}" animation="{{animation}}" class="setTlement position-fixed" style="transform:translateX(424rpx);z-index:999">
-        <view class="ml-24 lh-94 va-middle">
+    <view hidden="{{initial}}" animation="{{animation}}" class="setTlement position-fixed" style="transform:translateX(424rpx);z-index:999">
+        <view class="ml-24 lh-94 va-middle" catch:tap="showComboDes">
             <p class="d-inline-block va-middle mr-12 f36 f-bold color-333333">¥{{totalPrice}}</p>
             <image class="d-inline-block" style="width:18rpx;height:10rpx;" src="../../assets/images/shang.png"></image>
         </view>
-        <view class="bg-F63D24 setTlement-F63D24 flex-v-center">
+        <view class="bg-F63D24 setTlement-F63D24 flex-v-center" catch:tap="goPay">
             <p class="f28 f-bold color-FFFFFF">预约</p>
-            <!-- <p class="color-FFFFFF f24">限时送粮0.00</p> -->
         </view>
     </view>
     <!-- 选择宠物 -->
@@ -163,6 +165,40 @@
                 </view>
                 <van-tree-select items="{{ whichPet }}" height="calc(80vh - 356rpx)" data-items="{{whichPet}}" main-active-index="{{ mainActiveIndex }}" bind:click-nav="onClickNav" bind:click-item="onClickItem"></van-tree-select>
             </view>
+        </view>
+    </van-action-sheet>
+    <!-- 统计套装上拉 -->
+    <van-action-sheet show="{{comboListShow}}" bind:close="onClose">
+        <view class="" style="height:80vh;">
+            <view class="pt-20" style="height: 280rpx;width: 100%;background-color: #F0F5F9;">
+                <view class="flex-center " bind:tap="onClose" style="margin:0 auto;    width: 120rpx;height: 50rpx;border-radius: 60rpx;background-color: #FFFFFF;" hover-class="none" hover-stop-propagation="false">
+                    <image class="" src="../../assets/images/xia.png" style="width:30rpx;height:16rpx;"></image>
+                </view>
+                <view class="mx-22 my-28 flex-v-center" hover-class="none" hover-stop-propagation="false">
+                    <image class="" src="../../assets/images/addPet.png" style="width:94rpx;height:94rpx;"></image>
+                    <view class="mt-20" hover-class="none" hover-stop-propagation="false">
+                        <p class="f32 f-bold color-384359">添加宠物</p>
+                    </view>
+                </view>
+            </view>
+            <scroll-view class="py-20" style="width:100%;height:calc(80vh - 280rpx)" scroll-y>
+                <view class="flex-between px-40 pb-20" wx:if="{{primaryRadio}}">
+                    <span class="color-384359 f32 f-bold">{{primaryMealMsg.name}}</span>
+                    <view class="color-384359 f32 f-bold flex-between">
+                        <span class="mr-10">¥{{primaryMealMsg.price}}</span>
+                        <van-icon name="close" catch:tap="delPrmMeal" />
+                    </view>
+                </view>
+                <block wx:for="{{secondaryMealMsg}}">
+                    <view class="flex-between px-40 py-40 border-bottom Noborder">
+                        <span class="f32 f-bold" style="color:#A8B5C5;">{{item.name}}</span>
+                        <view class="color-384359 f32 f-bold flex-between">
+                            <span class="mr-10">¥{{item.price}}</span>
+                            <van-icon name="close" data-id="{{item.id}}" data-text="{{item}}" catch:tap="delSedmeal" color="#6F7B92" />
+                        </view>
+                    </view>
+                </block>
+            </scroll-view>
         </view>
     </van-action-sheet>
 </view>

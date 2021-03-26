@@ -11,11 +11,13 @@ import {
 import {
   userList
 } from '../../api/user';
+
 Page({
   /**
    * 页面的初始数据
    */
   data: {
+    fkStyle: "transform:translateY(-420rpx); -webkit-transform:translateY(-420rpx);z-index:20;padding-bottom:60rpx;",
     options: {
       pic: {
         src: ''
@@ -26,15 +28,15 @@ Page({
       },
       sex: 1,
       technicianTitle2: {
-        title2: "终极美容师",
+        title2: "",
       },
       show: true,
       businessCard: 'businessCard',
       technicianHead: 'technicianHead',
     },
     icon: {
-      normal: '../../assets/images/dog.png',
-      active: '../../assets/images/dengpao.png',
+      normal: '../../assets/images/addpets.png',
+      active: '../../assets/images/yes.png',
     },
     banners: [{
       image: '../../assets/images/guanggao.png'
@@ -52,23 +54,8 @@ Page({
     setMeal: false,
     primaryRadio: '',
     secondaryResult: [],
-    mockPet: [
-      // {
-      //   name: '洗护套餐A',
-      //   details: '8项护理',
-      //   details1: "360°全方位清洁服务360°360°全方位清洁服务360°360°全方位清洁服务360°360°全方位清洁服务360°",
-      //   price: '45.00',
-      //   id: '1'
-      // }
-    ],
-    addItem: [
-      // {
-      //   name: '刷牙',
-      //   price: `￥45':00`,
-      //   id: '1',
-      //   checked: ""
-      // }
-    ],
+    mockPet: [],
+    addItem: [],
     timers: [{
         date: "今天",
         times: "9:00",
@@ -97,13 +84,12 @@ Page({
     ],
     animation: '',
     showTime: '',
-    activeMeal: '',
     initial: false,
-    suggestAdd: [],
     addPetShow: false,
     mainActiveIndex: 0,
     activeId: null,
     items: [],
+    //单选宠物
     radio: 0,
     whichPet: [],
     shopName: null,
@@ -119,12 +105,24 @@ Page({
     secondaryMealMsg: [],
     // 门店ID
     storeId: '',
+    //美容师ID
+    userId: '',
+    //传入日期获取排班
+    workDay: '',
+    //控制上拉套餐列表
+    comboListShow: false,
+    isSameShop: true
 
   },
-  goToDes() {
-    console.log(this.goMap());
-  },
   goMap: function () {
+    console.log(this.data.shopName)
+    if (this.data.shopName) {
+      wx.setStorageSync("shopId", this.data.shopName.id);
+    } else {
+      wx.setStorageSync("shopId", '');
+    }
+    wx.setStorageSync('addItem', this.data.addItem);
+    wx.setStorageSync('mockPet',this.data.mockPet)
     wx.navigateTo({
       url: '../map/map',
     });
@@ -155,7 +153,6 @@ Page({
     const {
       id
     } = event.currentTarget.dataset.text;
-    console.log(id);
     if (this.data.primaryRadio === this.data.prevRadio) {
       this.setData({
         primaryRadio: '',
@@ -170,6 +167,7 @@ Page({
     this.getUserList();
     this.animationTimeAndPerson();
     this.sumPrice(this.data.primaryMealMsg, this.data.secondaryMealMsg)
+
   },
   onClickSecondary(event) {
     const secondaryArr = []
@@ -185,7 +183,6 @@ Page({
     this.setData({
       addItem: newAddItem
     })
-    console.log(newAddItem)
     this.data.secondaryResult.forEach((item, index) => {
       this.data.addItem.forEach((ele, num) => {
         if (item === ele.id) {
@@ -196,8 +193,10 @@ Page({
     this.setData({
       secondaryMealMsg: secondaryArr,
     })
+    this.getUserList();
     this.animationTimeAndPerson();
     this.sumPrice(this.data.primaryMealMsg, this.data.secondaryMealMsg)
+
   },
   animationTimeAndPerson() {
     this.setData({
@@ -261,6 +260,56 @@ Page({
       radio: e.currentTarget.dataset.index
     })
   },
+  /* 删除主套餐 */
+  delPrmMeal() {
+    this.setData({
+      primaryRadio: '',
+      primaryMealMsg: {}
+    });
+    this.animationTimeAndPerson()
+    this.sumPrice(this.data.primaryMealMsg, this.data.secondaryMealMsg)
+    this.isDeleteAll()
+  },
+  /* 删除单项套餐 */
+  delSedmeal(e) {
+    let {
+      id
+    } = e.currentTarget.dataset.text;
+    console.log(id);
+    let secondaryArr = this.data.secondaryResult
+    secondaryArr.forEach((item, index) => {
+      if (id === item) {
+        secondaryArr.splice(index, 1)
+      }
+    })
+    console.log(secondaryArr)
+    this.setData({
+      secondaryResult: secondaryArr
+    })
+    this.onClickSecondary()
+    this.isDeleteAll()
+  },
+  /**
+   * 主套餐、单项套餐都被删除完
+   * @param prmMealId 主套餐id
+   * @param secondaryArr 单项套餐数组(存放的是id)
+   */
+  isDeleteAll() {
+    const prmMealId = this.data.primaryRadio
+    const secondaryArr = this.data.secondaryResult
+    if (!prmMealId && secondaryArr.length === 0) {
+      this.setData({
+        comboListShow: false
+      })
+    }
+  },
+
+  /* 结算按钮拉起套餐列表 */
+  showComboDes() {
+    this.setData({
+      comboListShow: true
+    })
+  },
   addPet: function () {
     this.setData({
       addPetShow: true
@@ -268,7 +317,8 @@ Page({
   },
   onClose() {
     this.setData({
-      addPetShow: false
+      addPetShow: false,
+      comboListShow: false
     });
   },
   onChange(event) {
@@ -378,6 +428,7 @@ Page({
       console.log(comboC, comboZ);
       let arr = [],
         arrZ = [];
+        const getMockPet = wx.getStorageSync('mockPet')
       comboZ.forEach(item => {
         let obj = {
           bgImg: item.bgImg,
@@ -391,8 +442,10 @@ Page({
         arr.push(obj)
       })
       that.setData({
-        mockPet: arr
+        mockPet: this.data.isSameShop?arr:getMockPet
       })
+      
+      const getAddItem = wx.getStorageSync('addItem');
       comboC.forEach(item => {
         let obj = {
           name: item.name,
@@ -404,7 +457,7 @@ Page({
         arrZ.push(obj)
       })
       that.setData({
-        addItem: arrZ
+        addItem: this.data.isSameShop ? arrZ : getAddItem,
       })
     })
   },
@@ -431,7 +484,6 @@ Page({
           },
           sex: item.gender,
           technicianTitle2: {
-            // title2: item.titles[0].title
             title2: ''
           },
           show: true,
@@ -441,11 +493,43 @@ Page({
         if (item.titles.length > 0) {
           options.technicianTitle2.title2 = item.titles[0].title
         }
+        console.log(item.id);
         this.setData({
-          options: options
+          options: options,
+          userId: item.id
+        })
+        this.fnWorkTime()
+      }
+    })
+  },
+  fnWorkTime() {
+    let date = new Date();
+    console.log(this.getDate());
+    getWorktime({
+      storeId: this.data.storeId,
+      userId: this.data.userId,
+      workDay: this.getDate()
+    }).then(res => {
+      if (res && res.status === 200) {
+        let arrFive = [];
+        console.log();
+        res.data.forEach(item => {
+          if (item.orderId != null) {
+            console.log(item);
+          }
         })
       }
     })
+  },
+  //  获取日期  yy-mm-dd
+  getDate() {
+    let date = new Date();
+    let year = date.getFullYear(); //年份
+    let month = date.getMonth() + 1; //月份
+    month = month < 10 ? ('0' + month) : month;
+    let day = date.getDate(); //天
+    day = day < 10 ? ('0' + day) : day;
+    return year + '-' + month + '-' + day;
   },
   /**
    * 生命周期函数--监听页面加载
@@ -459,11 +543,103 @@ Page({
   onReady: function () {
 
   },
-
   /**
    * 生命周期函数--监听页面显示
    */
   onShow: function () {
+    let pages = getCurrentPages();
+    console.log(pages)
+    /**
+     * 页面数据回显
+     * 如果是路由切换
+     * 或者是回到预约页面，需要不改变之前选择的数据
+     * 并且将该数据回显用
+     * @param nowRouter 当前页面的路由
+     * @param bookingRouter 预约页面路由
+     * @param canShowRouters 需要做回显的路由，从该路由跳转过来
+     * @param prevRouter 从什么路由跳转过来的
+    */
+      const nowRouter = pages[0].route
+      const bookingRouter = 'pages/index/index'
+      const prevRouter = pages[0].__displayReporter.showReferpagepath
+      // 我的
+      // "pages/my-pet/my-pet",
+      // "pages/add-pet/add-pet",
+      // "pages/more-time/more-time",
+      // "pages/select-variety/select-variety",
+      // "pages/confirm-order/confirm-order",
+      // "pages/map/map",
+      // "pages/address-management/address-management",
+      // "pages/my-order/my-order",
+      // "pages/mine/mine",
+      // "pages/goods/goods",
+      // "pages/rim/rim",
+      // "pages/update-address/update-address"
+      const canShowRouters = ['pages/mine/mine.html','pages/confirm-order/confirm-order.html']
+      console.log(nowRouter === bookingRouter, canShowRouters.includes(prevRouter), !!this.data.shopName)
+      if (prevRouter !== 'pages/map/map.html') {
+        if(nowRouter === bookingRouter && canShowRouters.includes(prevRouter) && this.data.shopName) {
+          this.setData({
+            mockPet:wx.getStorageSync('mockPet'),
+            addItem: wx.getStorageSync('addItem'),
+            isSameShop: false
+          })
+        } else {
+          this.setData({
+            addItem: [],
+            mockPet:[],
+            isSameShop: true
+          })
+        }
+      }
+    console.log(this.data.isSameShop);
+
+    if (this.data.isSameShop) {
+      this.setData({
+        primaryRadio: '',
+        secondaryResult: [],
+
+        addItem: [],
+        animation: '',
+        showTime: '',
+        initial: false,
+        addPetShow: false,
+        mainActiveIndex: 0,
+        activeId: null,
+        //单选宠物
+        radio: 0,
+        petId: '',
+        petName: '',
+        totalPrice: '0.00',
+        zPrice: '',
+        fPricr: [],
+        // 主套餐，上一次点击的套餐id
+        prevRadio: '',
+        // 已选中主次套餐信息
+        primaryMealMsg: {},
+        secondaryMealMsg: [],
+        // 门店ID
+        storeId: '',
+        //美容师ID
+        userId: '',
+        //传入日期获取排班
+        workDay: '',
+        //控制上拉套餐列表
+        comboListShow: false,
+      })
+      let animationY = wx.createAnimation({
+        transformOrigin: "50% 50%",
+        duration: 0,
+        timingFunction: "ease",
+        delay: 0
+      });
+      this.animationY = animationY
+      animationY.translateY("-420rpx").step()
+      this.setData({
+        animationY: animationY.export(),
+      })
+
+    }
     let that = this;
     console.log(!!that.data.shopName);
     if (!that.data.shopName) return
@@ -476,28 +652,21 @@ Page({
     }
     console.log(this.data.primaryRadio);
 
-    getWorktime({
-      storeId: storeId,
-      userId:'2fda1b1d-5533-43f5-8faa-44e9d9f87e3e',
-      workDay:'2021-03-26'
-    }).then(res => {
-      if (res.status === 200) {
-        console.log(res);
-      }
-    })
   },
 
   /**
    * 生命周期函数--监听页面隐藏
    */
   onHide: function () {
-
+    wx.setStorageSync('addItem', this.data.addItem);
+    wx.setStorageSync('mockPet',this.data.mockPet)
   },
 
   /**
    * 生命周期函数--监听页面卸载
    */
   onUnload: function () {
+
 
   },
 
