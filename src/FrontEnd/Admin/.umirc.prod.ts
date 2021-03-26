@@ -1,7 +1,7 @@
 /*
  * @Author: Li-HONGYAO
  * @Date: 2021-03-15 13:25:34
- * @LastEditTime: 2021-03-15 14:16:54
+ * @LastEditTime: 2021-03-26 11:02:37
  * @LastEditors: Li-HONGYAO
  * @Description: 
  * @FilePath: \Admin\.umirc.prod.ts
@@ -15,6 +15,6 @@ export default defineConfig({
   define: {
     "process.env.BASE": '',
     "process.env.NAME": 'production',
-    "process.env.HOST": 'http://api.xinzhilv.vip:32001/api'
+    "process.env.HOST": 'http://api.xinzhilv.vip/api'
   },
 });

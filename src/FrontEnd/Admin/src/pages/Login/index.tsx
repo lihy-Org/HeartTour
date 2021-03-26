@@ -10,7 +10,6 @@ import { RuleObject } from 'rc-field-form/lib/interface';
 import Validator from 'lg-validator';
 import Api from '@/Api';
 
-
 interface IProps {
   updateUserModel: (values: UserModelState) => void;
 }
@@ -74,12 +73,6 @@ const Login: FC<IProps> = (props) => {
   // render
   return (
     <div className="page login">
-      <div className="rotate-box">
-        <img
-          src={require('../../assets/images/earth.png')}
-          className="rotate-img"
-        ></img>
-      </div>
       <Particles
         params={{
           particles: {
@@ -181,57 +174,70 @@ const Login: FC<IProps> = (props) => {
           retina_detect: true,
         }}
       />
-      <div className="login-wrapper pt-20">
-        <Row justify="center">
-          <Col>
-            <h2 className="title">心之旅·后台管理系统</h2>
-          </Col>
-        </Row>
-        <Form
-          form={form}
-          initialValues={{ phone: '15828242712' }}
-          name="basic"
-          onFinish={onLogin}
-          autoComplete="off"
-        >
-          <Form.Item name="phone" rules={[{ validator }]}>
-            <Input
-              type="tel"
-              placeholder="请输入手机账号"
-              allowClear
-              prefix={<PhoneOutlined />}
-            />
-          </Form.Item>
-
-          <Form.Item
-            name="code"
-            rules={[{ required: true, message: '验证码不能为空' }]}
+      <div className="contents">
+        <div className="titles">
+          <div className="title">心之旅·后台管理系统</div>
+          <div className="sub-title">
+            LovePets background management system template
+          </div>
+        </div>
+        <div className="wrapper">
+          <div className="welcome">欢迎登录平台</div>
+          <Form
+            form={form}
+            initialValues={{ phone: '15828242712' }}
+            name="basic"
+            onFinish={onLogin}
+            autoComplete="off"
           >
-            <Input
-              placeholder="请输入手机验证码"
-              allowClear
-              prefix={<SafetyOutlined />}
-              suffix={
-                time === Time_MAX ? (
-                  <a onClick={onGetCode}>获取验证码</a>
-                ) : (
-                  <span style={{ color: 'red' }}>{time}秒后重新获取</span>
-                )
-              }
-            />
-          </Form.Item>
+            <Form.Item name="phone" rules={[{ validator }]}>
+              <Input
+                type="tel"
+                placeholder="请输入手机账号"
+                allowClear
+                prefix={<PhoneOutlined />}
+                style={{ height: 40 }}
+              />
+            </Form.Item>
 
-          <Form.Item>
-            <Button
-              type="primary"
-              htmlType="submit"
-              loading={loading}
-              style={{ marginTop: 10 }}
+            <Form.Item
+              name="code"
+              rules={[{ required: true, message: '验证码不能为空' }]}
             >
-              登录
-            </Button>
-          </Form.Item>
-        </Form>
+              <Input
+                placeholder="请输入手机验证码"
+                allowClear
+                style={{ height: 40 }}
+                prefix={<SafetyOutlined />}
+                suffix={
+                  time === Time_MAX ? (
+                    <a onClick={onGetCode}>获取验证码</a>
+                  ) : (
+                    <span style={{ color: 'red' }}>{time}秒后重新获取</span>
+                  )
+                }
+              />
+            </Form.Item>
+
+            <Form.Item style={{ textAlign: 'center' }}>
+              <Button
+                type="primary"
+                htmlType="submit"
+                loading={loading}
+                shape="round"
+                style={{ marginTop: 10, width: 200 }}
+              >
+                登录
+              </Button>
+            </Form.Item>
+          </Form>
+        </div>
+      </div>
+      {/* 底部备案号 */}
+      <div className="footer-bar">
+        <a href="https://beian.miit.gov.cn" className="color-FFFFFF">
+          备案号：浙ICP备2020038537号-2
+        </a>
       </div>
     </div>
   );

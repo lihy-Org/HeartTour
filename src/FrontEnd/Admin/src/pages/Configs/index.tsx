@@ -150,7 +150,7 @@ const Banner: FC = () => {
         </section>
       </div>
       {/* 内容 */}
-      <div className="contents">
+      <div className="layout-contents">
         <Row gutter={16}>
           {datas.map((item, i) => (
             <Col span={4} key={item.title}>
